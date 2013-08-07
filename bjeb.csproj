@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>bjeb</RootNamespace>
     <AssemblyName>bjeb</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,7 +33,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="BasicModule.cs" />
     <Compile Include="Core.cs" />
+    <Compile Include="Computer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
