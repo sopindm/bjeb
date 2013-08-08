@@ -24,24 +24,38 @@ namespace bjeb
 		private List<Computer> _computers;
 
 		public override void OnLoad(ConfigNode sfsNode)
-		{
-			base.OnLoad(sfsNode);
-			loadComputers();
+        {
+            base.OnLoad(sfsNode);
 		}
 
 		private void loadComputers()
         {
-            List<Type> computerTypes = (from ass in AppDomain.CurrentDomain.GetAssemblies() from t in ass.GetTypes() where t.IsSubclassOf(typeof(Computer)) select t).ToList();
+            KSP.IO.FileInfo lib = KSP.IO.FileInfo.CreateForType<BJeb>("bjebModules.dll");
+            string assemblyPath = lib.DirectoryName + "/" + lib.ToString();
+
+            Debug.Log("Assembly info: " + assemblyPath);
 
             _computers = new List<Computer>();
 
-            foreach(Type t in computerTypes)
-            {
-				if(t == typeof(Computer))
-					continue;
+            AppDomain domain = AppDomain.CreateDomain("bjebModulesDomain");
+            AppDomain.Unload(domain);
+            //Assembly modules = domain.Load(assemblyPath);
 
-                _computers.Add((Computer)(t.GetConstructor(new Type[]{}).Invoke(new object[]{})));
-			}
+            /*
+            List<Type> computerTypes = (from ass in domain.GetAssemblies() from t in ass.GetTypes() where t.IsSubclassOf(typeof(Computer)) select t).ToList();
+
+            foreach (Type t in computerTypes)
+                Debug.Log("Assembly info: " + t.FullName);
+
+            _computers = new List<Computer>();
+
+            foreach (Type t in computerTypes)
+            {
+                if (t == typeof(Computer))
+                    continue;
+
+                _computers.Add((Computer)(domain.CreateInstanceAndUnwrap("bjebModules", t.FullName)));
+			}*/
 		}
 
         protected override void drawGUI()
@@ -60,8 +74,17 @@ namespace bjeb
 			GUILayout.Window( windowID, new Rect(200, 300, 100, 100), drawWindow, "Burning JEB", GUI.skin.window);
         }
 
+        private Boolean showed = false;
+
         private void drawWindow(int id)
         {
+            if (showed)
+                return;
+
+            showed = true;
+
+            loadComputers();
+
             GUILayout.Label("Hi, this is Burning JEB.");
 
 			GUILayout.BeginVertical();
