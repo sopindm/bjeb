@@ -27,7 +27,7 @@ namespace bjeb
             _stream = _connection.GetStream();
         }
 
-        public string readString()
+        public string read()
         {
             byte[] data = new byte[4];
             _stream.Read(data, 0, 4);
@@ -40,7 +40,7 @@ namespace bjeb
             return Encoding.Default.GetString(stringData);
         }
 
-        public void writeString(string str)
+        public void write(string str)
         {
             byte[] data = Encoding.Default.GetBytes(str);
 

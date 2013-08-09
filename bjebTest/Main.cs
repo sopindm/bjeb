@@ -11,20 +11,23 @@ namespace bjebTest
     {
         public static void Main(string[] args)
         {
-	    bjeb.Connection connection = bjeb.Connection.create("127.0.0.1", 4400);
+            bjeb.Connection connection = bjeb.Connection.create("127.0.0.1", 4400);
 
-            XmlDocument doc = new XmlDocument();
+            bjeb.Xml xml = new bjeb.Xml("bjeb");
+			bjeb.XmlNode node = new bjeb.XmlNode("modules", xml.root());
+			bjeb.XmlNode module1 = new bjeb.XmlNode("module", node);
 
-	    XmlDeclaration dec = doc.CreateXmlDeclaration("1.0", null, null);
-	    doc.AppendChild(dec);
+			bjeb.XmlNode module2 = new bjeb.XmlNode("module", node);
+			module2.attribute("name").set("Autopilot");
+			module2.attribute("value").set(123);
 
-	    XmlElement root = doc.CreateElement("bjeb");
-	    doc.AppendChild(root);
+			bjeb.XmlNode module3 = new bjeb.XmlNode("module", node);
 
-	    connection.writeString(doc.OuterXml);
-	    Console.WriteLine("Read: " + connection.readString());
+			xml.write(connection);
 
-	    connection.close();
+			Console.WriteLine("Read: " + bjeb.Xml.read(connection).toString());
+
+			connection.close();
         }
     }
 }

@@ -33,11 +33,16 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="../../../bjebServer/bin/Release/bjebServer" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\bjebServer\bjebServer.csproj">
+      <Project>{F9992EFC-2188-44F0-86C8-C235C9B33BA2}</Project>
+      <Name>bjebServer</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>
