@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bjeb", "bjeb.csproj", "{D5E08933-5165-4AA9-85AA-A10956EC3737}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bjebModules", "bjebModules\bjebModules.csproj", "{AB7F8932-D917-4E4A-B1B4-E8478305FE64}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bjebServer", "bjebServer\bjebServer.csproj", "{F9992EFC-2188-44F0-86C8-C235C9B33BA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bjebClient", "bjebClient\bjebClient.csproj", "{AB54751E-02FC-4545-A090-D046905C2555}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,14 +13,18 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AB7F8932-D917-4E4A-B1B4-E8478305FE64}.Debug|x86.ActiveCfg = Debug|x86
-		{AB7F8932-D917-4E4A-B1B4-E8478305FE64}.Debug|x86.Build.0 = Debug|x86
-		{AB7F8932-D917-4E4A-B1B4-E8478305FE64}.Release|x86.ActiveCfg = Release|x86
-		{AB7F8932-D917-4E4A-B1B4-E8478305FE64}.Release|x86.Build.0 = Release|x86
+		{AB54751E-02FC-4545-A090-D046905C2555}.Debug|x86.ActiveCfg = Debug|x86
+		{AB54751E-02FC-4545-A090-D046905C2555}.Debug|x86.Build.0 = Debug|x86
+		{AB54751E-02FC-4545-A090-D046905C2555}.Release|x86.ActiveCfg = Release|x86
+		{AB54751E-02FC-4545-A090-D046905C2555}.Release|x86.Build.0 = Release|x86
 		{D5E08933-5165-4AA9-85AA-A10956EC3737}.Debug|x86.ActiveCfg = Debug|x86
 		{D5E08933-5165-4AA9-85AA-A10956EC3737}.Debug|x86.Build.0 = Debug|x86
 		{D5E08933-5165-4AA9-85AA-A10956EC3737}.Release|x86.ActiveCfg = Release|x86
 		{D5E08933-5165-4AA9-85AA-A10956EC3737}.Release|x86.Build.0 = Release|x86
+		{F9992EFC-2188-44F0-86C8-C235C9B33BA2}.Debug|x86.ActiveCfg = Debug|x86
+		{F9992EFC-2188-44F0-86C8-C235C9B33BA2}.Debug|x86.Build.0 = Debug|x86
+		{F9992EFC-2188-44F0-86C8-C235C9B33BA2}.Release|x86.ActiveCfg = Release|x86
+		{F9992EFC-2188-44F0-86C8-C235C9B33BA2}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = bjeb.csproj
