@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bjeb", "bjeb.csproj", "{D5E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bjebServer", "bjebServer\bjebServer.csproj", "{F9992EFC-2188-44F0-86C8-C235C9B33BA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bjebClient", "bjebClient\bjebClient.csproj", "{AB54751E-02FC-4545-A090-D046905C2555}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bjebTest", "bjebTest\bjebTest.csproj", "{AB54751E-02FC-4545-A090-D046905C2555}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
