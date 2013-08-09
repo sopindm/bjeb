@@ -1,0 +1,43 @@
+CORE
++  Activatable/needs energy
++  Debug mode
+  Plugins system (with reloadable plugins)
+  Save/Load subsystem:
+    vessels
+    vessel types
+    space bodies
+    games
+    global
+
+    cleanup for destroyed vessels
+
+  Lock system
+    locking modules
+    locking module parts
+
+  GUI
+    compact and default view
+    views/layouts system
+    skins system
+
+CONTROLS
+  Smartest SAS
+  Aero-navigation
+  Rover controller
+  RCS translation controller
+  Warp controller
+  Burn controller
+  Staging controller
+  Action-groups controller
+  
+STATS
+  Ascent stats
+  Landing stats
+  Rendevouz stats
+
+MODULES
+   Ascent autopilot
+   Orbital autopilot (changing Ap/Pe, Inc, Ap/Pe instant)
+   Transfer autopilot
+   Breaking autopilot
+   Docking autopilot
