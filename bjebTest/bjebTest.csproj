@@ -7,8 +7,9 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{AB54751E-02FC-4545-A090-D046905C2555}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>bjebTest</RootNamespace>
+    <RootNamespace>bjeb.test</RootNamespace>
     <AssemblyName>bjebTest</AssemblyName>
+    <StartupObject>bjeb.test.MainClass</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>

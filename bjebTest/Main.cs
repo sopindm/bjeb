@@ -5,27 +5,35 @@ using System.Net.Sockets;
 using System.Text;
 using System.Xml;
 
-namespace bjebTest
+namespace bjeb.test
 {
     class MainClass
     {
         public static void Main(string[] args)
         {
-            bjeb.Connection connection = bjeb.Connection.create("127.0.0.1", 4400);
+            ClientConnection connection = ClientConnection.create("127.0.0.1", 4400);
 
-            bjeb.Xml xml = new bjeb.Xml("bjeb");
-			bjeb.XmlNode node = new bjeb.XmlNode("modules", xml.root());
-			bjeb.XmlNode module1 = new bjeb.XmlNode("module", node);
+			while(!connection.alive())
+			{
+				System.Threading.Thread.Sleep(100);
+				connection.reconnect();
+			}
 
-			bjeb.XmlNode module2 = new bjeb.XmlNode("module", node);
+            Xml xml = new Xml("bjeb");
+
+			XmlNode node = new XmlNode("modules", xml.root());
+
+			new XmlNode("module", node);
+
+			XmlNode module2 = new XmlNode("module", node);
 			module2.attribute("name").set("Autopilot");
 			module2.attribute("value").set(123);
 
-			bjeb.XmlNode module3 = new bjeb.XmlNode("module", node);
+			new XmlNode("module", node);
 
 			xml.write(connection);
 
-			Console.WriteLine("Read: " + bjeb.Xml.read(connection).toString());
+			Console.WriteLine("Read: " + Xml.read(connection).toString());
 
 			connection.close();
         }

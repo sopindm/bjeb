@@ -1,21 +1,21 @@
 using System;
 
-namespace bjebServer
+namespace bjeb.server
 {
     class MainClass
     {
         public static void Main(string[] args)
         {
-            bjeb.Server server = new bjeb.Server();
+            Server server = new Server();
             server.start();
 
-			bjeb.Connection connection = server.accept();
+			Connection connection = server.accept();
 
-			bjeb.Xml read = bjeb.Xml.read(connection);
+			Xml read = Xml.read(connection);
 			
             Console.WriteLine("Read: " + read.toString());
 
-			foreach(bjeb.XmlNode node in read.root().node("modules").nodes("module"))
+			foreach(XmlNode node in read.root().node("modules").nodes("module"))
 			{
 				var nameAttribute = node.attribute("name");
 				var valueAttribute = node.attribute("value");

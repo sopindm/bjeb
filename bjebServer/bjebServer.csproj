@@ -7,9 +7,9 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{F9992EFC-2188-44F0-86C8-C235C9B33BA2}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>bjebServer</RootNamespace>
+    <RootNamespace>bjeb.server</RootNamespace>
     <AssemblyName>bjebServer</AssemblyName>
-    <StartupObject>bjebServer.MainClass</StartupObject>
+    <StartupObject>bjeb.server.MainClass</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
