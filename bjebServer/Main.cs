@@ -13,19 +13,22 @@ namespace bjebServer
 
 			bjeb.Xml read = bjeb.Xml.read(connection);
 			
+            Console.WriteLine("Read: " + read.toString());
+
 			foreach(bjeb.XmlNode node in read.root().node("modules").nodes("module"))
 			{
-				if(!node.haveAttribute("name") || !node.haveAttribute("value"))
+				var nameAttribute = node.attribute("name");
+				var valueAttribute = node.attribute("value");
+
+				if(!nameAttribute.isSet() || !valueAttribute.isSet())
 					continue;
 
-				string name = node.attribute("name").getString();
-				int value = node.attribute("value").getInt();
+				string name = nameAttribute.getString();
+				int value = valueAttribute.getInt();
 
-				node.attribute("name").set(name + " from server");
-				node.attribute("value").set(42 + (float)value / 1000);
+				nameAttribute.set(name + " from server");
+				valueAttribute.set(42 + (float)value / 1000);
 			}
-
-            Console.WriteLine("Read: " + read.toString());
 
 			read.write(connection);
 

@@ -69,23 +69,9 @@ namespace bjeb
 			parent._node.AppendChild(_node);
 		}
 
-		public bool haveAttribute(string name)
-		{
-			return _node.Attributes[name] != null;
-		}
-
 		public XmlAttribute attribute(string name)
 		{
-			System.Xml.XmlAttribute ret = _node.Attributes[name];
-
-			if(ret != null)
-				return new XmlAttribute(ret);
-
-			System.Xml.XmlAttribute attr = _node.OwnerDocument.CreateAttribute(name);
-
-			_node.Attributes.Append(attr);
-
-            return new XmlAttribute(attr);
+			return new XmlAttribute(_node, name);
 		}
 
 		public XmlNode node(string name)
@@ -112,40 +98,35 @@ namespace bjeb
 
 			return ret;
 		}
-
-		//XmlNode[] childs();
-		//XmlNode[] childs(string name);
-
-		//void addChild(XmlNode node);
-		//void removeChild(XmlNode node);
-
-		/*
-		  XmlAttribute[] attributes();
-		  
-		  template<class T>
-		  void setAttribute(string name, T value);
-
-		  void removeAttribute(string name);
-
-		  template<class T>
-		  T attribute(string name);
-
-		  template<class T>
-		  T attribute(string name);*/
 	} 
 
 	public class XmlAttribute
 	{
-		System.Xml.XmlAttribute _attribute;
+		System.Xml.XmlNode _node;
+		string _name;
 
-		public XmlAttribute(System.Xml.XmlAttribute attribute)
+		public XmlAttribute(System.Xml.XmlNode node, string name)
 		{
-			_attribute = attribute;
+			_node = node;
+			_name = name;
+		}
+
+		public bool isSet()
+		{
+			return _node.Attributes[_name] != null;
 		}
 
 		public void set(string value)
 		{
-			_attribute.Value = value;
+			var attr = _node.Attributes[value];
+
+			if(attr == null)
+			{
+				attr = _node.OwnerDocument.CreateAttribute(_name);
+				_node.Attributes.Append(attr);
+			}
+
+			attr.Value = value;
 		}
 
 		public void set(int value)
@@ -160,7 +141,12 @@ namespace bjeb
 
 		public string getString()
 		{
-			return _attribute.Value;
+			var attr = _node.Attributes[_name];
+
+			if(attr == null)
+				return "";
+
+			return attr.Value;
 		}
 
 		public int getInt()
@@ -173,13 +159,4 @@ namespace bjeb
 			return float.Parse(getString());
 		}
 	}
-
-	/*
-	  class XmlAttribute
-	  {
-	  string name;
-
-	  template<class T>
-	  T value();
-	  } */
 }
