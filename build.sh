@@ -1,3 +1,3 @@
-xbuild bjebServer/bjebServer.csproj /p:Configuration=Release
-xbuild bjebTest/bjebTest.csproj /p:Configuration=Release
+xbuild server/bjebServer.csproj /p:Configuration=Release
+xbuild test/bjebTest.csproj /p:Configuration=Release
 

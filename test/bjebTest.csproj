@@ -41,7 +41,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\bjebServer\bjebServer.csproj">
+    <ProjectReference Include="..\server\bjebServer.csproj">
       <Project>{F9992EFC-2188-44F0-86C8-C235C9B33BA2}</Project>
       <Name>bjebServer</Name>
     </ProjectReference>

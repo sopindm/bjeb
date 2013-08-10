@@ -1,1 +1,1 @@
-mono bjebTest/bin/Release/bjebTest.exe
+mono test/bin/Release/bjebTest.exe

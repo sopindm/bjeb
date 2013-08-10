@@ -1,7 +1,10 @@
-<request type="gui" screenWidth="123" screenHeight="456"/>
+<msg type="gui" screenWidth="123" screenHeight="456"/>
 
-<response type="gui">
+<msg type="gui">
 ...
-</response>
+</msg>
+
+<msg type="guiResponse">
+</msg>
 
 <window id="12345" x="100" y="100" width="10" height="10" [draggable="true"] [title="BJeb"] [text="Hi from BJeb"]/>

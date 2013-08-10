@@ -26,8 +26,12 @@ namespace bjeb
 				_xml.AppendChild(_root);
 			}
 
-			public XmlNode root() {
-				return new XmlNode(_root);
+			public XmlNode root
+			{
+				get
+				{
+					return new XmlNode(_root);
+				}
 			}
 
 			public void write(Connection connection)

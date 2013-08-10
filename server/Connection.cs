@@ -41,44 +41,15 @@ namespace bjeb
 				}
 			}
 
-			public bool alive()
-			{
-				if(_connection == null)
-					return false;
-
-				Socket client = _connection.Client;
-				bool blockingState = client.Blocking;
-
-				try
-				{
-					byte [] tmp = new byte[1];
-
-					client.Blocking = false;
-					client.Send(tmp, 0, 0);
-					return true;
-				}
-				catch (SocketException e) 
-				{
-					if (e.NativeErrorCode.Equals(10035))
-						return true;
-					else
-						return false;
-				}
-				finally
-				{
-					client.Blocking = blockingState;
-				}
-			}
-
 			public string read()
 			{
-				if(!alive())
-					throw new ConnectionException();
-
 				byte[] data = new byte[4];
 				_stream.Read(data, 0, 4);
 
 				int size = BitConverter.ToInt32(data, 0);
+
+				if(size == 0)
+					throw new ConnectionException();
 
 				byte[] stringData = new byte[size];
 				_stream.Read(stringData, 0, size);
@@ -88,13 +59,20 @@ namespace bjeb
 
 			public void write(string str)
 			{
-				if(!alive())
+				if(_connection == null)
 					throw new ConnectionException();
 
-				byte[] data = Encoding.Default.GetBytes(str);
+				try
+				{
+					byte[] data = Encoding.Default.GetBytes(str);
 
-				_stream.Write(BitConverter.GetBytes(data.Length), 0, 4);
-				_stream.Write(data, 0, data.Length);
+					_stream.Write(BitConverter.GetBytes(data.Length), 0, 4);
+					_stream.Write(data, 0, data.Length);
+				}
+				catch(System.IO.IOException)
+				{
+					throw new ConnectionException();
+				}
 			}
 
 			public void close()
@@ -104,6 +82,9 @@ namespace bjeb
 					_stream.Close();
 					_connection.Close();
 				}
+
+				_stream = null;
+				_connection = null;
 			}
 		}
 

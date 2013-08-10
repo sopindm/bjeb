@@ -41,6 +41,8 @@
     <Compile Include="Server.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Xml.cs" />
+    <Compile Include="Computer.cs" />
+    <Compile Include="Gui.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
