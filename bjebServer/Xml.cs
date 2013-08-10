@@ -3,160 +3,163 @@ using System.Collections.Generic;
 
 namespace bjeb
 {
-	public class Xml
+	namespace net
 	{
-		private System.Xml.XmlDocument _xml;
-		private System.Xml.XmlNode _root;
-
-		private Xml(System.Xml.XmlDocument xml)
-        {
-            _xml = xml;
-			_root = _xml.LastChild;
-		}
-
-		public Xml(string rootName) {
-			_xml = new System.Xml.XmlDocument();
-
-			System.Xml.XmlDeclaration dec = _xml.CreateXmlDeclaration("1.0", null, null);
-			_xml.AppendChild(dec);
-
-			_root = _xml.CreateElement(rootName);
-			_xml.AppendChild(_root);
-		}
-
-		public XmlNode root() {
-			return new XmlNode(_root);
-		}
-
-		public void write(Connection connection)
+		public class Xml
 		{
-			connection.write(toString());
-		}
+			private System.Xml.XmlDocument _xml;
+			private System.Xml.XmlNode _root;
 
-		public static Xml read(Connection connection)
-        {
-            System.Xml.XmlDocument document = new System.Xml.XmlDocument();
-            document.LoadXml(connection.read());
-
-            return new Xml(document);
-		}
-
-		public string toString()
-		{
-			return _xml.OuterXml;
-		}
-	}
-
-	public class XmlNode
-	{
-		System.Xml.XmlNode _node;
-
-		public string name
-		{
-			get
+			private Xml(System.Xml.XmlDocument xml)
 			{
-				return _node.LocalName;
+				_xml = xml;
+				_root = _xml.LastChild;
+			}
+
+			public Xml(string rootName) {
+				_xml = new System.Xml.XmlDocument();
+
+				System.Xml.XmlDeclaration dec = _xml.CreateXmlDeclaration("1.0", null, null);
+				_xml.AppendChild(dec);
+
+				_root = _xml.CreateElement(rootName);
+				_xml.AppendChild(_root);
+			}
+
+			public XmlNode root() {
+				return new XmlNode(_root);
+			}
+
+			public void write(Connection connection)
+			{
+				connection.write(toString());
+			}
+
+			public static Xml read(Connection connection)
+			{
+				System.Xml.XmlDocument document = new System.Xml.XmlDocument();
+				document.LoadXml(connection.read());
+
+				return new Xml(document);
+			}
+
+			public string toString()
+			{
+				return _xml.OuterXml;
 			}
 		}
 
-		public XmlNode(System.Xml.XmlNode node) {
-			_node = node;
-		}
-
-		public XmlNode(string name, XmlNode parent)
+		public class XmlNode
 		{
-			_node = parent._node.OwnerDocument.CreateElement(name);
-			parent._node.AppendChild(_node);
-		}
+			System.Xml.XmlNode _node;
 
-		public XmlAttribute attribute(string name)
-		{
-			return new XmlAttribute(_node, name);
-		}
-
-		public XmlNode node(string name)
-		{										
-			List<XmlNode> all = nodes(name);
-
-			if(all.Count == 0)
-				return null;
-
-			return all[0];
-		}
-
-		public List<XmlNode> nodes(string name)
-		{
-			System.Xml.XmlNodeList nodes = _node.ChildNodes;
-
-			List<XmlNode> ret = new List<XmlNode>();
-
-			foreach(System.Xml.XmlNode node in nodes)
+			public string name
 			{
-				if(node.Name == name)
-					ret.Add(new XmlNode(node));
+				get
+				{
+					return _node.LocalName;
+				}
 			}
 
-			return ret;
-		}
-	} 
-
-	public class XmlAttribute
-	{
-		System.Xml.XmlNode _node;
-		string _name;
-
-		public XmlAttribute(System.Xml.XmlNode node, string name)
-		{
-			_node = node;
-			_name = name;
-		}
-
-		public bool isSet()
-		{
-			return _node.Attributes[_name] != null;
-		}
-
-		public void set(string value)
-		{
-			var attr = _node.Attributes[value];
-
-			if(attr == null)
-			{
-				attr = _node.OwnerDocument.CreateAttribute(_name);
-				_node.Attributes.Append(attr);
+			public XmlNode(System.Xml.XmlNode node) {
+				_node = node;
 			}
 
-			attr.Value = value;
-		}
+			public XmlNode(string name, XmlNode parent)
+			{
+				_node = parent._node.OwnerDocument.CreateElement(name);
+				parent._node.AppendChild(_node);
+			}
 
-		public void set(int value)
+			public XmlAttribute attribute(string name)
+			{
+				return new XmlAttribute(_node, name);
+			}
+
+			public XmlNode node(string name)
+			{										
+				List<XmlNode> all = nodes(name);
+
+				if(all.Count == 0)
+					return null;
+
+				return all[0];
+			}
+
+			public List<XmlNode> nodes(string name)
+			{
+				System.Xml.XmlNodeList nodes = _node.ChildNodes;
+
+				List<XmlNode> ret = new List<XmlNode>();
+
+				foreach(System.Xml.XmlNode node in nodes)
+				{
+					if(node.Name == name)
+						ret.Add(new XmlNode(node));
+				}
+
+				return ret;
+			}
+		} 
+
+		public class XmlAttribute
 		{
-			set(value.ToString());
-		}
+			System.Xml.XmlNode _node;
+			string _name;
 
-		public void set(float value)
-		{
-			set(value.ToString());
-		}
+			public XmlAttribute(System.Xml.XmlNode node, string name)
+			{
+				_node = node;
+				_name = name;
+			}
 
-		public string getString()
-		{
-			var attr = _node.Attributes[_name];
+			public bool isSet()
+			{
+				return _node.Attributes[_name] != null;
+			}
 
-			if(attr == null)
-				return "";
+			public void set(string value)
+			{
+				var attr = _node.Attributes[value];
 
-			return attr.Value;
-		}
+				if(attr == null)
+				{
+					attr = _node.OwnerDocument.CreateAttribute(_name);
+					_node.Attributes.Append(attr);
+				}
 
-		public int getInt()
-		{
-			return Int32.Parse(getString());
-		}
+				attr.Value = value;
+			}
 
-		public float getFloat()
-		{
-			return float.Parse(getString());
+			public void set(int value)
+			{
+				set(value.ToString());
+			}
+
+			public void set(float value)
+			{
+				set(value.ToString());
+			}
+
+			public string getString()
+			{
+				var attr = _node.Attributes[_name];
+
+				if(attr == null)
+					return "";
+
+				return attr.Value;
+			}
+
+			public int getInt()
+			{
+				return Int32.Parse(getString());
+			}
+
+			public float getFloat()
+			{
+				return float.Parse(getString());
+			}
 		}
 	}
 }

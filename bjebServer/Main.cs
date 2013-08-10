@@ -1,16 +1,12 @@
 using System;
+using bjeb.net;
 
 namespace bjeb.server
 {
     class MainClass
     {
-        public static void Main(string[] args)
-        {
-            Server server = new Server();
-            server.start();
-
-			Connection connection = server.accept();
-
+		private static void handleConnection(Connection connection)
+		{
 			Xml read = Xml.read(connection);
 			
             Console.WriteLine("Read: " + read.toString());
@@ -33,6 +29,15 @@ namespace bjeb.server
 			read.write(connection);
 
             connection.close();
+		}
+
+        public static void Main(string[] args)
+        {
+            bjeb.net.Server server = new bjeb.net.Server("127.0.0.1", 4400);
+
+			for(int i=0;i<10;i++)
+				server.accept(handleConnection);
+
             server.stop();
         }
     }

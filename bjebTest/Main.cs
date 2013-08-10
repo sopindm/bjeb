@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Xml;
+using bjeb.net;
 
 namespace bjeb.test
 {
@@ -34,6 +34,8 @@ namespace bjeb.test
 			xml.write(connection);
 
 			Console.WriteLine("Read: " + Xml.read(connection).toString());
+
+			Console.ReadLine();
 
 			connection.close();
         }

@@ -5,126 +5,129 @@ using System.Net.Sockets;
 
 namespace bjeb
 {
-	public class ConnectionException: System.Exception
+	namespace net
 	{
-	}
-
-    public class Connection
-    {
-        private TcpClient _connection;
-        private NetworkStream _stream;
-
-		public Connection(string hostname, int port)
-		{      
-			connect(hostname, port);
-		}	
-
-		public Connection(TcpClient connection)
-        {
-			_connection = connection;
-			_stream = _connection.GetStream();
-        }
-
-		protected void connect(string hostname, int port)
+		public class ConnectionException: System.Exception
 		{
-			try
+		}
+
+		public class Connection
+		{
+			private TcpClient _connection;
+			private NetworkStream _stream;
+
+			public Connection(string hostname, int port)
+			{      
+				connect(hostname, port);
+			}	
+
+			public Connection(TcpClient connection)
 			{
-				_connection = new TcpClient(hostname, port);
+				_connection = connection;
 				_stream = _connection.GetStream();
 			}
-			catch(SocketException)
+
+			protected void connect(string hostname, int port)
 			{
-				_connection = null;
-				_stream = null;
+				try
+				{
+					_connection = new TcpClient(hostname, port);
+					_stream = _connection.GetStream();
+				}
+				catch(SocketException)
+				{
+					_connection = null;
+					_stream = null;
+				}
 			}
-		}
 
-		public bool alive()
-		{
-			if(_connection == null)
-				return false;
-
-			Socket client = _connection.Client;
-			bool blockingState = client.Blocking;
-
-			try
+			public bool alive()
 			{
-				byte [] tmp = new byte[1];
-
-				client.Blocking = false;
-				client.Send(tmp, 0, 0);
-				return true;
-			}
-			catch (SocketException e) 
-			{
-				if (e.NativeErrorCode.Equals(10035))
-					return true;
-				else
+				if(_connection == null)
 					return false;
+
+				Socket client = _connection.Client;
+				bool blockingState = client.Blocking;
+
+				try
+				{
+					byte [] tmp = new byte[1];
+
+					client.Blocking = false;
+					client.Send(tmp, 0, 0);
+					return true;
+				}
+				catch (SocketException e) 
+				{
+					if (e.NativeErrorCode.Equals(10035))
+						return true;
+					else
+						return false;
+				}
+				finally
+				{
+					client.Blocking = blockingState;
+				}
 			}
-			finally
+
+			public string read()
 			{
-				client.Blocking = blockingState;
+				if(!alive())
+					throw new ConnectionException();
+
+				byte[] data = new byte[4];
+				_stream.Read(data, 0, 4);
+
+				int size = BitConverter.ToInt32(data, 0);
+
+				byte[] stringData = new byte[size];
+				_stream.Read(stringData, 0, size);
+
+				return Encoding.Default.GetString(stringData);
+			}
+
+			public void write(string str)
+			{
+				if(!alive())
+					throw new ConnectionException();
+
+				byte[] data = Encoding.Default.GetBytes(str);
+
+				_stream.Write(BitConverter.GetBytes(data.Length), 0, 4);
+				_stream.Write(data, 0, data.Length);
+			}
+
+			public void close()
+			{
+				if(_connection != null)
+				{
+					_stream.Close();
+					_connection.Close();
+				}
 			}
 		}
 
-        public string read()
-        {
-			if(!alive())
-				throw new ConnectionException();
+		public class ClientConnection: Connection
+		{
+			private string _host;
+			private int _port;
 
-            byte[] data = new byte[4];
-            _stream.Read(data, 0, 4);
-
-            int size = BitConverter.ToInt32(data, 0);
-
-            byte[] stringData = new byte[size];
-            _stream.Read(stringData, 0, size);
-
-            return Encoding.Default.GetString(stringData);
-        }
-
-        public void write(string str)
-        {
-			if(!alive())
-				throw new ConnectionException();
-
-            byte[] data = Encoding.Default.GetBytes(str);
-
-            _stream.Write(BitConverter.GetBytes(data.Length), 0, 4);
-            _stream.Write(data, 0, data.Length);
-        }
-
-        public void close()
-        {
-			if(_connection != null)
+			public ClientConnection(string host, int port): base(host, port)
 			{
-				_stream.Close();
-				_connection.Close();
+				_host = host;
+				_port = port;
 			}
-        }
-    }
 
-	public class ClientConnection: Connection
-	{
-		private string _host;
-		private int _port;
+			public static ClientConnection create(string hostname, int port)
+			{
+				return new ClientConnection(hostname, port);
+			}	
 
-		public ClientConnection(string host, int port): base(host, port)
-		{
-			_host = host;
-			_port = port;
-		}
-
-		public static ClientConnection create(string hostname, int port)
-        {
-			return new ClientConnection(hostname, port);
-		}	
-
-		public void reconnect()
-		{
-			close();
-			connect(_host, _port);
+			public void reconnect()
+			{
+				close();
+				connect(_host, _port);
+			}
 		}
 	}
 }
