@@ -52,14 +52,14 @@ namespace bjeb.net
 
         static SortedDictionary<string, Type> _serializableTypes;
 
-        static Serializable()
-        {
+		static Serializable()
+		{
             List<Type> serializableTypes = (from ass in AppDomain.CurrentDomain.GetAssemblies() from t in ass.GetTypes() where isSerializable(t) select t).ToList();
 
             _serializableTypes = new SortedDictionary<string, Type>();
 
             foreach (Type t in serializableTypes)
-                _serializableTypes.Add(serializableAttribute(t).nodeName, t);
+				_serializableTypes.Add(serializableAttribute(t).nodeName, t);
         }
 
 		virtual public Serializable state() { return null; }
@@ -89,7 +89,7 @@ namespace bjeb.net
 
         public static Serializable create(XmlNode node)
         {
-            Type t = _serializableTypes [node.name];
+            Type t = _serializableTypes[node.name];
 
             if (t == null)
                 throw new SerializationException("No serializable type " + node.name);

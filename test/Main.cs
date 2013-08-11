@@ -17,30 +17,31 @@ namespace bjeb.test
 
             screen.serialize(request.root);
 
-			request.write(connection);
+            request.write(connection);
 
-			Console.WriteLine("Read: " + Xml.read(connection).toString());
+            Xml response = Xml.read(connection);
+
+            Window window = new Window();
+            window.deserialize(response.root.node("window"));
+
+            Console.WriteLine("Window ID: " + window.id + " X: " + window.x + "Y: " + window.y + " Width: " + window.width + " Height: " + window.height);
 		}
 
         public static void Main(string[] args)
         {
+			Client client = new Client("127.0.0.1", 4400);
+
             while (true)
             {
-                try
-                {
-					Client client = new Client("127.0.0.1", 4400);
-
-                    while(true)
-					{
-						update(client.connection);
-						System.Threading.Thread.Sleep(1000);
-					}
-                } 
-				catch (ConnectionException)
-                {
+                if(!client.execute(() => 
+						{
+							update(client.connection);
+							System.Threading.Thread.Sleep(1000);
+						}))
+				{
 					Console.WriteLine("No connection");
 					System.Threading.Thread.Sleep(1000);
-                } 
+				}
 			}
 		}
     }

@@ -1,0 +1,27 @@
+Window:
+  Draggable (+ serializing states)
+  Skin
+
+Button
+  Text
+  Event
+  With coordinates or with layout
+  Skin (+ add skin to view base class)
+  
+Window content
+  Layouts
+
+Labels 
+  Text
+  Event???
+
+Font
+  Color
+  Size??
+  Family???
+
+Textboxs
+  Text
+  Event
+
+Scrollbars

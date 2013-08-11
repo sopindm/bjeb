@@ -1,13 +1,14 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
+using bjeb;
 
 namespace bjeb
 {
     public class BJeb: BasicModule
     {
+		private net.Client _client;
+
         private static GUISkin _skin;
         public static GUISkin Skin
         {
@@ -21,41 +22,47 @@ namespace bjeb
             }
         }
 
-		private List<Computer> _computers;
+		private gui.Screen _screen;
+
+		public override void OnStart(StartState state)
+        {
+            base.OnStart(state);
+
+            object[] objects = AssetBase.FindObjectsOfTypeIncludingAssets(typeof(GUISkin));
+            foreach (object obj in objects)
+                Debug.Log("GUI Skin: " + ((GUISkin)obj).name);
+
+			_client = new net.Client("127.0.0.1", 4400);
+
+			_screen = new gui.Screen();
+			_screen.width = Screen.width;
+			_screen.height = Screen.height;
+		}
 
 		public override void OnLoad(ConfigNode sfsNode)
         {
             base.OnLoad(sfsNode);
 		}
 
-		private void loadComputers()
-        {
-            KSP.IO.FileInfo lib = KSP.IO.FileInfo.CreateForType<BJeb>("bjebModules.dll");
-            string assemblyPath = lib.DirectoryName + "/" + lib.ToString();
+		private List<gui.Window> requestGUI()
+		{
+			net.Xml request = new net.Xml("msg");
+			_screen.serialize(request.root);
+			request.write(_client.connection);
 
-            Debug.Log("Assembly info: " + assemblyPath);
+			net.Xml response = net.Xml.read(_client.connection);
+				
+			List<gui.Window> windows = new List<gui.Window>();
 
-            _computers = new List<Computer>();
+			foreach(var node in response.root.nodes("window"))
+			{
+				gui.Window newWindow = new gui.Window();
+				newWindow.deserialize(node);
 
-            AppDomain domain = AppDomain.CreateDomain("bjebModulesDomain");
-            AppDomain.Unload(domain);
-            //Assembly modules = domain.Load(assemblyPath);
+				windows.Add(newWindow);
+			}
 
-            /*
-            List<Type> computerTypes = (from ass in domain.GetAssemblies() from t in ass.GetTypes() where t.IsSubclassOf(typeof(Computer)) select t).ToList();
-
-            foreach (Type t in computerTypes)
-                Debug.Log("Assembly info: " + t.FullName);
-
-            _computers = new List<Computer>();
-
-            foreach (Type t in computerTypes)
-            {
-                if (t == typeof(Computer))
-                    continue;
-
-                _computers.Add((Computer)(domain.CreateInstanceAndUnwrap("bjebModules", t.FullName)));
-			}*/
+			return windows;
 		}
 
         protected override void drawGUI()
@@ -68,31 +75,27 @@ namespace bjeb
 
             if (vessel != FlightGlobals.ActiveVessel)
                 return;
+			
+			List<gui.Window> windows = null;
 
-			GUI.skin = Skin;
+			if(_client.execute(() => { windows = requestGUI(); }))
+			{
+				GUI.skin = Skin;
 
-			GUILayout.Window( windowID, new Rect(200, 300, 100, 100), drawWindow, "Burning JEB", GUI.skin.window);
+				foreach(var window in windows)
+					window.draw();
+
+				//			    
+			}
         }
 
-        private Boolean showed = false;
+		private void updateGUI()
+		{
+		}
 
         private void drawWindow(int id)
         {
-            if (showed)
-                return;
-
-            showed = true;
-
-            loadComputers();
-
             GUILayout.Label("Hi, this is Burning JEB.");
-
-			GUILayout.BeginVertical();
-
-			foreach(Computer computer in _computers)
-				GUILayout.Label(computer.name);
-
-			GUILayout.EndVertical();
         }
     }
 }

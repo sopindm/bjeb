@@ -36,6 +36,8 @@ namespace bjeb
                 try
                 {
                     _connection = new TcpClient(hostname, port);
+					_connection.NoDelay = true;
+
                     _stream = _connection.GetStream();
                 } 
                 catch (SocketException)
@@ -43,30 +45,38 @@ namespace bjeb
                     _connection = null;
                     _stream = null;
 
-                    throw new ConnectionException("failed to setup connection");
+					throw new ConnectionException("Failed to connect to server");
 				}
 			}	
 
 			public Connection(TcpClient connection)
 			{
 				_connection = connection;
+				_connection.NoDelay = true;
 				_stream = _connection.GetStream();
 			}
 
 			public string read()
 			{
-				byte[] data = new byte[4];
-				_stream.Read(data, 0, 4);
+				try
+				{
+					byte[] data = new byte[4];
+					_stream.Read(data, 0, 4);
 
-				int size = BitConverter.ToInt32(data, 0);
+					int size = BitConverter.ToInt32(data, 0);
 
-				if(size == 0)
+					if(size == 0)
+						throw new ConnectionException("failed to read from connection");
+
+					byte[] stringData = new byte[size];
+					_stream.Read(stringData, 0, size);
+
+					return Encoding.Default.GetString(stringData);
+				}
+				catch(System.IO.IOException)
+				{
 					throw new ConnectionException("failed to read from connection");
-
-				byte[] stringData = new byte[size];
-				_stream.Read(stringData, 0, size);
-
-				return Encoding.Default.GetString(stringData);
+				}
 			}
 
 			public void write(string str)

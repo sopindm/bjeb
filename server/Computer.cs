@@ -15,10 +15,12 @@ namespace bjeb
 
 		private void resizeWindow()
 		{
-			_window.x = _screen.width - 120;
+            _window.x = _screen.width - 550;
 			_window.y = 100;
-			_window.width = 100;
-			_window.height = _screen.height - 120;
+			_window.width = 200;
+            _window.height = 100;
+			_window.title = "Annoying title";
+			//_window.dragable = true;
 		}
 
 		public Xml handle(Xml request)

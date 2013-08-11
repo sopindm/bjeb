@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bjebTest", "test\bjebTest.c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bjebLib", "lib\bjebLib.csproj", "{1247FCA3-610B-4178-9BA0-836D00888B23}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bjebLibUnity", "lib\bjebLibUnity.csproj", "{1247FCA3-610B-4178-9BA0-836D00888B23}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -16,8 +18,12 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1247FCA3-610B-4178-9BA0-836D00888B23}.Debug|x86.ActiveCfg = Debug|x86
+		{1247FCA3-610B-4178-9BA0-836D00888B23}.Debug|x86.ActiveCfg = Debug|x86
+		{1247FCA3-610B-4178-9BA0-836D00888B23}.Debug|x86.Build.0 = Debug|x86
 		{1247FCA3-610B-4178-9BA0-836D00888B23}.Debug|x86.Build.0 = Debug|x86
 		{1247FCA3-610B-4178-9BA0-836D00888B23}.Release|x86.ActiveCfg = Release|x86
+		{1247FCA3-610B-4178-9BA0-836D00888B23}.Release|x86.ActiveCfg = Release|x86
+		{1247FCA3-610B-4178-9BA0-836D00888B23}.Release|x86.Build.0 = Release|x86
 		{1247FCA3-610B-4178-9BA0-836D00888B23}.Release|x86.Build.0 = Release|x86
 		{AB54751E-02FC-4545-A090-D046905C2555}.Debug|x86.ActiveCfg = Debug|x86
 		{AB54751E-02FC-4545-A090-D046905C2555}.Debug|x86.Build.0 = Debug|x86
