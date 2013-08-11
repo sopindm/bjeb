@@ -8,8 +8,23 @@ namespace bjeb
 	namespace net
 	{
 		public class ConnectionException: System.Exception
-		{
-		}
+        {
+        private string _error
+        {
+            get;
+            set;
+        }
+
+        public ConnectionException(string error)
+        {
+            _error = error;
+        }
+
+        public override string ToString()
+        {
+            return "Serialization exception: " + _error;
+        }
+        }
 
 		public class Connection
 		{
@@ -28,7 +43,7 @@ namespace bjeb
                     _connection = null;
                     _stream = null;
 
-                    throw new ConnectionException();
+                    throw new ConnectionException("failed to setup connection");
 				}
 			}	
 
@@ -46,7 +61,7 @@ namespace bjeb
 				int size = BitConverter.ToInt32(data, 0);
 
 				if(size == 0)
-					throw new ConnectionException();
+					throw new ConnectionException("failed to read from connection");
 
 				byte[] stringData = new byte[size];
 				_stream.Read(stringData, 0, size);
@@ -57,7 +72,7 @@ namespace bjeb
 			public void write(string str)
 			{
 				if(_connection == null)
-					throw new ConnectionException();
+					throw new ConnectionException("failed to write to connection");
 
 				try
 				{
@@ -68,7 +83,7 @@ namespace bjeb
 				}
 				catch(System.IO.IOException)
 				{
-					throw new ConnectionException();
+					throw new ConnectionException("failed to write to connection");
 				}
 			}
 

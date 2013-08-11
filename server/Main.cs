@@ -15,15 +15,16 @@ namespace bjeb.server
 				{
 					Xml request = Xml.read(connection);
 			
-					Console.WriteLine(request.toString());
+					Console.WriteLine("Request: " + request.toString());
 
-					computer.screen.deserialize(request.root.node("screen"));
+					Xml response = computer.handle(request);
 
-					Xml response = new Xml("msg");
-
-					computer.screen.serialize(new XmlNode(computer.screen.xmlName, response.root));
-
-					response.write(connection);
+					if(response != null)
+					{
+						Console.WriteLine("Response: " + response.toString());
+						Console.WriteLine();
+						response.write(connection);
+					}
 				}
 			}
 			catch(ConnectionException)

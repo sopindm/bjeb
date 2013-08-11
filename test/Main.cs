@@ -7,15 +7,15 @@ namespace bjeb.test
     class MainClass
     {
 		public static void update(Connection connection)
-		{
-			Screen screen = new Screen();
+        {
+            Screen screen = new Screen();
 
-			screen.width = 100;
-			screen.height = 50;
+            screen.width = 1000;
+            screen.height = 500;
 
-			Xml request = new Xml("msg");
+            Xml request = new Xml("msg");
 
-			screen.serialize(new XmlNode(screen.xmlName, request.root));
+            screen.serialize(request.root);
 
 			request.write(connection);
 

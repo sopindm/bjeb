@@ -2,6 +2,7 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
+    [XmlSerializable("screen")]
 	public class Screen: Serializable
 	{
 		public int width
@@ -16,21 +17,13 @@ namespace bjeb.gui
 			set;
 		}
 
-		override public string xmlName
-		{
-			get
-			{
-				return "screen";
-			}
-		}
-
-		override public void serialize(XmlNode node)
+		override protected void doSerialize(XmlNode node)
 		{
 			node.attribute("width").set(width);
 			node.attribute("height").set(height);
 		}
 
-		override public void deserialize(XmlNode node)
+		override protected void doDeserialize(XmlNode node)
 		{
 			width = node.attribute("width").getInt();
 			height = node.attribute("height").getInt();
