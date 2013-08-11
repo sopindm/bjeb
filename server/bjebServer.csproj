@@ -32,17 +32,15 @@
     <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Main.cs" />
-    <Compile Include="Connection.cs" />
-    <Compile Include="Server.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Xml.cs" />
     <Compile Include="Computer.cs" />
-    <Compile Include="Gui.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\lib\bjebLib.csproj">
+      <Project>{1247FCA3-610B-4178-9BA0-836D00888B23}</Project>
+      <Name>bjebLib</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

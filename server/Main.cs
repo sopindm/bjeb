@@ -17,7 +17,13 @@ namespace bjeb.server
 			
 					Console.WriteLine(request.toString());
 
-					computer.gui.response(request).write(connection);
+					computer.screen.deserialize(request.root.node("screen"));
+
+					Xml response = new Xml("msg");
+
+					computer.screen.serialize(new XmlNode(computer.screen.xmlName, response.root));
+
+					response.write(connection);
 				}
 			}
 			catch(ConnectionException)

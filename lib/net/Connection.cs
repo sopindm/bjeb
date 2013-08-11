@@ -17,28 +17,25 @@ namespace bjeb
 			private NetworkStream _stream;
 
 			public Connection(string hostname, int port)
-			{      
-				connect(hostname, port);
+            {      
+                try
+                {
+                    _connection = new TcpClient(hostname, port);
+                    _stream = _connection.GetStream();
+                } 
+                catch (SocketException)
+                {
+                    _connection = null;
+                    _stream = null;
+
+                    throw new ConnectionException();
+				}
 			}	
 
 			public Connection(TcpClient connection)
 			{
 				_connection = connection;
 				_stream = _connection.GetStream();
-			}
-
-			protected void connect(string hostname, int port)
-			{
-				try
-				{
-					_connection = new TcpClient(hostname, port);
-					_stream = _connection.GetStream();
-				}
-				catch(SocketException)
-				{
-					_connection = null;
-					_stream = null;
-				}
 			}
 
 			public string read()
@@ -85,29 +82,6 @@ namespace bjeb
 
 				_stream = null;
 				_connection = null;
-			}
-		}
-
-		public class ClientConnection: Connection
-		{
-			private string _host;
-			private int _port;
-
-			public ClientConnection(string host, int port): base(host, port)
-			{
-				_host = host;
-				_port = port;
-			}
-
-			public static ClientConnection create(string hostname, int port)
-			{
-				return new ClientConnection(hostname, port);
-			}	
-
-			public void reconnect()
-			{
-				close();
-				connect(_host, _port);
 			}
 		}
 	}

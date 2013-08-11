@@ -1,47 +1,46 @@
 using System;
-using System.IO;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
 using bjeb.net;
+using bjeb.gui;
 
 namespace bjeb.test
 {
     class MainClass
     {
-		public static void update(ClientConnection connection)
+		public static void update(Connection connection)
 		{
-			Gui gui = new Gui();
+			Screen screen = new Screen();
 
-			gui.width = 100;
-			gui.height = 50;
+			screen.width = 100;
+			screen.height = 50;
 
-			gui.request().write(connection);
+			Xml request = new Xml("msg");
+
+			screen.serialize(new XmlNode(screen.xmlName, request.root));
+
+			request.write(connection);
 
 			Console.WriteLine("Read: " + Xml.read(connection).toString());
 		}
 
         public static void Main(string[] args)
         {
-            ClientConnection connection = ClientConnection.create("127.0.0.1", 4400);
+            while (true)
+            {
+                try
+                {
+					Client client = new Client("127.0.0.1", 4400);
 
-			while(true)
-			{
-				try
-				{
-					while(true)
+                    while(true)
 					{
-						update(connection);
+						update(client.connection);
 						System.Threading.Thread.Sleep(1000);
 					}
-				}
-				catch(ConnectionException)
-				{
-				}
-				finally
-				{
-					connection.reconnect();
-				}
+                } 
+				catch (ConnectionException)
+                {
+					Console.WriteLine("No connection");
+					System.Threading.Thread.Sleep(1000);
+                } 
 			}
 		}
     }

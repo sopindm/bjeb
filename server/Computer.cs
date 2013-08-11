@@ -2,7 +2,7 @@ namespace bjeb
 {
 	public class Computer
 	{
-		public Gui gui
+		public gui.Screen screen
 		{
 			get;
 			private set;
@@ -10,7 +10,7 @@ namespace bjeb
 
 		public Computer()
 		{
-			gui = new Gui();
+			screen = new gui.Screen();
 		}
 	}
 }
