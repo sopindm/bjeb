@@ -15,6 +15,8 @@ namespace bjeb.test
 
             Xml request = new Xml("msg");
 
+			request.root.attribute("type").set("gui");
+
             screen.serialize(request.root);
 
             request.write(connection);
@@ -24,7 +26,19 @@ namespace bjeb.test
             Window window = new Window();
             window.deserialize(response.root.node("window"));
 
+			window.x--;
+			window.y++;
+			window.width++;
+			window.height--;
+
             Console.WriteLine("Window ID: " + window.id + " X: " + window.x + "Y: " + window.y + " Width: " + window.width + " Height: " + window.height);
+
+			request = new Xml("msg");
+
+			request.root.attribute("type").set("guiUpdate");
+
+			window.serializeState(request.root);
+			request.write(connection);
 		}
 
         public static void Main(string[] args)

@@ -23,10 +23,20 @@ namespace bjeb.gui
 			node.attribute("height").set(height);
 		}
 
+		override protected void doSerializeState(XmlNode node)
+		{
+			doSerialize(node);
+		}
+
 		override protected void doDeserialize(XmlNode node)
 		{
 			width = node.attribute("width").getInt();
 			height = node.attribute("height").getInt();
+		}
+
+		override protected void doDeserializeState(XmlNode node)
+		{
+			doDeserialize(node);
 		}
 	}
 }

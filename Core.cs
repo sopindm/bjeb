@@ -47,6 +47,8 @@ namespace bjeb
 		private List<gui.Window> requestGUI()
 		{
 			net.Xml request = new net.Xml("msg");
+			request.root.attribute("type").set("gui");
+
 			_screen.serialize(request.root);
 			request.write(_client.connection);
 
@@ -82,10 +84,16 @@ namespace bjeb
 			{
 				GUI.skin = Skin;
 
-				foreach(var window in windows)
-					window.draw();
+				net.Xml request = new net.Xml("msg");
+				request.root.attribute("type").set("guiUpdate");
 
-				//			    
+				foreach(var window in windows)
+				{
+					window.draw();
+					window.serializeState(request.root);
+				}
+
+				request.tryWrite(_client.connection);
 			}
         }
 

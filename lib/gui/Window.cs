@@ -25,27 +25,28 @@ namespace bjeb.gui
 		public Window()
 		{
 			id = nextId();
+			draggable = false;
 		}
 
-		public int x
+		public float x
 		{
 			get;
 			set;
 		}
 
-		public int y
+		public float y
 		{
 			get;
 			set;
 		}
 
-		public int width
+		public float width
 		{
 			get;
 			set;
 		}
 
-		public int height
+		public float height
 		{
 			get;
 			set;
@@ -57,10 +58,21 @@ namespace bjeb.gui
 			set;
 		}
 
+		public bool draggable
+		{
+			get;
+			set;
+		}
+
 		public void draw()
 		{
 #if UNITY
-			GUILayout.Window( id, new Rect(x, y, width, height), drawContext, title, GUI.skin.window);
+			Rect area = GUILayout.Window( id, new Rect(x, y, width, height), drawContext, title, GUI.skin.window);
+
+			x = area.x;
+			y = area.y;
+			width = area.width;
+			height = area.height;
 #endif
 		}
 
@@ -68,6 +80,9 @@ namespace bjeb.gui
 		{
 #if UNITY
             GUILayout.Label("Hi, this is Burning JEB.");
+			
+			if(draggable)
+				GUI.DragWindow();
 #endif
 		}
 
@@ -75,24 +90,38 @@ namespace bjeb.gui
 		{
 			node.attribute("id").set(id);
 
+			node.attribute("title").set(title);
+
+			doSerializeState(node);
+
+			node.attribute("draggable").set(draggable);
+		}
+
+		override protected void doSerializeState(XmlNode node)
+		{
 			node.attribute("x").set(x);
 			node.attribute("y").set(y);
 			node.attribute("width").set(width);
 			node.attribute("height").set(height);
-
-			node.attribute("title").set(title);
 		}
 
 		override protected void doDeserialize(XmlNode node)
         {
             id = node.attribute("id").getInt();
 
-            x = node.attribute("x").getInt();
-            y = node.attribute("y").getInt();
-            width = node.attribute("width").getInt();
-            height = node.attribute("height").getInt();
-
 			title = node.attribute("title").getString();
+
+			doDeserializeState(node);
+
+			draggable = node.attribute("draggable").getBool();
+		}
+
+		override protected void doDeserializeState(XmlNode node)
+		{
+            x = node.attribute("x").getFloat();
+            y = node.attribute("y").getFloat();
+            width = node.attribute("width").getFloat();
+            height = node.attribute("height").getFloat();
 		}
 	}
 }

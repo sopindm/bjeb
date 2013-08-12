@@ -1,5 +1,4 @@
 Window:
-  Draggable (+ serializing states)
   Skin
 
 Button

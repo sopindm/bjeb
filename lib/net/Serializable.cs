@@ -87,6 +87,14 @@ namespace bjeb.net
             return node;
         }
 
+		public XmlNode serializeState(XmlNode parent)
+		{
+            XmlNode node = new XmlNode(nodeName(), parent);
+            doSerializeState(node);
+
+            return node;
+		}
+
         public static Serializable create(XmlNode node)
         {
             Type t = _serializableTypes[node.name];
@@ -108,7 +116,18 @@ namespace bjeb.net
             doDeserialize(node);
         }
 
+		public void deserializeState(XmlNode node)
+        {
+            if (nodeName() != node.name)
+                throw new SerializationException("Tried to deserialize from node with wrong name");
+
+            doDeserializeState(node);
+        }
+
         abstract protected void doSerialize(XmlNode node);
         abstract protected void doDeserialize(XmlNode node);
+
+        abstract protected void doSerializeState(XmlNode node);
+        abstract protected void doDeserializeState(XmlNode node);
 	}
 }

@@ -39,6 +39,19 @@ namespace bjeb
 				connection.write(toString());
 			}
 
+			public bool tryWrite(Connection connection)
+			{
+				try
+				{
+					write(connection);
+					return true;
+				}
+				catch(ConnectionException)
+				{
+					return false;
+				}
+			}
+
 			public static Xml read(Connection connection)
 			{
 				System.Xml.XmlDocument document = new System.Xml.XmlDocument();
@@ -145,6 +158,11 @@ namespace bjeb
 				set(value.ToString());
 			}
 
+			public void set(bool value)
+			{
+				set(value.ToString());
+			}
+
 			public string getString()
 			{
 				var attr = _node.Attributes[_name];
@@ -163,6 +181,11 @@ namespace bjeb
 			public float getFloat()
 			{
 				return float.Parse(getString());
+			}
+
+			public bool getBool()
+			{
+				return bool.Parse(getString());
 			}
 		}
 	}
