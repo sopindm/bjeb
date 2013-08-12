@@ -35,6 +35,7 @@
     <Compile Include="gui\Screen.cs" />
     <Compile Include="gui\Window.cs" />
     <Compile Include="gui\View.cs" />
+    <Compile Include="gui\AssetBase.cs" />
     <Compile Include="net\Connection.cs" />
     <Compile Include="net\Serializable.cs" />
     <Compile Include="net\Server.cs" />

@@ -32,6 +32,8 @@ namespace bjeb
             foreach (object obj in objects)
                 Debug.Log("GUI Skin: " + ((GUISkin)obj).name);
 
+            Debug.Log("High logic skin: " + HighLogic.Skin.name);
+
 			_client = new net.Client("127.0.0.1", 4400);
 
 			_screen = new gui.Screen();

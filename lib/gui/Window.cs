@@ -26,6 +26,7 @@ namespace bjeb.gui
 		{
 			id = nextId();
 			draggable = false;
+			skin = AssetBase.Skin.Default;
 		}
 
 		public float x
@@ -58,6 +59,12 @@ namespace bjeb.gui
 			set;
 		}
 
+		public AssetBase.Skin skin
+		{
+			get;
+			set;
+		}
+
 		public bool draggable
 		{
 			get;
@@ -67,7 +74,7 @@ namespace bjeb.gui
 		public void draw()
 		{
 #if UNITY
-			Rect area = GUILayout.Window( id, new Rect(x, y, width, height), drawContext, title, GUI.skin.window);
+			Rect area = GUILayout.Window( id, new Rect(x, y, width, height), drawContext, title, AssetBase.unitySkin(skin).window);
 
 			x = area.x;
 			y = area.y;
@@ -91,6 +98,7 @@ namespace bjeb.gui
 			node.attribute("id").set(id);
 
 			node.attribute("title").set(title);
+			node.attribute("skin").set(skin.ToString());
 
 			doSerializeState(node);
 
@@ -110,6 +118,7 @@ namespace bjeb.gui
             id = node.attribute("id").getInt();
 
 			title = node.attribute("title").getString();
+			skin = (AssetBase.Skin)System.Enum.Parse(typeof(AssetBase.Skin), node.attribute("skin").getString());
 
 			doDeserializeState(node);
 

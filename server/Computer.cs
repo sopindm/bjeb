@@ -26,6 +26,7 @@ namespace bjeb
             _window.height = 100;
 			_window.title = "Annoying title";
 			_window.draggable = true;
+			_window.skin = gui.AssetBase.Skin.PlaqueDialog;
 
 			_started = true;
 		}
