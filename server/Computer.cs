@@ -26,7 +26,16 @@ namespace bjeb
             _window.height = 100;
 			_window.title = "Annoying title";
 			_window.draggable = true;
-			_window.skin = gui.AssetBase.Skin.PlaqueDialog;
+			_window.skin = gui.AssetBase.Skin.Window6;
+
+			_window.button.text = "Click me";
+			_window.button.skin = gui.AssetBase.Skin.PlaqueDialog;
+			_window.button.onClick = (button => 
+					{
+						button.text = "Don't click me agan, please";
+						_window.title = "Fuck off";
+					});
+									  
 
 			_started = true;
 		}
@@ -48,6 +57,15 @@ namespace bjeb
 			return null;
 		}
 
+		private Xml handleWindowUpdate(Xml request)
+		{
+			if(request.root.attribute("id").getInt() != _window.id)
+				return null;
+
+			_window.button.deserializeState(request.root.node("button"));
+			return null;
+		}
+
 		public Xml handle(Xml request)
 		{
 			switch(request.root.attribute("type").getString())
@@ -56,6 +74,8 @@ namespace bjeb
 				return handleGui(request);
 			case "guiUpdate":
 				return handleGuiUpdate(request);
+			case "guiWindowUpdate":
+				return handleWindowUpdate(request);
 			}
 
 			return null;

@@ -63,6 +63,8 @@ namespace bjeb
 				gui.Window newWindow = new gui.Window();
 				newWindow.deserialize(node);
 
+				newWindow.onDrawFinished = updateWindow;
+
 				windows.Add(newWindow);
 			}
 
@@ -99,8 +101,14 @@ namespace bjeb
 			}
         }
 
-		private void updateGUI()
+		private void updateWindow(gui.Window window)
 		{
+			net.Xml request = new net.Xml("msg");
+			request.root.attribute("type").set("guiWindowUpdate");
+			request.root.attribute("id").set(window.id);
+			window.button.serializeState(request.root);
+
+			request.tryWrite(_client.connection);
 		}
 
         private void drawWindow(int id)

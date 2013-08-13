@@ -9,6 +9,12 @@ namespace bjeb.gui
 	[XmlSerializable("window")]
 	public class Window: Serializable
 	{
+		public Button button
+		{
+			get;
+			set;
+		}
+
 		private static int _nextId = 92142814;
 		private static int nextId()
 		{
@@ -27,6 +33,7 @@ namespace bjeb.gui
 			id = nextId();
 			draggable = false;
 			skin = AssetBase.Skin.Default;
+			button = new Button();
 		}
 
 		public float x
@@ -71,6 +78,14 @@ namespace bjeb.gui
 			set;
 		}
 
+		public delegate void OnDrawFinished(Window window);
+
+		public OnDrawFinished onDrawFinished
+		{
+			get;
+			set;
+		}
+
 		public void draw()
 		{
 #if UNITY
@@ -86,10 +101,13 @@ namespace bjeb.gui
 		private void drawContext(int id)
 		{
 #if UNITY
-            GUILayout.Label("Hi, this is Burning JEB.");
+			button.draw();
 			
 			if(draggable)
 				GUI.DragWindow();
+
+			if(onDrawFinished != null)
+				onDrawFinished(this);
 #endif
 		}
 
@@ -103,6 +121,8 @@ namespace bjeb.gui
 			doSerializeState(node);
 
 			node.attribute("draggable").set(draggable);
+
+			button.serialize(node);
 		}
 
 		override protected void doSerializeState(XmlNode node)
@@ -123,6 +143,8 @@ namespace bjeb.gui
 			doDeserializeState(node);
 
 			draggable = node.attribute("draggable").getBool();
+
+			button.deserialize(node.node("button"));
 		}
 
 		override protected void doDeserializeState(XmlNode node)
