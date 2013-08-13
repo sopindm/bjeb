@@ -1,5 +1,4 @@
 Button
-  Event
   With coordinates or with layout
 
 View base class
@@ -9,6 +8,12 @@ View base class
   Layout parameters
   Subviews
   Forward skin to subviews
+  Coordinates translation(to/from parent coordinates, to/from window coordinates, to/from screen coordinates)
+
+Event arguments
+  Mouse state
+  Keyboard state???
+  Send mouse state for windows to server every frame (if mouse is inside of window)
 
 Layouts
 
