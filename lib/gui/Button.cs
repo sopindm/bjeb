@@ -13,6 +13,32 @@ namespace bjeb.gui
 		{
 			text = "";
 			skin = AssetBase.Skin.Default;
+			x = null;
+			y = null;
+		}
+
+		public int? x
+		{
+			get;
+			set;
+		}
+
+		public int? y
+		{
+			get;
+			set;
+		}
+
+		public int? width
+		{
+			get;
+			set;
+		}
+
+		public int? height
+		{
+			get;
+			set;
 		}
 
 		public string text
@@ -40,7 +66,10 @@ namespace bjeb.gui
 		public void draw()
 		{
 #if UNITY
-			_clicked = GUILayout.Button(text, AssetBase.unitySkin(skin).button);
+			if(x != null && y != null && width != null && height != null)
+				_clicked = GUI.Button(new UnityEngine.Rect(x.Value, y.Value, width.Value, height.Value), text, AssetBase.unitySkin(skin).button);
+			else
+				_clicked = GUILayout.Button(text, AssetBase.unitySkin(skin).button);
 #endif
 		}
 
@@ -48,6 +77,14 @@ namespace bjeb.gui
 		{
 			node.attribute("text").set(text);
 			node.attribute("skin").set(skin.ToString());
+
+			if(x != null && y != null && width != null && height != null)
+			{
+				node.attribute("x").set(x.Value);
+				node.attribute("y").set(y.Value);
+				node.attribute("width").set(width.Value);
+				node.attribute("height").set(height.Value);
+			}
 		}
 
 		override protected void doSerializeState(XmlNode node)
@@ -59,6 +96,17 @@ namespace bjeb.gui
         {
 			text = node.attribute("text").getString();
 			skin = (AssetBase.Skin)System.Enum.Parse(typeof(AssetBase.Skin), node.attribute("skin").getString());
+			
+			if(node.attribute("x").isSet() && 
+			   node.attribute("y").isSet() &&
+			   node.attribute("width").isSet() &&
+			   node.attribute("height").isSet())
+			{
+				x = node.attribute("x").getInt();
+				y = node.attribute("y").getInt();
+				width = node.attribute("width").getInt();
+				height = node.attribute("height").getInt();
+			}
 		}
 
 		override protected void doDeserializeState(XmlNode node)

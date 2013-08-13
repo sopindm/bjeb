@@ -30,9 +30,9 @@ namespace bjeb
 
 			_window.button.text = "Click me";
 			_window.button.skin = gui.AssetBase.Skin.PlaqueDialog;
-			_window.button.onClick = (button => 
+			_window.button.onClick = (b => 
 					{
-						button.text = "Don't click me agan, please";
+						b.text = "Don't click me agan, please";
 						_window.title = "Fuck off";
 					});
 									  
