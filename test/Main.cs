@@ -6,19 +6,15 @@ namespace bjeb.test
 {
     class MainClass
     {
-		public static void update(Connection connection)
+	public static void update(Connection connection)
         {
             Screen screen = new Screen();
 
             screen.width = 1000;
             screen.height = 500;
 
-            Xml request = new Xml("msg");
-
-			request.root.attribute("type").set("gui");
-
+            Xml request = Xml.createMessage("gui");
             screen.serialize(request.root);
-
             request.write(connection);
 
             Xml response = Xml.read(connection);
@@ -35,10 +31,7 @@ namespace bjeb.test
 			Console.WriteLine("Button: " + window.button.text);
 			Console.WriteLine();
 
-			request = new Xml("msg");
-
-			request.root.attribute("type").set("guiUpdate");
-
+			request = Xml.createMessage("guiUpdate");
 			window.serializeState(request.root);
 			request.write(connection);
 			

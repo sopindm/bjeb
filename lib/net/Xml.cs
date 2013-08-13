@@ -16,8 +16,17 @@ namespace bjeb
 				_root = _xml.LastChild;
 			}
 
-			public Xml(string rootName) {
-				_xml = new System.Xml.XmlDocument();
+			public static Xml createMessage(string type)
+ 			{
+			        Xml ret = new Xml("msg");
+				ret.root.attribute("type").set(type);
+
+				return ret;
+			}			
+
+			public Xml(string rootName)
+			{
+			        _xml = new System.Xml.XmlDocument();
 
 				System.Xml.XmlDeclaration dec = _xml.CreateXmlDeclaration("1.0", null, null);
 				_xml.AppendChild(dec);

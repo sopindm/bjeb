@@ -16,6 +16,12 @@ Labels
   Text
   Event???
 
+Style system
+  Default style taken from skin
+  Can be overriden (style expressions like 'Window1.button')
+  Style fields (font, color, background, ...)
+  Setting skin's styles ('label' = 'my.custom.style')
+
 Font
   Color
   Size??

@@ -23,7 +23,7 @@ namespace bjeb
 			_window.x = _screen.width - 550;
 			_window.y = 100;
 			_window.width = 200;
-            _window.height = 100;
+			_window.height = 100;
 			_window.title = "Annoying title";
 			_window.draggable = true;
 			_window.skin = gui.AssetBase.Skin.Window6;
