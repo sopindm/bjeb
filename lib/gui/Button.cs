@@ -7,47 +7,15 @@ using bjeb.net;
 namespace bjeb.gui
 {
 	[XmlSerializable("button")]
-	public class Button: Serializable
+	public class Button: View
 	{
 		public Button()
 		{
 			text = "";
-			skin = AssetBase.Skin.Default;
-			x = null;
-			y = null;
-		}
 
-		public int? x
-		{
-			get;
-			set;
-		}
-
-		public int? y
-		{
-			get;
-			set;
-		}
-
-		public int? width
-		{
-			get;
-			set;
-		}
-
-		public int? height
-		{
-			get;
-			set;
 		}
 
 		public string text
-		{
-			get;
-			set;
-		}
-
-		public AssetBase.Skin skin
 		{
 			get;
 			set;
@@ -63,28 +31,35 @@ namespace bjeb.gui
 
 		private bool _clicked = false;
 
-		public void draw()
+#if UNITY
+		private UnityEngine.GUIStyle style
+		{
+			get
+			{
+				return AssetBase.unitySkin(skin).button;
+			}
+		}
+#endif
+
+		override protected void drawLayout()
 		{
 #if UNITY
-			if(x != null && y != null && width != null && height != null)
-				_clicked = GUI.Button(new UnityEngine.Rect(x.Value, y.Value, width.Value, height.Value), text, AssetBase.unitySkin(skin).button);
-			else
-				_clicked = GUILayout.Button(text, AssetBase.unitySkin(skin).button);
+			_clicked = GUILayout.Button(text, style);
+#endif
+		}
+
+		override protected void drawFixed()
+		{
+#if UNITY
+			_clicked = GUI.Button(area, text, style);
 #endif
 		}
 
 		override protected void doSerialize(XmlNode node)
 		{
-			node.attribute("text").set(text);
-			node.attribute("skin").set(skin.ToString());
+			base.doSerialize(node);
 
-			if(x != null && y != null && width != null && height != null)
-			{
-				node.attribute("x").set(x.Value);
-				node.attribute("y").set(y.Value);
-				node.attribute("width").set(width.Value);
-				node.attribute("height").set(height.Value);
-			}
+			node.attribute("text").set(text);
 		}
 
 		override protected void doSerializeState(XmlNode node)
@@ -94,19 +69,9 @@ namespace bjeb.gui
 
 		override protected void doDeserialize(XmlNode node)
         {
+			base.doDeserialize(node);
+
 			text = node.attribute("text").getString();
-			skin = (AssetBase.Skin)System.Enum.Parse(typeof(AssetBase.Skin), node.attribute("skin").getString());
-			
-			if(node.attribute("x").isSet() && 
-			   node.attribute("y").isSet() &&
-			   node.attribute("width").isSet() &&
-			   node.attribute("height").isSet())
-			{
-				x = node.attribute("x").getInt();
-				y = node.attribute("y").getInt();
-				width = node.attribute("width").getInt();
-				height = node.attribute("height").getInt();
-			}
 		}
 
 		override protected void doDeserializeState(XmlNode node)

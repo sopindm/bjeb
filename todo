@@ -1,17 +1,6 @@
 View base class
-  Skin
-  Coordinates (optional)
-  Size(optional)  		 
-  Min size/max size/expandable
-  Layout parameters
-  Subviews
-  Forward skin to subviews
-  Coordinates translation(to/from parent coordinates, to/from window coordinates, to/from screen coordinates)
-
-Event arguments
-  Mouse state
-  Keyboard state???
-  Send mouse state for windows to server every frame (if mouse is inside of window)
+  Subviews(Container and Containable)
+  Forward skin to subviews 
 
 Layouts
 
@@ -19,19 +8,29 @@ Labels
   Text
   Event???
 
+Textboxs
+  Text
+  Event
+
+Event arguments
+  Mouse state
+  Send mouse state for windows to server every frame (if mouse is inside of window)
+
+Scrollbars
+
 Style system
   Default style taken from skin
   Can be overriden (style expressions like 'Window1.button')
   Style fields (font, color, background, ...)
   Setting skin's styles ('label' = 'my.custom.style')
 
+View
+  Min size/max size/expandable
+  Layout parameters
+  Coordinates translation(to/from parent coordinates, to/from window coordinates, to/from screen coordinates)
+
 Font
   Color
   Size??
   Family???
 
-Textboxs
-  Text
-  Event
-
-Scrollbars
