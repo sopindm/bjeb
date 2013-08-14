@@ -16,7 +16,7 @@ fi
 
 echo "Building library"
  
-xbuild bjebLib.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/lib/ /verbosity:minimal /nologo
+xbuild bjebLib.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/lib/ /verbosity:quiet /nologo
 
 if [ $? != 0 ]; then
  echo "Library build failed"
@@ -25,7 +25,7 @@ fi
 
 echo "Building server" 
 
-xbuild bjebServer.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/server/ /verbosity:minimal /nologo
+xbuild bjebServer.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/server/ /verbosity:quiet /nologo
 
 if [ $? != 0 ]; then
   echo "Server build failed"
@@ -34,7 +34,7 @@ fi
 
 echo "Building test client" 
 
-xbuild bjebTest.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/client/ /verbosity:minimal /nologo
+xbuild bjebTest.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/client/ /verbosity:quiet /nologo
 
 if [ $? != 0 ]; then
  echo "Test client build failed"
@@ -43,7 +43,7 @@ fi
 
 echo "Building unity library" 
 
-xbuild bjebLibUnity.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/unityLib/ /verbosity:minimal /nologo
+xbuild bjebLibUnity.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/unityLib/ /verbosity:quiet /nologo
 
 if [ $? != 0 ]; then
  echo "Unity library build failed"
@@ -52,7 +52,7 @@ fi
 
 echo "Building plugin" 
 
-xbuild bjebPlugin.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/plugin/ /verbosity:minimal /nologo
+xbuild bjebPlugin.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/plugin/ /verbosity:quiet /nologo
 
 if [ $? != 0 ]; then
  echo "Plugin build failed"
