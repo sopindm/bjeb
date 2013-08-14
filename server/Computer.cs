@@ -33,7 +33,15 @@ namespace bjeb
 			_window.button.onClick = (b => 
 					{
 						b.text = "Don't click me agan, please";
+						b.x = 0;
+						b.y = 50;
+						b.width = 200;
+						b.height = 100;
+
 						_window.title = "Fuck off";
+
+						_window.width = 400;
+						_window.height = 300;
 					});
 									  
 
