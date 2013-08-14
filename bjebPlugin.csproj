@@ -5,16 +5,17 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1247FCA3-610B-4178-9BA0-836D00888B23}</ProjectGuid>
+    <ProjectGuid>{D5E08933-5165-4AA9-85AA-A10956EC3737}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>bjeb</RootNamespace>
-    <AssemblyName>bjebLib</AssemblyName>
+    <AssemblyName>bjeb</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>bin\plugin\Debug\</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -24,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>bin\plugin\Release\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -32,21 +33,25 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="gui\Screen.cs" />
-    <Compile Include="gui\Window.cs" />
-    <Compile Include="gui\View.cs" />
-    <Compile Include="gui\AssetBase.cs" />
-    <Compile Include="gui\Button.cs" />
-    <Compile Include="net\Connection.cs" />
-    <Compile Include="net\Serializable.cs" />
-    <Compile Include="net\Server.cs" />
-    <Compile Include="net\Xml.cs" />
-    <Compile Include="net\Client.cs" />
+    <Compile Include="BasicModule.cs" />
+    <Compile Include="Core.cs" />
+    <Compile Include="Computer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Net" />
-    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\ksp\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>..\ksp\KSP_Data\Managed\System.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\ksp\KSP_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="bjebLibUnity.csproj">
+      <Project>{1247FCA3-610B-4178-9BA0-836D00888B23}</Project>
+      <Name>bjebLibUnity</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
