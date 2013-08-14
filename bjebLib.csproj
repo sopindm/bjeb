@@ -8,14 +8,13 @@
     <ProjectGuid>{1247FCA3-610B-4178-9BA0-836D00888B23}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>bjeb</RootNamespace>
-    <AssemblyName>bjebLibUnity</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AssemblyName>bjebLib</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>unity\bin\Debug</OutputPath>
+    <OutputPath>bin\lib\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,38 +24,29 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>unity\bin\Release</OutputPath>
+    <OutputPath>bin\lib\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <ConsolePause>false</ConsolePause>
-    <DefineConstants>UNITY</DefineConstants>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="gui\Screen.cs" />
-    <Compile Include="gui\Window.cs" />
-    <Compile Include="gui\View.cs" />
-    <Compile Include="gui\AssetBase.cs" />
-    <Compile Include="gui\Button.cs" />
-    <Compile Include="net\Connection.cs" />
-    <Compile Include="net\Serializable.cs" />
-    <Compile Include="net\Server.cs" />
-    <Compile Include="net\Xml.cs" />
-    <Compile Include="net\Client.cs" />
+    <Compile Include="src\lib\gui\Screen.cs" />
+    <Compile Include="src\lib\gui\Window.cs" />
+    <Compile Include="src\lib\gui\View.cs" />
+    <Compile Include="src\lib\gui\AssetBase.cs" />
+    <Compile Include="src\lib\gui\Button.cs" />
+    <Compile Include="src\lib\net\Connection.cs" />
+    <Compile Include="src\lib\net\Serializable.cs" />
+    <Compile Include="src\lib\net\Server.cs" />
+    <Compile Include="src\lib\net\Xml.cs" />
+    <Compile Include="src\lib\net\Client.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System">
-      <HintPath>..\..\ksp\KSP_Data\Managed\System.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml">
-      <HintPath>..\..\ksp\KSP_Data\Managed\System.Xml.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\ksp\KSP_Data\Managed\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\ksp\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
 </Project>

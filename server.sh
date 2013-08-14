@@ -1,1 +1,1 @@
-mono server/bin/Release/bjebServer.exe
+mono bin/server/Release/bjebServer.exe
