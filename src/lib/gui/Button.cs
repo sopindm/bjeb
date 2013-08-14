@@ -7,7 +7,7 @@ using bjeb.net;
 namespace bjeb.gui
 {
 	[XmlSerializable("button")]
-	public class Button: View
+	public class Button: LayoutView
 	{
 		public Button()
 		{
@@ -51,7 +51,7 @@ namespace bjeb.gui
 		override protected void drawFixed()
 		{
 #if UNITY
-			_clicked = GUI.Button(area, text, style);
+			_clicked = GUI.Button(area.rectangle, text, style);
 #endif
 		}
 

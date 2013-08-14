@@ -8,7 +8,7 @@ namespace bjeb
         public float EnergyConsumption;
 
         [KSPField]
-		public bool active = true;
+		public new bool active = true;
 
 		[KSPField]
 		public bool debug = false;

@@ -7,7 +7,7 @@ using bjeb.net;
 namespace bjeb.gui
 {
 	[XmlSerializable("window")]
-	public class Window: Serializable
+	public class Window: View
 	{
 		public Button button
 		{
@@ -32,41 +32,11 @@ namespace bjeb.gui
 		{
 			id = nextId();
 			draggable = false;
-			skin = AssetBase.Skin.Default;
+
 			button = new Button();
 		}
 
-		public float x
-		{
-			get;
-			set;
-		}
-
-		public float y
-		{
-			get;
-			set;
-		}
-
-		public float width
-		{
-			get;
-			set;
-		}
-
-		public float height
-		{
-			get;
-			set;
-		}
-
 		public string title
-		{
-			get;
-			set;
-		}
-
-		public AssetBase.Skin skin
 		{
 			get;
 			set;
@@ -86,21 +56,27 @@ namespace bjeb.gui
 			set;
 		}
 
-		public void draw()
+#if UNITY
+		private GUIStyle style
+		{
+			get
+			{
+				return AssetBase.unitySkin(skin).window;
+			}
+		}
+#endif
+
+		public override void draw()
 		{
 #if UNITY
-			Rect area = GUILayout.Window( id, new Rect(x, y, width, height), drawContext, title, AssetBase.unitySkin(skin).window);
-
-			x = area.x;
-			y = area.y;
-			width = area.width;
-			height = area.height;
+			area.rectangle = GUILayout.Window( id, area.rectangle, drawContext, title, style);
 #endif
 		}
 
 		private void drawContext(int id)
 		{
 #if UNITY
+			button.draw();
 			button.draw();
 			
 			if(draggable)
@@ -127,10 +103,7 @@ namespace bjeb.gui
 
 		override protected void doSerializeState(XmlNode node)
 		{
-			node.attribute("x").set(x);
-			node.attribute("y").set(y);
-			node.attribute("width").set(width);
-			node.attribute("height").set(height);
+			area.serialize(node);
 		}
 
 		override protected void doDeserialize(XmlNode node)
@@ -149,10 +122,7 @@ namespace bjeb.gui
 
 		override protected void doDeserializeState(XmlNode node)
 		{
-            x = node.attribute("x").getFloat();
-            y = node.attribute("y").getFloat();
-            width = node.attribute("width").getFloat();
-            height = node.attribute("height").getFloat();
+			area.deserialize(node);
 		}
 	}
 }

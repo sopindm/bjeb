@@ -20,10 +20,10 @@ namespace bjeb
 			if(_started)
 				return;
 
-			_window.x = _screen.width - 550;
-			_window.y = 100;
-			_window.width = 200;
-			_window.height = 100;
+			_window.area.x = _screen.width - 550;
+			_window.area.y = 100;
+			_window.area.width = 200;
+			_window.area.height = 100;
 			_window.title = "Annoying title";
 			_window.draggable = true;
 			_window.skin = gui.AssetBase.Skin.Window6;
@@ -33,15 +33,15 @@ namespace bjeb
 			_window.button.onClick = (b => 
 					{
 						b.text = "Don't click me agan, please";
-						b.x = 0;
-						b.y = 50;
-						b.width = 200;
-						b.height = 100;
+						b.area.x = 0;
+						b.area.y = 50;
+						b.area.width = 200;
+						b.area.height = 100;
 
 						_window.title = "Fuck off";
 
-						_window.width = 400;
-						_window.height = 300;
+						_window.area.width = 400;
+						_window.area.height = 300;
 					});
 									  
 

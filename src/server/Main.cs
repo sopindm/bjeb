@@ -44,8 +44,6 @@ namespace bjeb.server
 			{
 				server.accept(handleConnection);
 			}
-
-            server.stop();
         }
     }
 }
