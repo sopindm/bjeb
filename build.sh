@@ -1,4 +1,6 @@
 if [ "$1" = "clean" ]; then
+   echo "Cleaning..."
+
    rm -r bin/lib/*
    rm -r bin/obj/lib/*
    rm -r bin/server/*
@@ -9,38 +11,48 @@ if [ "$1" = "clean" ]; then
    rm -r bin/obj/unityLib/*
    rm -r bin/plugin/*
    rm -r bin/obj/plugin/*
-   exit 1
+   exit 0
 fi
 
-xbuild bjebLib.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/lib/ /verbosity:minimal
+echo "Building library"
+ 
+xbuild bjebLib.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/lib/ /verbosity:minimal /nologo
 
 if [ $? != 0 ]; then
  echo "Library build failed"
  exit 1
 fi
 
-xbuild bjebServer.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/server/ /verbosity:minimal
+echo "Building server" 
+
+xbuild bjebServer.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/server/ /verbosity:minimal /nologo
 
 if [ $? != 0 ]; then
   echo "Server build failed"
 exit 1
 fi
 
-xbuild bjebTest.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/client/ /verbosity:minimal
+echo "Building test client" 
+
+xbuild bjebTest.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/client/ /verbosity:minimal /nologo
 
 if [ $? != 0 ]; then
  echo "Test client build failed"
  exit 1
 fi
 
-xbuild bjebLibUnity.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/unityLib/ /verbosity:minimal
+echo "Building unity library" 
+
+xbuild bjebLibUnity.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/unityLib/ /verbosity:minimal /nologo
 
 if [ $? != 0 ]; then
  echo "Unity library build failed"
  exit 1
 fi
 
-xbuild bjebPlugin.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/plugin/ /verbosity:minimal
+echo "Building plugin" 
+
+xbuild bjebPlugin.csproj /p:Configuration=Release /p:BaseIntermediateOutputPath=bin/obj/plugin/ /verbosity:minimal /nologo
 
 if [ $? != 0 ]; then
  echo "Plugin build failed"
