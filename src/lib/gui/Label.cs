@@ -6,41 +6,31 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
-	[XmlSerializable("button")]
-	public class Button: LayoutView
+	[XmlSerializable("label")]
+	public class Label: LayoutView
 	{
-		public Button()
-		{
-			text = "";
-		}
-
-		public Button(string text)
-		{
-			this.text = text;
-		}
-
 		public string text
 		{
 			get;
 			set;
 		}
 
-		public delegate void OnClick(Button button);
-
-		public OnClick onClick
+		public Label()
 		{
-			get;
-			set;
+			this.text = "";
 		}
 
-		private bool _clicked = false;
+		public Label(string text = "")
+		{
+			this.text = text;
+		}
 
 #if UNITY
 		private UnityEngine.GUIStyle style
 		{
 			get
 			{
-				return AssetBase.unitySkin(skin).button;
+				return AssetBase.unitySkin(skin).label;
 			}
 		}
 #endif
@@ -48,40 +38,35 @@ namespace bjeb.gui
 		override protected void drawLayout()
 		{
 #if UNITY
-			_clicked = GUILayout.Button(text, style);
+			GUILayout.Label(text, style);
 #endif
 		}
 
 		override protected void drawFixed()
 		{
 #if UNITY
-			_clicked = GUI.Button(area.rectangle, text, style);
+			GUI.Label(area.rectangle, text, style);
 #endif
 		}
 
 		override protected void doSerialize(XmlNode node)
 		{
 			base.doSerialize(node);
-
 			node.attribute("text").set(text);
 		}
 
 		override protected void doSerializeState(XmlNode node)
 		{
-			node.attribute("clicked").set(_clicked);
 		}
 
 		override protected void doDeserialize(XmlNode node)
         {
 			base.doDeserialize(node);
-
 			text = node.attribute("text").getString();
 		}
 
 		override protected void doDeserializeState(XmlNode node)
 		{
-			if(node.attribute("clicked").getBool() && onClick != null)
-				onClick(this);
 		}
 	}
 }

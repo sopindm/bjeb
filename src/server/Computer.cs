@@ -20,34 +20,40 @@ namespace bjeb
 			if(_started)
 				return;
 
-			_window.area.x = _screen.width - 550;
-			_window.area.y = 100;
-			_window.area.width = 200;
-			_window.area.height = 100;
+			_window.area.set(_screen.width - 550, 100, 300, 100);
 			_window.title = "Annoying title";
 			_window.draggable = true;
-			_window.skin = gui.AssetBase.Skin.Window6;
+			_window.skin = gui.AssetBase.Skin.Window7;
 
 			_window.views.clear();
 
-			gui.Button button = new gui.Button();
-			button.text = "Click me";
+			gui.Layout layout = gui.Layout.makeHorizontal();
+
+			gui.Button button = new gui.Button("Click me");
 			button.skin = gui.AssetBase.Skin.PlaqueDialog;
-			button.onClick = (b => 
-					{
-						b.text = "Don't click me agan, please";
-						b.area.x = 0;
-						b.area.y = 50;
-						b.area.width = 200;
-						b.area.height = 100;
+			button.onClick = (b => { b.text = "Don't click me agan, please"; });
 
-						_window.title = "Fuck off";
+			layout.views.add(button);
+			layout.views.add(new gui.Label("TEXT"));
+			layout.views.add(new gui.Textbox());
+			layout.views.add(button);
+			
+			gui.Button button2 = new gui.Button("Click me");
+			button2.onClick = ( b => { button.text = "Click me again"; });
 
-						_window.area.width = 400;
-						_window.area.height = 300;
-					});
+			layout.views.add(new gui.Label("Other text..."));
 
-			_window.views.add(button);
+			gui.Layout layout2  = gui.Layout.makeVertical();
+
+			layout2.view.add(button2);
+			layout2.views.add(layout);
+
+			gui.Textbox box = new gui.Textbox("");
+			box.onUpdate = (b  => { button.text = box.text; });
+
+			layout2.views.add(box);
+
+			_window.views.add(layout2);
 
 			_started = true;
 		}

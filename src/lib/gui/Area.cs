@@ -26,6 +26,14 @@ namespace bjeb.gui
 			set;
 		}
 
+		public void set(float x, float y, float width, float height)
+		{
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+		}
+
 		public bool isSet()
 		{
 			return x != null && y != null && width != null && height != null;

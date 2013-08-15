@@ -1,1 +1,1 @@
-mono bin/server/Release/bjebServer.exe
+LANG="POSIX C" mono bin/server/Release/bjebServer.exe

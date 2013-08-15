@@ -39,6 +39,11 @@ namespace bjeb.test
 			window.views.serializeState(request.root);
 
 			request.write(connection);
+
+			Xml tmp = new net.Xml("msg");
+			window.views.serialize(tmp.root);
+
+			Console.WriteLine("Views: " + tmp.toString());
 		}
 
         public static void Main(string[] args)
