@@ -28,9 +28,12 @@ namespace bjeb
 			_window.draggable = true;
 			_window.skin = gui.AssetBase.Skin.Window6;
 
-			_window.button.text = "Click me";
-			_window.button.skin = gui.AssetBase.Skin.PlaqueDialog;
-			_window.button.onClick = (b => 
+			_window.views.clear();
+
+			gui.Button button = new gui.Button();
+			button.text = "Click me";
+			button.skin = gui.AssetBase.Skin.PlaqueDialog;
+			button.onClick = (b => 
 					{
 						b.text = "Don't click me agan, please";
 						b.area.x = 0;
@@ -43,7 +46,8 @@ namespace bjeb
 						_window.area.width = 400;
 						_window.area.height = 300;
 					});
-									  
+
+			_window.views.add(button);
 
 			_started = true;
 		}
@@ -70,7 +74,9 @@ namespace bjeb
 			if(request.root.attribute("id").getInt() != _window.id)
 				return null;
 
-			_window.button.deserializeState(request.root.node("button"));
+			System.Console.WriteLine("Deserializing from: " + request.toString());
+
+			_window.views.deserializeState(request.root);
 			return null;
 		}
 

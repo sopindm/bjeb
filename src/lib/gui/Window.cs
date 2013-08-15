@@ -9,10 +9,14 @@ namespace bjeb.gui
 	[XmlSerializable("window")]
 	public class Window: View
 	{
-		public Button button
+		private ViewContainer _views;
+
+		public ViewContainer views
 		{
-			get;
-			set;
+			get
+			{
+				return _views;
+			}
 		}
 
 		private static int _nextId = 92142814;
@@ -33,7 +37,7 @@ namespace bjeb.gui
 			id = nextId();
 			draggable = false;
 
-			button = new Button();
+			_views = new ViewContainer(this);
 		}
 
 		public string title
@@ -76,9 +80,8 @@ namespace bjeb.gui
 		private void drawContext(int id)
 		{
 #if UNITY
-			button.draw();
-			button.draw();
-			
+			_views.draw();
+
 			if(draggable)
 				GUI.DragWindow();
 
@@ -98,7 +101,7 @@ namespace bjeb.gui
 
 			node.attribute("draggable").set(draggable);
 
-			button.serialize(node);
+			_views.serialize(node);
 		}
 
 		override protected void doSerializeState(XmlNode node)
@@ -117,7 +120,7 @@ namespace bjeb.gui
 
 			draggable = node.attribute("draggable").getBool();
 
-			button.deserialize(node.node("button"));
+			_views.deserialize(node);
 		}
 
 		override protected void doDeserializeState(XmlNode node)

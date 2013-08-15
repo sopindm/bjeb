@@ -28,8 +28,6 @@ namespace bjeb.test
 			window.area.height--;
 
             Console.WriteLine("Window ID: " + window.id + " X: " + window.area.x + "Y: " + window.area.y + " Width: " + window.area.width + " Height: " + window.area.height);
-			Console.WriteLine("Button: " + window.button.text);
-			Console.WriteLine();
 
 			request = Xml.createMessage("guiUpdate");
 			window.serializeState(request.root);
@@ -38,7 +36,7 @@ namespace bjeb.test
 			request = new net.Xml("msg");
 			request.root.attribute("type").set("guiWindowUpdate");
 			request.root.attribute("id").set(window.id);
-			window.button.serializeState(request.root);
+			window.views.serializeState(request.root);
 
 			request.write(connection);
 		}

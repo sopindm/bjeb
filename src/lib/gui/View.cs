@@ -1,3 +1,9 @@
+using System.Collections.Generic;
+using bjeb.net;
+#if UNITY
+using UnityEngine;
+#endif
+
 namespace bjeb.gui
 {
 	public abstract class View: net.Serializable
@@ -7,6 +13,16 @@ namespace bjeb.gui
 			get;
 			set;
 		}
+
+#if UNITY
+		public GUISkin unitySkin
+		{
+			get
+			{
+				return AssetBase.unitySkin(skin);
+			}
+		}
+#endif		
 
 		public Area area
 		{
@@ -49,5 +65,93 @@ namespace bjeb.gui
 
 		abstract protected void drawFixed();
 		abstract protected void drawLayout();
+	}
+
+	public class ViewContainer
+	{
+		private View _parent;
+		private List<View> _childs;
+
+		public View baseView
+		{
+			get
+			{
+				return _parent;
+			}
+		}
+
+		public ViewContainer(View view)
+		{
+			_parent = view;
+			_childs = new List<View>();
+		}
+
+		public void add(View view)
+		{
+			_childs.Add(view);
+		}
+
+		public void remove(View view)
+		{
+			_childs.Remove(view);
+		}
+
+		public void clear()
+		{
+			_childs.Clear();
+		}
+
+		public void draw()
+		{
+#if UNITY
+			var currentSkin = GUI.skin;
+			GUI.skin = _parent.unitySkin;
+
+			foreach(View view in _childs)
+				view.draw();
+
+			GUI.skin = currentSkin;
+#endif
+		}
+
+		public void serialize(XmlNode node)
+		{
+			XmlNode childs = new XmlNode("views", node);
+
+			foreach(View view in _childs)
+				view.serialize(childs);
+		}
+
+		public void deserialize(XmlNode node)
+		{
+			clear();
+
+			net.XmlNode childs = node.node("views");
+
+			foreach(var child in childs.nodes())
+				add((View)Serializable.create(child));
+		}
+
+		public void serializeState(XmlNode node)
+		{
+			XmlNode childs = new XmlNode("views", node);
+
+			foreach(View view in _childs)
+				view.serializeState(childs);
+		}
+
+		public void deserializeState(XmlNode node)
+		{
+			net.XmlNode childs = node.node("views");
+
+            var nodes = childs.nodes();
+            var views = _childs;
+
+			var viewIterator = views.GetEnumerator();
+			var childIterator = nodes.GetEnumerator();
+
+			while(childIterator.MoveNext() && viewIterator.MoveNext())
+				viewIterator.Current.deserializeState(childIterator.Current);
+		}
 	}
 }

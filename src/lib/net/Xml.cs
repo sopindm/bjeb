@@ -112,6 +112,18 @@ namespace bjeb
 				return all[0];
 			}
 
+			public List<XmlNode> nodes()
+			{
+				System.Xml.XmlNodeList nodes = _node.ChildNodes;
+
+				List<XmlNode> ret = new List<XmlNode>();
+
+				foreach(System.Xml.XmlNode node in nodes)
+					ret.Add(new XmlNode(node));
+
+				return ret;
+			}
+
 			public List<XmlNode> nodes(string name)
 			{
 				System.Xml.XmlNodeList nodes = _node.ChildNodes;

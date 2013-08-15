@@ -15,7 +15,7 @@ namespace bjeb.gui
 			Window7,
 			OrbitMap,
 			PlaqueDialog,
-			Default = Window2
+			Default
 		}
 
 		private static string skinName(Skin skin)
@@ -42,6 +42,8 @@ namespace bjeb.gui
 				return "OrbitMapSkin";
 			case Skin.PlaqueDialog:
 				return "PlaqueDialogSkin";
+			case Skin.Default:
+				return "Default";
 			}
 
 			return "";
@@ -54,6 +56,9 @@ namespace bjeb.gui
 		{
 			if(_skins == null)
 				_skins = new SortedDictionary<Skin, UnityEngine.GUISkin>();
+
+			if(skin == Skin.Default)
+				return UnityEngine.GUI.skin;
 
 			if(!_skins.ContainsKey(skin))
 			{

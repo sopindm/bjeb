@@ -106,7 +106,7 @@ namespace bjeb
 			net.Xml request = new net.Xml("msg");
 			request.root.attribute("type").set("guiWindowUpdate");
 			request.root.attribute("id").set(window.id);
-			window.button.serializeState(request.root);
+			window.views.serializeState(request.root);
 
 			request.tryWrite(_client.connection);
 		}
