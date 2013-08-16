@@ -1,16 +1,13 @@
-Event arguments
-  Mouse state
-
 Layout parameters
+  Min size/max size/expandable
 
 Scrollbars
+
+Toggles
 
 Style system
   Default style taken from skin
   Can be overriden (style expressions like 'Window1.button')
-
-View
-  Min size/max size/expandable
 
 Font
   Color
