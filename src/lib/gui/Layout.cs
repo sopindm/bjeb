@@ -48,9 +48,9 @@ namespace bjeb.gui
 		{
 #if UNITY
 			if(isVertical)
-				GUILayout.BeginVertical();
+				GUILayout.BeginVertical(area.layoutOptions());
 			else
-				GUILayout.BeginHorizontal();
+				GUILayout.BeginHorizontal(area.layoutOptions());
 
 			views.draw();
 

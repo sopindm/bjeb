@@ -62,7 +62,7 @@ namespace bjeb.gui
 		override protected void drawLayout()
 		{
 #if UNITY
-			string newText = GUILayout.TextField(text, maxLength, style);
+			string newText = GUILayout.TextField(text, maxLength, style, area.layoutOptions());
 
 			if(newText != text)
 			{

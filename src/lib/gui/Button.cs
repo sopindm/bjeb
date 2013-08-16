@@ -201,7 +201,7 @@ namespace bjeb.gui
 		override protected void drawLayout()
 		{
 #if UNITY
-			_clicked = GUILayout.Button(text, style);
+			_clicked = GUILayout.Button(text, style, area.layoutOptions());
 			_state.update();
 #endif
 		}

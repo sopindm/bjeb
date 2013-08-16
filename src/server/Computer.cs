@@ -70,6 +70,11 @@ namespace bjeb
 
 			layout2.views.add(box);
 
+			gui.Slider slider = new gui.Slider(0, 1000, 500);
+			slider.isHorizontal = false;
+
+			layout2.views.add(slider);
+
 			_window.views.add(layout2);
 
 			_started = true;

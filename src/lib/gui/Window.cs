@@ -73,7 +73,7 @@ namespace bjeb.gui
 		public override void draw()
 		{
 #if UNITY
-			area.rectangle = GUILayout.Window( id, area.rectangle, drawContext, title, style);
+			area.rectangle = GUILayout.Window( id, area.rectangle, drawContext, title, style, area.layoutOptions());
 #endif
 		}
 

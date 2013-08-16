@@ -38,7 +38,7 @@ namespace bjeb.gui
 		override protected void drawLayout()
 		{
 #if UNITY
-			GUILayout.Label(text, style);
+			GUILayout.Label(text, style, area.layoutOptions());
 #endif
 		}
 

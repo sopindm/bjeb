@@ -1,3 +1,8 @@
+using System.Collections.Generic;
+#if UNITY
+using UnityEngine;
+#endif
+
 namespace bjeb.gui
 {
 	public class Area
@@ -26,6 +31,42 @@ namespace bjeb.gui
 			set;
 		}
 
+		public float? minWidth
+		{
+			get;
+			set;
+		}
+
+		public float? minHeight
+		{
+			get;
+			set;
+		}
+
+		public float? maxWidth
+		{
+			get;
+			set;
+		}
+
+		public float? maxHeight
+		{
+			get;
+			set;
+		}
+
+		public bool? widthExpandable
+		{
+			get;
+			set;
+		}
+
+		public bool? heightExpandable
+		{
+			get;
+			set;
+		}
+
 		public void set(float x, float y, float width, float height)
 		{
 			this.x = x;
@@ -40,11 +81,11 @@ namespace bjeb.gui
 		}
 
 #if UNITY
-		public UnityEngine.Rect rectangle
+		public Rect rectangle
 		{
 			get
 			{
-				return new UnityEngine.Rect(x.Value, y.Value, width.Value, height.Value);
+				return new Rect(x.Value, y.Value, width.Value, height.Value);
 			}
 			set
 			{
@@ -53,6 +94,37 @@ namespace bjeb.gui
 				width = value.width;
 				height = value.height;
 			}
+		}
+
+		public GUILayoutOption[] layoutOptions()
+        {
+            List<GUILayoutOption> options = new List<GUILayoutOption>();
+
+			if(width != null)
+				options.Add(GUILayout.Width(width.Value));
+
+			if(height != null)
+				options.Add(GUILayout.Height(height.Value));
+			
+			if(minWidth != null)
+				options.Add(GUILayout.MinWidth(minWidth.Value));
+
+			if(minHeight != null)
+				options.Add(GUILayout.MinHeight(minHeight.Value));
+			
+			if(maxWidth != null)
+				options.Add(GUILayout.MaxWidth(maxWidth.Value));
+
+			if(maxHeight != null)
+				options.Add(GUILayout.MaxHeight(maxHeight.Value));
+
+			if(widthExpandable != null)
+				options.Add(GUILayout.ExpandWidth(widthExpandable.Value));
+			
+			if(heightExpandable != null)
+				options.Add(GUILayout.ExpandHeight(heightExpandable.Value));
+			
+			return options.ToArray();
 		}
 #endif	
 
@@ -69,21 +141,76 @@ namespace bjeb.gui
 
 			if(height != null)
 				node.attribute("height").set(height.Value);
+
+			if(minWidth != null)
+				node.attribute("minWidth").set(minWidth.Value);
+
+			if(minHeight != null)
+				node.attribute("minHeight").set(minHeight.Value);
+
+			if(maxWidth != null)
+				node.attribute("maxWidth").set(maxWidth.Value);
+
+			if(maxHeight != null)
+				node.attribute("maxHeight").set(maxHeight.Value);
+
+			if(widthExpandable != null)
+				node.attribute("widthExpandable").set(widthExpandable.Value);
+
+			if(heightExpandable != null)
+				node.attribute("heightExpandable").set(heightExpandable.Value);
 		}
 
 		public void deserialize(net.XmlNode node)
 		{
 			if(node.attribute("x").isSet())
 				x = node.attribute("x").getFloat();
+			else
+				x = null;
 
 			if(node.attribute("y").isSet())
 				y = node.attribute("y").getFloat();
+			else
+				y = null;
 
 			if(node.attribute("width").isSet())
 				width = node.attribute("width").getFloat();
+			else
+				width = null;
 
 			if(node.attribute("height").isSet())
 				height = node.attribute("height").getFloat();
+			else height = null;
+
+			if(node.attribute("minWidth").isSet())
+				minWidth = node.attribute("minWidth").getFloat();
+			else 
+				minWidth = null;
+
+			if(node.attribute("minHeight").isSet())
+				minHeight = node.attribute("minHeight").getFloat();
+			else 
+				minHeight = null;
+
+			if(node.attribute("maxWidth").isSet())
+				maxWidth = node.attribute("maxWidth").getFloat();
+			else 
+				maxWidth = null;
+
+			if(node.attribute("maxHeight").isSet())
+				maxHeight = node.attribute("maxHeight").getFloat();
+			else 
+				maxHeight = null;
+
+			if(node.attribute("widthExpandable").isSet())
+				widthExpandable = node.attribute("widthExpandable").getBool();
+			else
+				widthExpandable = null;
+
+			if(node.attribute("heightExpandable").isSet())
+				heightExpandable = node.attribute("heightExpandable").getBool();
+			else
+				heightExpandable = null;
 		}
 	}
 }
