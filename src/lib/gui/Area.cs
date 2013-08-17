@@ -67,6 +67,15 @@ namespace bjeb.gui
 			set;
 		}
 
+		public Area()
+		{
+		}
+
+		public Area(float x, float y, float width, float height)
+		{
+			set(x, y, width, height);
+		}
+
 		public void set(float x, float y, float width, float height)
 		{
 			this.x = x;

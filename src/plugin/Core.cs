@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using bjeb;
+using bjeb.net;
 
 namespace bjeb
 {
@@ -22,53 +22,15 @@ namespace bjeb
             }
         }
 
-		private gui.Screen _screen;
-
 		public override void OnStart(StartState state)
         {
             base.OnStart(state);
-
-            object[] objects = AssetBase.FindObjectsOfTypeIncludingAssets(typeof(GUISkin));
-            foreach (object obj in objects)
-                Debug.Log("GUI Skin: " + ((GUISkin)obj).name);
-
-            Debug.Log("High logic skin: " + HighLogic.Skin.name);
-
-			_client = new net.Client("127.0.0.1", 4400);
-
-			_screen = new gui.Screen();
-			_screen.width = Screen.width;
-			_screen.height = Screen.height;
+			_client = new Client("127.0.0.1", 4400, (c => Protocol.requestSetup(c, Screen.width, Screen.height)));
 		}
 
 		public override void OnLoad(ConfigNode sfsNode)
         {
             base.OnLoad(sfsNode);
-		}
-
-		private List<gui.Window> requestGUI()
-		{
-			net.Xml request = new net.Xml("msg");
-			request.root.attribute("type").set("gui");
-
-			_screen.serialize(request.root);
-			request.write(_client.connection);
-
-			net.Xml response = net.Xml.read(_client.connection);
-				
-			List<gui.Window> windows = new List<gui.Window>();
-
-			foreach(var node in response.root.nodes("window"))
-			{
-				gui.Window newWindow = new gui.Window();
-				newWindow.deserialize(node);
-
-				newWindow.onDrawFinished = updateWindow;
-
-				windows.Add(newWindow);
-			}
-
-			return windows;
 		}
 
         protected override void drawGUI()
@@ -84,36 +46,13 @@ namespace bjeb
 			
 			List<gui.Window> windows = null;
 
-			if(_client.execute(() => { windows = requestGUI(); }))
+			if(_client.execute(c => { windows = Protocol.requestGui(c); }))
 			{
-				GUI.skin = Skin;
-
-				net.Xml request = new net.Xml("msg");
-				request.root.attribute("type").set("guiUpdate");
-
 				foreach(var window in windows)
-				{
 					window.draw();
-					window.serializeState(request.root);
-				}
 
-				request.tryWrite(_client.connection);
+				Protocol.requestGuiUpdate(windows, _client.connection);
 			}
-        }
-
-		private void updateWindow(gui.Window window)
-		{
-			net.Xml request = new net.Xml("msg");
-			request.root.attribute("type").set("guiWindowUpdate");
-			request.root.attribute("id").set(window.id);
-			window.views.serializeState(request.root);
-
-			request.tryWrite(_client.connection);
-		}
-
-        private void drawWindow(int id)
-        {
-            GUILayout.Label("Hi, this is Burning JEB.");
         }
     }
 }

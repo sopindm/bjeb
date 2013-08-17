@@ -4,23 +4,18 @@ using bjeb.gui;
 
 namespace bjeb.test
 {
-    class MainClass
-    {
-	public static void update(Connection connection)
-        {
-            Screen screen = new Screen();
+	class TestPlugin
+	{
+		public void setup(Connection connection)
+		{
+			Protocol.requestSetup(connection, 1000, 500);
+		}
 
-            screen.width = 1000;
-            screen.height = 500;
-
-            Xml request = Xml.createMessage("gui");
-            screen.serialize(request.root);
-            request.write(connection);
-
-            Xml response = Xml.read(connection);
-
-            Window window = new Window();
-            window.deserialize(response.root.node("window"));
+		public void update(Connection connection)
+		{
+			var windows = Protocol.requestGui(connection);
+			
+            Window window = windows[0];
 
 			window.area.x--;
 			window.area.y++;
@@ -29,32 +24,29 @@ namespace bjeb.test
 
             Console.WriteLine("Window ID: " + window.id + " X: " + window.area.x + "Y: " + window.area.y + " Width: " + window.area.width + " Height: " + window.area.height);
 
-			request = Xml.createMessage("guiUpdate");
-			window.serializeState(request.root);
-			request.write(connection);
-			
-			request = new net.Xml("msg");
-			request.root.attribute("type").set("guiWindowUpdate");
-			request.root.attribute("id").set(window.id);
-			window.views.serializeState(request.root);
-
-			request.write(connection);
+			Protocol.requestGuiUpdate(windows, connection);
+			Protocol.requestWindowUpdate(window, connection);
 
 			Xml tmp = new net.Xml("msg");
 			window.views.serialize(tmp.root);
 
 			Console.WriteLine("Views: " + tmp.toString());
 		}
+	}
 
+    class MainClass
+    {
         public static void Main(string[] args)
         {
-			Client client = new Client("127.0.0.1", 4400);
+			TestPlugin plugin = new TestPlugin();
+
+			Client client = new Client("127.0.0.1", 4400, plugin.setup);
 
             while (true)
             {
-                if(!client.execute(() => 
+                if(!client.execute((c) => 
 						{
-							update(client.connection);
+							plugin.update(c);
 							System.Threading.Thread.Sleep(1000);
 						}))
 				{

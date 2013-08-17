@@ -1,10 +1,7 @@
-Style system
-  Not send default skin and style
-  Default style taken from skin
-  Can be overriden with type
+Customizing styles
+  active, hover, focused, normal + on...
+    font color
+  alignment
 
-Font
-  Color
 
-Customizing style
-  Style fields (font, color, background, ...)
+  

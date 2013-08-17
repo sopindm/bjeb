@@ -6,6 +6,7 @@ namespace bjeb.net
 		private int _port;
 
 		private bool _connected;
+		private bool _setup;
 
 		public Connection connection
 		{
@@ -13,14 +14,24 @@ namespace bjeb.net
 			private set;
 		}
 
-		public Client(string host, int port)
+		public delegate void OnSetup(Connection connection);
+
+		public OnSetup onSetup
+		{
+			get;
+			set;
+		}
+
+		public Client(string host, int port, OnSetup setup = null)
 		{
 			_host = host;
 			_port = port;
+			_setup = false;
 
 			try
 			{
 				connection = new Connection(host, port);
+				onSetup = setup;
 				_connected = true;
 			}
 			catch(ConnectionException)
@@ -29,9 +40,12 @@ namespace bjeb.net
 			}
 		}
 
-		public bool isConnected()
+		public bool connected
 		{
-			return _connected;
+			get
+			{
+				return _connected;
+			}
 		}
 
 		public void disconnect()
@@ -39,6 +53,7 @@ namespace bjeb.net
 			if(_connected)
 			{
 				_connected = false;
+				_setup = false;
 				connection.close();
 			}
 		}
@@ -52,16 +67,22 @@ namespace bjeb.net
 			_connected = true;
 		}
 
-		public delegate void ClientRequest();
+		public delegate void ClientRequest(Connection connection);
 
 		public bool execute(ClientRequest request)
 		{
 			try
 			{
-				if(!isConnected())
+				if(!connected)
 					connect();
 
-				request();
+				if(!_setup && onSetup != null)
+				{
+					onSetup(connection);
+					_setup = true;
+				}
+
+				request(connection);
 				return true;
 			}
 			catch(net.ConnectionException)

@@ -57,6 +57,7 @@ namespace bjeb
 				}
 				catch(ConnectionException)
 				{
+					connection.close();
 					return false;
 				}
 			}

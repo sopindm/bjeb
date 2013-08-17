@@ -105,10 +105,12 @@ namespace bjeb.gui
 
 		override protected void doDeserializeState(XmlNode node)
 		{
-			if(node.attribute("toggled").isSet() && onSwitch != null)
+			if(node.attribute("toggled").isSet())
 			{
 				toggled = node.attribute("toggled").getBool();
-				onSwitch(this);
+
+				if(onSwitch != null)
+					onSwitch(this);
 			}
 		}
 	}

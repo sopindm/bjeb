@@ -17,6 +17,16 @@ namespace bjeb.gui
 			set;
 		}
 
+		public Screen(): this(0, 0)
+		{
+		}
+
+		public Screen(int width, int height)
+		{
+			this.width = width;
+			this.height = height;
+		}
+
 		override protected void doSerialize(XmlNode node)
 		{
 			node.attribute("width").set(width);
