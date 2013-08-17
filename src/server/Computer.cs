@@ -1,26 +1,27 @@
+using System.Collections.Generic;
 using bjeb.net;
 using bjeb.gui;
+using bjeb.game;
 
 namespace bjeb
 {
-	public class Computer
+	public class Computer: IServer
 	{
-		private gui.Screen _screen;
-		private gui.Window _window;
+		private gui.Window _window = null;
+		private Label vesselInfo = null;
 
 		public Computer()
 		{
-			_screen = new gui.Screen();
-			_window = new gui.Window();
 		}
 
-		private void setupWindow()
+		public void onSetup(Screen screen)
 		{
-			_window.area.set(_screen.width - 550, 50, 200, 30);
+			_window = new gui.Window();
+			_window.area.set(screen.width - 550, 50, 200, 30);
 
 			_window.title = "BJEB";
 			_window.draggable = true;
-			_window.skin = gui.Skin.Window2;
+			_window.skin = gui.Skin.Window7;
 
 			_window.views.clear();
 
@@ -51,60 +52,30 @@ namespace bjeb
 						
 			_window.views.add(new Button("X") { area = new Area(_window.area.width.Value - 20, 5, 20, 20) });
 
+			vesselInfo = new Label();
+
 			content.views.add(new Toggle("Sample module", false));
+			content.views.add(vesselInfo);
 
 			_window.views.add(content);
 			_window.views.add(new Layout());
 		}
 
-		public Xml handleSetup(Xml request)
+		public IEnumerable<Window> windows
 		{
-			_screen.deserialize(request.root.node("screen"));
-			setupWindow();
-
-			return null;
-		}
-
-		public Xml handleGui(Xml request)
-		{
-			Xml response = new Xml("msg");
-			_window.serialize(response.root);
-
-			return response;
-		}
-
-		public Xml handleGuiUpdate(Xml request)
-		{
-			_window.deserializeState(request.root.node("window"));
-			return null;
-		}
-
-		private Xml handleWindowUpdate(Xml request)
-		{
-			if(request.root.attribute("id").getInt() != _window.id)
-				return null;
-
-			System.Console.WriteLine("Deserializing from: " + request.toString());
-
-			_window.views.deserializeState(request.root);
-			return null;
-		}
-
-		public Xml handle(Xml request)
-		{
-			switch(request.root.attribute("type").getString())
+			get
 			{
-			case "setup":
-				return handleSetup(request);
-			case "gui":
-				return handleGui(request);
-			case "guiUpdate":
-				return handleGuiUpdate(request);
-			case "guiWindowUpdate":
-				return handleWindowUpdate(request);
-			}
+				List<Window> ret = new List<Window>();
+				ret.Add(_window);
 
-			return null;
+				return ret;
+			}
+		}
+
+		public void onUpdate(Vessel vessel)
+		{
+			vesselInfo.text = "Yaw: " + vessel.yaw.ToString("F2") + " Pitch: " + vessel.pitch.ToString("F2") + " Roll: " + vessel.roll.ToString("F2");
+				
 		}
 	}
 }

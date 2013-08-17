@@ -180,6 +180,11 @@ namespace bjeb
 				set(value.ToString());
 			}
 
+			public void set(double value)
+			{
+				set(value.ToString());
+			}
+
 			public void set(bool value)
 			{
 				set(value.ToString());
@@ -203,6 +208,11 @@ namespace bjeb
 			public float getFloat()
 			{
 				return float.Parse(getString());
+			}
+
+			public double getDouble()
+			{
+				return double.Parse(getString());
 			}
 
 			public bool getBool()

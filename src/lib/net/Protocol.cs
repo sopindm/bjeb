@@ -1,11 +1,19 @@
 using System.Collections.Generic;
 using bjeb.gui;
+using bjeb.game;
 
 namespace bjeb.net
 {
 	public interface IServer
 	{
 		void onSetup(Screen screen);
+
+		IEnumerable<Window> windows
+		{
+			get;
+		}
+
+		void onUpdate(game.Vessel vessel);
 	}
 
 	public class Protocol
@@ -64,34 +72,93 @@ namespace bjeb.net
 			request.tryWrite(connection);
 		}
 
-		public static void handle(Connection connection, IServer server)
+		public static void requestUpdate(game.Vessel vessel, Connection connection)
 		{
-			Xml request = Xml.read(connection);
-
+			Xml request = Xml.createMessage("update");
+			vessel.serialize(request.root);
+			request.tryWrite(connection);
+		}
+		
+		public static Xml handle(Xml request, IServer server)
+		{
 			switch(request.root.attribute("type").getString())
 			{
 			case "setup":
-				handleSetup(request, connection, server);
-				break;
-			}
-				/*
+				return handleSetup(request, server);
 			case "gui":
-				return handleGui(request, connection, server);
+				return handleGui(request, server);
 			case "guiUpdate":
-				return handleGuiUpdate(request, connection, server);
+				return handleGuiUpdate(request, server);
 			case "guiWindowUpdate":
-				return handleWindowUpdate(request, connection, server);
-				}*/
+				return handleWindowUpdate(request, server);
+			case "update":
+				return handleUpdate(request, server);
+			}
+			
+			return null;
 		}
 
-		private static void handleSetup(Xml request, Connection connection, IServer server)
+		private static Xml handleSetup(Xml request, IServer server)
 		{
 			Screen screen = new Screen();
 			screen.deserialize(request.root.node("screen"));
 
 			server.onSetup(screen);
+
+			return null;
 		}
 
-		//private static void handleGui(Xml request, Connection connection, IServer server);
+		private static Xml handleGui(Xml request, IServer server)
+		{
+			Xml response = new Xml("msg");
+
+			foreach(var window in server.windows)
+				window.serialize(response.root);
+
+			return response;
+		}
+
+		private static Xml handleGuiUpdate(Xml request, IServer server)
+		{
+            var nodes = request.root.nodes("window");
+            var windows = server.windows;
+
+			var nodeIterator = nodes.GetEnumerator();
+			var windowIterator = windows.GetEnumerator();
+
+			while(nodeIterator.MoveNext() && windowIterator.MoveNext())
+			{
+				if(windowIterator.Current.id != nodeIterator.Current.attribute("id").getInt())
+					throw new System.ArgumentException();
+
+				windowIterator.Current.deserializeState(nodeIterator.Current);
+			}
+
+			return null;
+		}
+
+		private static Xml handleWindowUpdate(Xml request, IServer server)
+		{
+			foreach(var window in server.windows)
+			{
+				if(window.id != request.root.attribute("id").getInt())
+					continue;
+
+				window.views.deserializeState(request.root);
+				return null;
+			}
+
+			throw new System.ArgumentException();
+		}
+
+		private static Xml handleUpdate(Xml request, IServer server)
+		{
+			var vessel = new game.Vessel();
+			vessel.deserialize(request.root.node("vessel"));
+
+			server.onUpdate(vessel);
+			
+			return null;
+		}
 	}
 }

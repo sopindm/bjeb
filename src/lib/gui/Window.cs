@@ -106,6 +106,7 @@ namespace bjeb.gui
 
 		override protected void doSerializeState(XmlNode node)
 		{
+			node.attribute("id").set(id);
 			area.serialize(node);
 		}
 

@@ -27,11 +27,11 @@ namespace bjeb.net
 			_host = host;
 			_port = port;
 			_setup = false;
+			onSetup = setup;
 
 			try
 			{
 				connection = new Connection(host, port);
-				onSetup = setup;
 				_connected = true;
 			}
 			catch(ConnectionException)
@@ -65,6 +65,7 @@ namespace bjeb.net
 
 			connection = new Connection(_host, _port);
 			_connected = true;
+			_setup = false;
 		}
 
 		public delegate void ClientRequest(Connection connection);

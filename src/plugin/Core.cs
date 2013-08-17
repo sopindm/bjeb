@@ -33,6 +33,17 @@ namespace bjeb
             base.OnLoad(sfsNode);
 		}
 
+		protected override void onUpdate(double delta)
+		{
+			game.Vessel vessel = new game.Vessel();
+			vessel.update(this.vessel);
+
+			if(!_client.connected)
+				statusMessage = "No connection";
+
+			_client.execute(c => Protocol.requestUpdate(vessel, c));
+		}
+
         protected override void drawGUI()
         {
 			if(!isActive)

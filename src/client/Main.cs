@@ -1,6 +1,7 @@
 using System;
 using bjeb.net;
 using bjeb.gui;
+using bjeb.game;
 
 namespace bjeb.test
 {
@@ -9,10 +10,12 @@ namespace bjeb.test
 		public void setup(Connection connection)
 		{
 			Protocol.requestSetup(connection, 1000, 500);
+			System.Console.WriteLine("Set up");
 		}
 
 		public void update(Connection connection)
 		{
+			System.Console.WriteLine("Updating");
 			var windows = Protocol.requestGui(connection);
 			
             Window window = windows[0];
@@ -31,6 +34,10 @@ namespace bjeb.test
 			window.views.serialize(tmp.root);
 
 			Console.WriteLine("Views: " + tmp.toString());
+
+			Vessel vessel = new Vessel();
+
+			Protocol.requestUpdate(vessel, connection);
 		}
 	}
 

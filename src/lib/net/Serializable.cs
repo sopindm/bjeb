@@ -127,7 +127,7 @@ namespace bjeb.net
         abstract protected void doSerialize(XmlNode node);
         abstract protected void doDeserialize(XmlNode node);
 
-        abstract protected void doSerializeState(XmlNode node);
-        abstract protected void doDeserializeState(XmlNode node);
+        virtual protected void doSerializeState(XmlNode node) {}
+        virtual protected void doDeserializeState(XmlNode node) {}
 	}
 }

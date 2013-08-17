@@ -17,7 +17,7 @@ namespace bjeb.server
 			
 					Console.WriteLine("Request: " + request.toString());
 
-					Xml response = computer.handle(request);
+					Xml response = Protocol.handle(request, computer);
 
 					if(response != null)
 					{

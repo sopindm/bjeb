@@ -49,6 +49,7 @@
     <Compile Include="src\lib\net\Xml.cs" />
     <Compile Include="src\lib\net\Client.cs" />
     <Compile Include="src\lib\net\Protocol.cs" />
+    <Compile Include="src\lib\game\Vessel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
