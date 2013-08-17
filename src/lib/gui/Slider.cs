@@ -56,6 +56,8 @@ namespace bjeb.gui
 
 			onUpdate = null;
 			_isUpdated = false;
+
+			thumbStyle = Style.Default;
 		}
 
 		public delegate void OnUpdate(Slider slider);
@@ -66,33 +68,22 @@ namespace bjeb.gui
 			set;
 		}
 
-#if UNITY
-		private UnityEngine.GUIStyle sliderStyle
+		override protected Style defaultStyle
 		{
 			get
 			{
-				GUISkin uskin = AssetBase.unitySkin(skin);
-
 				if(isHorizontal)
-					return uskin.horizontalSlider;
+					return Style.HorizontalSlider;
 				else
-					return uskin.verticalSlider;
+					return Style.VerticalSlider;
 			}
 		}
 
-		private UnityEngine.GUIStyle thumbStyle
+		public Style thumbStyle
 		{
-			get
-			{
-				GUISkin uskin = AssetBase.unitySkin(skin);
-
-				if(isHorizontal)
-					return uskin.horizontalSliderThumb;
-				else
-					return uskin.verticalSliderThumb;
-			}
+			get;
+			set;
 		}
-#endif
 
 		override protected void drawLayout()
 		{
@@ -100,9 +91,15 @@ namespace bjeb.gui
 			float newValue;
 
 			if(isHorizontal)
-				newValue = GUILayout.HorizontalSlider(value, minValue, maxValue, sliderStyle, thumbStyle, area.layoutOptions());
+				newValue = GUILayout.HorizontalSlider(value, minValue, maxValue, 
+													  unityStyle(), 
+													  unityStyle(thumbStyle, Style.HorizontalSliderThumb),
+													  area.layoutOptions());
 			else 
-				newValue = GUILayout.VerticalSlider(value, minValue, maxValue, sliderStyle, thumbStyle, area.layoutOptions());
+				newValue = GUILayout.VerticalSlider(value, minValue, maxValue, 
+													unityStyle(), 
+													unityStyle(thumbStyle, Style.VerticalSliderThumb),
+													area.layoutOptions());
 
 			if(value != newValue)
 			{
@@ -118,9 +115,13 @@ namespace bjeb.gui
 			float newValue;
 
 			if(isHorizontal)
-				newValue = GUI.HorizontalSlider(area.rectangle, value, minValue, maxValue, sliderStyle, thumbStyle);
+				newValue = GUI.HorizontalSlider(area.rectangle, value, minValue, maxValue, 
+												unityStyle(), 
+												unityStyle(thumbStyle, Style.HorizontalSliderThumb));
 			else
-				newValue = GUI.VerticalSlider(area.rectangle, value, minValue, maxValue, sliderStyle, thumbStyle);
+				newValue = GUI.VerticalSlider(area.rectangle, value, minValue, maxValue, 
+											  unityStyle(),
+											  unityStyle(thumbStyle, Style.VerticalSliderThumb));
 
 			if(value != newValue)
 			{
@@ -138,6 +139,8 @@ namespace bjeb.gui
 			node.attribute("maxValue").set(maxValue);
 			node.attribute("value").set(value);
 			node.attribute("isHorizontal").set(isHorizontal);
+
+			serializeStyle(thumbStyle, "thumbStyle", node);
 		}
 
 		override protected void doSerializeState(XmlNode node)
@@ -157,6 +160,8 @@ namespace bjeb.gui
 			maxValue = node.attribute("maxValue").getFloat();
 			value = node.attribute("value").getFloat();
 			isHorizontal = node.attribute("isHorizontal").getBool();
+
+			thumbStyle = deserializeStyle("thumbStyle", node);
 		}
 
 		override protected void doDeserializeState(XmlNode node)

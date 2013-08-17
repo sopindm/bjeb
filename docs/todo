@@ -1,11 +1,7 @@
-enabling and disabling views, hiding and showing views
-
-Toggles
-
 Style system
   Not send default skin and style
   Default style taken from skin
-  Can be overriden (style expressions like 'Window1.button')
+  Can be overriden with type
 
 Font
   Color

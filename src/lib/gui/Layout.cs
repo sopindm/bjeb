@@ -31,6 +31,14 @@ namespace bjeb.gui
 			_views = new ViewContainer(this);
 		}
 
+		override protected Style defaultStyle
+		{
+			get
+			{
+				return Style.Default;
+			}
+		}
+
 		public static Layout makeVertical()
 		{
 			return new Layout();
@@ -46,6 +54,9 @@ namespace bjeb.gui
 
 		public override void draw()
 		{
+			if(!isShowing)
+				return;
+
 #if UNITY
 			if(isVertical)
 				GUILayout.BeginVertical(area.layoutOptions());
@@ -63,6 +74,8 @@ namespace bjeb.gui
 
 		override protected void doSerialize(XmlNode node)
 		{
+			base.doSerialize(node);
+
 			node.attribute("isVertical").set(isVertical);
 			_views.serialize(node);
 		}
@@ -74,6 +87,8 @@ namespace bjeb.gui
 
 		override protected void doDeserialize(XmlNode node)
         {
+			base.doDeserialize(node);
+
 			isVertical = node.attribute("isVertical").getBool();
 			_views.deserialize(node);
 		}

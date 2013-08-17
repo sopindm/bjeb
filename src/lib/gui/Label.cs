@@ -25,27 +25,25 @@ namespace bjeb.gui
 			this.text = text;
 		}
 
-#if UNITY
-		private UnityEngine.GUIStyle style
+		override protected Style defaultStyle
 		{
-			get
+			get 
 			{
-				return AssetBase.unitySkin(skin).label;
+				return Style.Label;
 			}
 		}
-#endif
 
 		override protected void drawLayout()
 		{
 #if UNITY
-			GUILayout.Label(text, style, area.layoutOptions());
+			GUILayout.Label(text, unityStyle(), area.layoutOptions());
 #endif
 		}
 
 		override protected void drawFixed()
 		{
 #if UNITY
-			GUI.Label(area.rectangle, text, style);
+			GUI.Label(area.rectangle, text, unityStyle());
 #endif
 		}
 

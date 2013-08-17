@@ -171,6 +171,14 @@ namespace bjeb.gui
 			this.text = text;
 		}
 
+		override protected Style defaultStyle
+		{
+			get
+			{
+				return Style.Button;
+			}
+		}
+
 		public string text
 		{
 			get;
@@ -188,20 +196,10 @@ namespace bjeb.gui
 		private bool _clicked = false;
 		private MouseState _state = new MouseState();
 
-#if UNITY
-		private UnityEngine.GUIStyle style
-		{
-			get
-			{
-				return AssetBase.unitySkin(skin).button;
-			}
-		}
-#endif
-
 		override protected void drawLayout()
 		{
 #if UNITY
-			_clicked = GUILayout.Button(text, style, area.layoutOptions());
+			_clicked = GUILayout.Button(text, unityStyle(), area.layoutOptions());
 			_state.update();
 #endif
 		}
@@ -209,7 +207,7 @@ namespace bjeb.gui
 		override protected void drawFixed()
 		{
 #if UNITY
-			_clicked = GUI.Button(area.rectangle, text, style);
+			_clicked = GUI.Button(area.rectangle, text, unityStyle());
 			_state.update();
 #endif
 		}

@@ -23,7 +23,7 @@ namespace bjeb
 			_window.area.set(_screen.width - 550, 100, 300, 100);
 			_window.title = "Annoying title";
 			_window.draggable = true;
-			_window.skin = gui.AssetBase.Skin.Window2;
+			_window.skin = gui.Skin.Window2;
 
 			_window.views.clear();
 
@@ -70,10 +70,17 @@ namespace bjeb
 
 			layout2.views.add(box);
 
-			gui.Slider slider = new gui.Slider(0, 1000, 500);
-			slider.isHorizontal = false;
+			gui.Layout layout3 = gui.Layout.makeHorizontal();
 
-			layout2.views.add(slider);
+			gui.Slider slider = new gui.Slider(0, 1000, 500);
+
+			gui.Toggle toggle = new gui.Toggle("Switch me", false);
+			toggle.onSwitch = (t => { if(t.toggled) slider.value = 100; else slider.value = 800; });
+
+			layout3.views.add(slider);
+			layout3.views.add(toggle);
+
+			layout2.views.add(layout3);
 
 			_window.views.add(layout2);
 

@@ -8,10 +8,35 @@ namespace bjeb.gui
 {
 	public abstract class View: net.Serializable
 	{
-		public AssetBase.Skin skin
+		public Skin skin
 		{
 			get;
 			set;
+		}
+
+		public Style style
+		{
+			get;
+			set;
+		}
+
+		protected abstract Style defaultStyle
+		{
+			get;
+		}
+
+		protected static void serializeStyle(Style style, string fieldName, XmlNode node)
+		{
+			if(style != Style.Default)
+				node.attribute(fieldName).set(style.ToString());
+		}
+
+		protected static Style deserializeStyle(string fieldName, XmlNode node)
+		{
+			if(!node.attribute(fieldName).isSet())
+				return Style.Default;
+
+			return (Style)System.Enum.Parse(typeof(Style), node.attribute(fieldName).getString());
 		}
 
 #if UNITY
@@ -22,6 +47,19 @@ namespace bjeb.gui
 				return AssetBase.unitySkin(skin);
 			}
 		}
+
+		protected GUIStyle unityStyle()
+		{
+			return unityStyle(style, defaultStyle);
+		}
+
+		protected GUIStyle unityStyle(Style style, Style defaultStyle)
+		{
+			if(style == Style.Default)
+				style = defaultStyle;
+
+			return AssetBase.unityStyle(style, skin);
+		}
 #endif		
 
 		public Area area
@@ -30,22 +68,50 @@ namespace bjeb.gui
 			set;
 		}
 
+		public bool isShowing
+		{
+			get;
+			private set;
+		}
+
+		public void show()
+		{
+			isShowing = true;
+		}
+
+		public void hide()
+		{
+			isShowing = false;
+		}
+
 		public View()
 		{
-			skin = AssetBase.Skin.Default;
+			isShowing = true;
+			skin = Skin.Default;
+			style = Style.Default;
 			area = new Area();
 		}
 
 		override protected void doSerialize(net.XmlNode node)
 		{
-			node.attribute("skin").set(skin.ToString());
+			if(skin != Skin.Default)
+				node.attribute("skin").set(skin.ToString());
+			serializeStyle(style, "style", node);
+
+			node.attribute("isShowing").set(isShowing);
 
 			area.serialize(node);
 		}
 
 		override protected void doDeserialize(net.XmlNode node)
 		{
-			skin = (AssetBase.Skin)System.Enum.Parse(typeof(AssetBase.Skin), node.attribute("skin").getString());
+			if(node.attribute("skin").isSet())
+				skin = (Skin)System.Enum.Parse(typeof(Skin), node.attribute("skin").getString());
+			else
+				skin = Skin.Default;
+			style = deserializeStyle("style", node);
+
+			isShowing = node.attribute("isShowing").getBool();
 
 			area.deserialize(node);
 		}
@@ -57,6 +123,9 @@ namespace bjeb.gui
 	{
 		override public void draw()
 		{
+			if(!isShowing)
+				return;
+
 			if(area.isSet())
 				drawFixed();
 			else

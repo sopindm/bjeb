@@ -32,6 +32,14 @@ namespace bjeb.gui
 			private set;
 		}
 
+		override protected Style defaultStyle
+		{
+			get
+			{
+				return Style.Window;
+			}
+		}
+
 		public Window()
 		{
 			id = nextId();
@@ -60,20 +68,12 @@ namespace bjeb.gui
 			set;
 		}
 
-#if UNITY
-		private GUIStyle style
-		{
-			get
-			{
-				return AssetBase.unitySkin(skin).window;
-			}
-		}
-#endif
-
 		public override void draw()
 		{
+			if(!isShowing)
+				return;
 #if UNITY
-			area.rectangle = GUILayout.Window( id, area.rectangle, drawContext, title, style, area.layoutOptions());
+			area.rectangle = GUILayout.Window( id, area.rectangle, drawContext, title, unityStyle(), area.layoutOptions());
 #endif
 		}
 
@@ -92,10 +92,10 @@ namespace bjeb.gui
 
 		override protected void doSerialize(XmlNode node)
 		{
-			node.attribute("id").set(id);
+			base.doSerialize(node);
 
+			node.attribute("id").set(id);
 			node.attribute("title").set(title);
-			node.attribute("skin").set(skin.ToString());
 
 			doSerializeState(node);
 
@@ -111,10 +111,10 @@ namespace bjeb.gui
 
 		override protected void doDeserialize(XmlNode node)
         {
-            id = node.attribute("id").getInt();
+			base.doDeserialize(node);
 
+            id = node.attribute("id").getInt();
 			title = node.attribute("title").getString();
-			skin = (AssetBase.Skin)System.Enum.Parse(typeof(AssetBase.Skin), node.attribute("skin").getString());
 
 			doDeserializeState(node);
 

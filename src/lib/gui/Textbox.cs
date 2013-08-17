@@ -41,6 +41,14 @@ namespace bjeb.gui
 			_isUpdated = false;
 		}
 
+		override protected Style defaultStyle
+		{
+			get
+			{
+				return Style.Textbox;
+			}
+		}
+
 		public delegate void OnUpdate(Textbox textbox);
 
 		public OnUpdate onUpdate
@@ -49,20 +57,10 @@ namespace bjeb.gui
 			set;
 		}
 
-#if UNITY
-		private UnityEngine.GUIStyle style
-		{
-			get
-			{
-				return AssetBase.unitySkin(skin).textField;
-			}
-		}
-#endif
-
 		override protected void drawLayout()
 		{
 #if UNITY
-			string newText = GUILayout.TextField(text, maxLength, style, area.layoutOptions());
+			string newText = GUILayout.TextField(text, maxLength, unityStyle(), area.layoutOptions());
 
 			if(newText != text)
 			{
@@ -75,7 +73,7 @@ namespace bjeb.gui
 		override protected void drawFixed()
 		{
 #if UNITY
-			string newText = GUI.TextField(area.rectangle, text, maxLength, style);
+			string newText = GUI.TextField(area.rectangle, text, maxLength, unityStyle());
 
 			if(newText != text)
 			{

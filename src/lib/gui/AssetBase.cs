@@ -2,22 +2,35 @@ using System.Collections.Generic;
 
 namespace bjeb.gui
 {
+	public enum Skin {
+		FlagBrowser,
+		Window1,
+		Window2,
+		Window3,
+		Window4,
+		Window5,
+		Window6,
+		Window7,
+		OrbitMap,
+		PlaqueDialog,
+		Default
+	}
+
+	public enum Style {
+		Button,
+		Default,
+		HorizontalSlider,
+		HorizontalSliderThumb,
+		Label,
+		Textbox,
+		Toggle,
+		VerticalSlider,
+		VerticalSliderThumb,
+		Window
+	}
+
 	public class AssetBase
 	{
-		public enum Skin {
-			FlagBrowser,
-			Window1,
-			Window2,
-			Window3,
-			Window4,
-			Window5,
-			Window6,
-			Window7,
-			OrbitMap,
-			PlaqueDialog,
-			Default
-		}
-
 		private static string skinName(Skin skin)
 		{
 			switch(skin)
@@ -51,6 +64,37 @@ namespace bjeb.gui
 
 #if UNITY
 		private static SortedDictionary<Skin, UnityEngine.GUISkin> _skins = null;
+
+		public static UnityEngine.GUIStyle unityStyle(Style style, Skin skin)
+		{
+			UnityEngine.GUISkin uskin = unitySkin(skin);
+
+			switch(style)
+			{
+			case Style.Button:
+				return uskin.button;
+			case Style.HorizontalSlider:
+				return uskin.horizontalSlider;
+			case Style.HorizontalSliderThumb:
+				return uskin.horizontalSliderThumb;
+			case Style.Label:
+				return uskin.label;
+			case Style.Textbox:
+				return uskin.textField;
+			case Style.Toggle:
+				return uskin.toggle;
+			case Style.VerticalSlider:
+				return uskin.verticalSlider;
+			case Style.VerticalSliderThumb:
+				return uskin.verticalSliderThumb;
+			case Style.Window:
+				return uskin.window;
+			case Style.Default:
+				return null;
+			}
+
+			return null;
+		}
 
 		public static UnityEngine.GUISkin unitySkin(Skin skin)
 		{
