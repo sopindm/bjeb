@@ -1,126 +1,92 @@
-#if UNITY
-using UnityEngine;
-#endif
+using System;
 using bjeb.net;
+using bjeb.math;
 
 namespace bjeb.game
 {
 	/*
   Vessel:
-     position
-	 rotation
-
 	 orbit
 	 rotatingFrameVelocity
 
 	 altitude
 	 altitudeTrue
-	 altitudeBotton
 
-	 momentumOfInertia
+	 parts
 
 	 mass
-
-	 angularVelocity
-	 angularMomentum
-
-	 torque
-	 thrustTorque
-
-
-  Bain body - celectial body:
-     position
-	 rotation
-	 radius
-	 g
-	 G
-
-	 orbit*/
+	 angularVelocity*/
 
 	[XmlSerializable("vessel")]
 	public class Vessel: Serializable
 	{
-		public math.Vector3 centerOfMass;
+		public Vector3 centerOfMass;
 
-		public double yaw
+		private Quaternion _rootRotation;
+		public Quaternion rotation
 		{
-			get;
-			private set;
+			get
+			{
+				return _rootRotation * Quaternion.makePitch(-Math.PI / 2);
+			}
 		}
 
-		public double pitch
+		public math.Vector3 up
 		{
-			get;
-			private set;
+			get
+			{
+				return centerOfMass.normalize;
+			}
 		}
 
-		public double roll
+		public math.Vector3 north
 		{
-			get;
-			private set;
+			get
+			{
+				return (mainBody.rotation.up * mainBody.radius - centerOfMass).exclude(up).normalize;
+			}
 		}
 
-		public math.Quaternion vesselRotation
+		public math.Quaternion surfaceRotation
 		{
-			get;
-			private set;
+			get
+			{
+				return (rotation.inverse * Quaternion.look(north, up)).inverse;
+			}
 		}
 
-		public math.Quaternion vesselSurfaceRotation
-		{
-			get;
-			private set;
-		}
+		public CelestialBody mainBody;
 
 		public Vessel()
 		{
-			centerOfMass = new math.Vector3();
-			vesselRotation = new math.Quaternion();
-			vesselSurfaceRotation = new math.Quaternion();
+			centerOfMass = new Vector3();
+			_rootRotation = new Quaternion();
+			mainBody = new CelestialBody();
 		}
 
 #if UNITY
 		public void update(global::Vessel vessel)
 		{
-            centerOfMass = new math.Vector3(vessel.findWorldCenterOfMass());
+			mainBody.update(vessel.mainBody);
 
-			var mainBodyPosition = new math.Vector3(vessel.mainBody.position);
-            math.Vector3 up = (centerOfMass - mainBodyPosition).normalize;
+            centerOfMass = new Vector3(vessel.findWorldCenterOfMass()) - mainBody.position;
+			_rootRotation = new Quaternion(vessel.GetTransform().rotation);
 
-			math.Vector3 north = (mainBodyPosition + new math.Vector3(vessel.mainBody.transform.up) * vessel.mainBody.Radius - centerOfMass).exclude(up).normalize;
-
-			var surfaceRotation = math.Quaternion.look(north, up);
-			vesselRotation = new math.Quaternion(vessel.GetTransform().rotation);
-			vesselSurfaceRotation = ((new math.Quaternion(Quaternion.Euler(90, 0, 0)) * vesselRotation.inverse) * surfaceRotation).inverse;
-
-			Quaternion rotationVesselSurface = vesselSurfaceRotation.unity;
-
-			yaw = rotationVesselSurface.eulerAngles.y;
-			pitch = (rotationVesselSurface.eulerAngles.x > 180) ? (360.0 - rotationVesselSurface.eulerAngles.x) : -rotationVesselSurface.eulerAngles.x;
-			roll = (rotationVesselSurface.eulerAngles.z > 180) ? (rotationVesselSurface.eulerAngles.z - 360.0) : rotationVesselSurface.eulerAngles.z;
 		}
 #endif
 
 		override protected void doSerialize(XmlNode node)
 		{
 			centerOfMass.serialize("centerOfMass", node);
-			vesselSurfaceRotation.serialize("vesselSufraceRotation", node);
-			vesselRotation.serialize("vesselRotation", node);
-
-			node.attribute("yaw").set(yaw);
-			node.attribute("pitch").set(pitch);
-			node.attribute("roll").set(roll);
+			_rootRotation.serialize("rootRotation", node);
+			mainBody.serialize(node);
 		}
 
 		override protected void doDeserialize(XmlNode node)
 		{
 			centerOfMass.deserialize("centerOfMass", node);
-			vesselSurfaceRotation.deserialize("vesselSufraceRotation", node);
-			vesselRotation.deserialize("vesselRotation", node);
-
-			yaw = node.attribute("yaw").getFloat();
-			pitch = node.attribute("pitch").getFloat();
-			roll = node.attribute("roll").getFloat();
+			_rootRotation.deserialize("rootRotation", node);
+			mainBody.deserialize(node.node("celestialBody"));
 		}
 	}
 }

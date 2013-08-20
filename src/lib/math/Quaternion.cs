@@ -45,6 +45,30 @@ namespace bjeb.math
 			}
 		}
 
+		public Vector3 forward
+		{
+			get
+			{
+				return this * Vector3.forward;
+			}
+		}
+
+		public Vector3 up
+		{
+			get
+			{
+				return this * Vector3.up;
+			}
+		}
+
+		public Vector3 right
+		{
+			get
+			{
+				return this * Vector3.right;
+			}
+		}
+
 		public double magnitudeSquare
 		{
 			get
@@ -134,14 +158,24 @@ namespace bjeb.math
 
 		public void serialize(string name, net.XmlNode node)
 		{
-			node.attribute("w").set(w);
+			net.XmlNode child = node.node(name);
+
+			if(child == null)
+				child = new net.XmlNode(name, node);
+
+			child.attribute("w").set(w);
 			v.serialize(name, node);
 		}
 
 		public void deserialize(string name, net.XmlNode node)
 		{
-			w = node.attribute("w").getDouble();
+			w = node.node(name).attribute("w").getDouble();
 			v.deserialize(name, node);
+		}
+
+		public static Quaternion makePitch(double angle)
+		{
+			return angleAxis(angle, Vector3.right);
 		}
 
 		public double yaw
@@ -175,7 +209,7 @@ namespace bjeb.math
 		{
 			get
 			{
-				Vector3 up2 = Quaternion.angleAxis(yaw, Vector3.up) * Quaternion.angleAxis(pitch, Vector3.right) * Vector3.up;
+				Vector3 up2 = Quaternion.angleAxis(yaw, Vector3.up) * Quaternion.angleAxis(-pitch, Vector3.right) * Vector3.up;
 
 				return -up2.angleInPlane(this * Vector3.up, this * Vector3.forward);
 			}

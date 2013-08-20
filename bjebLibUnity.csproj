@@ -53,6 +53,7 @@
     <Compile Include="src\lib\net\Protocol.cs" />
     <Compile Include="src\lib\math\Vector3.cs" />
     <Compile Include="src\lib\math\Quaternion.cs" />
+    <Compile Include="src\lib\game\CelestialBody.cs" />
     <Compile Include="src\lib\game\Vessel.cs" />
   </ItemGroup>
   <ItemGroup>

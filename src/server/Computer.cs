@@ -82,8 +82,10 @@ namespace bjeb
 
 		public void onUpdate(Vessel vessel)
 		{
-			vesselInfo.text = "My forward: " + (vessel.vesselRotation * math.Vector3.up).ToString();
-				
+			vesselInfo.text = 
+				"Yaw: " + Angle.fromRadians(vessel.surfaceRotation.yaw).ToString("F2") +
+				"Pitch: " + Angle.fromRadians(vessel.surfaceRotation.pitch).ToString("F2") +
+				"Roll: " + Angle.fromRadians(vessel.surfaceRotation.roll).ToString("F2");
 		}
 	}
 }
