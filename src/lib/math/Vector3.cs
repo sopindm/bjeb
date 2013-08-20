@@ -133,6 +133,25 @@ namespace bjeb.math
 			return Math.Acos(dot(vector) / magnitude / vector.magnitude);
 		}
 
+		public double angleInPlane(Vector3 vector, Vector3 normal)
+		{
+			Vector3 v1 = exclude(normal);
+			Vector3 v2 = vector.exclude(normal);
+			
+			if(v1.equals(zero))
+				return 0;
+
+			if(v2.equals(zero))
+				return 0;
+
+			Vector3 rotationNormal = v1.cross(v2);
+
+			if(rotationNormal.equals(zero))
+				return Math.Sign(v1.dot(v2)) > 0 ? 0 : Math.PI;
+
+			return v1.angle(v2) * Math.Sign(v1.cross(v2).dot(normal));
+		}
+
 		public Vector3 project(Vector3 vector)
 		{
 			return vector * dot(vector) / vector.magnitudeSquare;
@@ -208,7 +227,10 @@ namespace bjeb.math
 
 		public void serialize(string name, XmlNode node)
 		{
-			XmlNode child = new XmlNode(name, node);
+			XmlNode child = node.node(name);
+
+			if(child == null)
+				child = new XmlNode(name, node);
 
 			child.attribute("x").set(x);
 			child.attribute("y").set(y);

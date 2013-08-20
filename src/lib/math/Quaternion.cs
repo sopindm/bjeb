@@ -16,11 +16,26 @@ namespace bjeb.math
 			private set;
 		}
 
+		public Quaternion()
+		{
+			w = 0;
+			v = new Vector3();
+		}
+
 		public Quaternion(double w, Vector3 v)
 		{
 			this.w = w;
 			this.v = v;
 		}
+
+		#if UNITY
+		public Quaternion(UnityEngine.Quaternion q)
+		{
+			w = q.w;
+
+			v = new Vector3(q.x, q.y, q.z);
+		}
+		#endif
 
 		public static Quaternion identity
 		{
@@ -115,6 +130,55 @@ namespace bjeb.math
 			Quaternion look1 = look(forward);
 
 			return _look(look1 * Vector3.up, upward) * look1;
+		}
+
+		public void serialize(string name, net.XmlNode node)
+		{
+			node.attribute("w").set(w);
+			v.serialize(name, node);
+		}
+
+		public void deserialize(string name, net.XmlNode node)
+		{
+			w = node.attribute("w").getDouble();
+			v.deserialize(name, node);
+		}
+
+		public double yaw
+		{
+			get
+			{
+				double ret = Vector3.right.angleInPlane(Vector3.up.cross(this * Vector3.forward), Vector3.up);
+
+				if(ret < 0)
+					ret = 2 * Math.PI + ret;
+
+				return ret;
+			}
+		}
+
+		public double pitch
+		{
+			get
+			{
+				Quaternion yawTransform = Quaternion.angleAxis(yaw, Vector3.up);
+
+				Vector3 forward1 = yawTransform * Vector3.forward;
+				Vector3 right1 = yawTransform * Vector3.right;
+
+				double ret = forward1.angleInPlane(this * Vector3.forward, right1);
+				return -ret;
+			}
+		}
+
+		public double roll
+		{
+			get
+			{
+				Vector3 up2 = Quaternion.angleAxis(yaw, Vector3.up) * Quaternion.angleAxis(pitch, Vector3.right) * Vector3.up;
+
+				return -up2.angleInPlane(this * Vector3.up, this * Vector3.forward);
+			}
 		}
 	}
 }

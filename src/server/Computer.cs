@@ -5,6 +5,14 @@ using bjeb.game;
 
 namespace bjeb
 {
+	public class Angle
+	{
+		public static double fromRadians(double radians)
+		{
+			return radians / System.Math.PI * 180;
+		}
+	}
+
 	public class Computer: IServer
 	{
 		private gui.Window _window = null;
@@ -74,7 +82,7 @@ namespace bjeb
 
 		public void onUpdate(Vessel vessel)
 		{
-			vesselInfo.text = "Yaw: " + vessel.yaw.ToString("F2") + " Pitch: " + vessel.pitch.ToString("F2") + " Roll: " + vessel.roll.ToString("F2");
+			vesselInfo.text = "My forward: " + (vessel.vesselRotation * math.Vector3.up).ToString();
 				
 		}
 	}
