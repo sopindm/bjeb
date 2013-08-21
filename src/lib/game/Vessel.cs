@@ -116,8 +116,10 @@ namespace bjeb.game
             {
                 altitude -= (vessel.mainBody.pqsController.GetSurfaceHeight(UnityEngine.QuaternionD.AngleAxis(vessel.mainBody.GetLongitude(centerOfMass.unity), Vector3d.down) * UnityEngine.QuaternionD.AngleAxis(vessel.mainBody.GetLatitude(centerOfMass.unity), Vector3d.forward) * Vector3d.right) - vessel.mainBody.pqsController.radius);
             }
+			//use longitude and latitude methods
 
-			//add longitude and latitude methods
+			//atmospheric pressure and density
+			//parts info + mode physics (server side)
 		}
 #endif
 
