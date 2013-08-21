@@ -20,7 +20,11 @@ namespace bjeb.game
 	[XmlSerializable("vessel")]
 	public class Vessel: Serializable
 	{
-		public Vector3 centerOfMass;
+		public Vector3 centerOfMass
+		{
+			get;
+			private set;
+		}
 
 		private Quaternion _rootRotation;
 		public Quaternion rotation
@@ -35,7 +39,7 @@ namespace bjeb.game
 		{
 			get
 			{
-				return centerOfMass.normalize;
+				return (centerOfMass - mainBody.position).normalize;
 			}
 		}
 
@@ -43,7 +47,7 @@ namespace bjeb.game
 		{
 			get
 			{
-				return (mainBody.rotation.up * mainBody.radius - centerOfMass).exclude(up).normalize;
+				return (mainBody.position + mainBody.rotation.up * mainBody.radius - centerOfMass).exclude(up).normalize;
 			}
 		}
 
@@ -57,10 +61,35 @@ namespace bjeb.game
 
 		public CelestialBody mainBody;
 
+		private Vector3 _rotatingFrameVelocity;
+
+		public Vector3 east
+		{
+			get
+			{
+				return north.cross(up);
+			}
+		}
+
+		public Vector3 gravity
+		{
+			get;
+			private set;
+		}
+
+		public double altitude
+		{
+			get;
+			private set;
+		}
+
 		public Vessel()
 		{
 			centerOfMass = new Vector3();
 			_rootRotation = new Quaternion();
+			_rotatingFrameVelocity = new Vector3();
+			gravity = new Vector3();
+
 			mainBody = new CelestialBody();
 		}
 
@@ -69,9 +98,26 @@ namespace bjeb.game
 		{
 			mainBody.update(vessel.mainBody);
 
-            centerOfMass = new Vector3(vessel.findWorldCenterOfMass()) - mainBody.position;
+            centerOfMass = new Vector3(vessel.findWorldCenterOfMass());
 			_rootRotation = new Quaternion(vessel.GetTransform().rotation);
 
+			_rotatingFrameVelocity = new Vector3(vessel.mainBody.getRFrmVel(centerOfMass.unity));
+
+			gravity = new Vector3(FlightGlobals.getGeeForceAtPosition(centerOfMass.unity));
+
+			altitude = vessel.mainBody.GetAltitude(centerOfMass.unity);
+
+            UnityEngine.RaycastHit sfc;
+            if (UnityEngine.Physics.Raycast(centerOfMass.unity, -up.unity, out sfc, (float)altitude + 10000.0F, 1 << 15))
+            {
+                altitude = sfc.distance;
+            }
+            else if (vessel.mainBody.pqsController != null)
+            {
+                altitude -= (vessel.mainBody.pqsController.GetSurfaceHeight(UnityEngine.QuaternionD.AngleAxis(vessel.mainBody.GetLongitude(centerOfMass.unity), Vector3d.down) * UnityEngine.QuaternionD.AngleAxis(vessel.mainBody.GetLatitude(centerOfMass.unity), Vector3d.forward) * Vector3d.right) - vessel.mainBody.pqsController.radius);
+            }
+
+			//add longitude and latitude methods
 		}
 #endif
 
@@ -79,6 +125,11 @@ namespace bjeb.game
 		{
 			centerOfMass.serialize("centerOfMass", node);
 			_rootRotation.serialize("rootRotation", node);
+			_rotatingFrameVelocity.serialize("rotatingFrameVelocity", node);
+			gravity.serialize("gravity", node);
+
+			node.attribute("altitude").set(altitude);
+
 			mainBody.serialize(node);
 		}
 
@@ -86,6 +137,11 @@ namespace bjeb.game
 		{
 			centerOfMass.deserialize("centerOfMass", node);
 			_rootRotation.deserialize("rootRotation", node);
+			_rotatingFrameVelocity.deserialize("rotatingFrameVelocity", node);
+			gravity.deserialize("gravity", node);
+
+			altitude = node.attribute("altitude").getDouble();
+
 			mainBody.deserialize(node.node("celestialBody"));
 		}
 	}
