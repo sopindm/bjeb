@@ -83,9 +83,9 @@ namespace bjeb
 		public void onUpdate(Vessel vessel)
 		{
 			vesselInfo.text = 
-				"Yaw: " + Angle.fromRadians(vessel.surfaceRotation.yaw).ToString("F2") +
-				"Pitch: " + Angle.fromRadians(vessel.surfaceRotation.pitch).ToString("F2") +
-				"Roll: " + Angle.fromRadians(vessel.surfaceRotation.roll).ToString("F2");
+				"Mass: " + vessel.mass.ToString("F2") + " " +
+				"Angular momentum: " + vessel.angularMomentum.ToString() + " " +
+				"Momentum of inertia: " + vessel.momentumOfInertia.ToString();
 		}
 	}
 }

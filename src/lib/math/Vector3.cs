@@ -220,6 +220,14 @@ namespace bjeb.math
 			}
 		}
 		
+		public static Vector3 one
+		{
+			get
+			{
+				return new Vector3(1, 1, 1);
+			}
+		}
+
 		public override string ToString()
 		{
 			return "(x: " + x.ToString("F2") + " y: " + y.ToString("F2") + " z: " + z.ToString("F2") + ")";
