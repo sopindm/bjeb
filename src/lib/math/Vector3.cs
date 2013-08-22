@@ -87,6 +87,41 @@ namespace bjeb.math
 			private set;
 		}
 
+		public double this[int index]
+		{
+			get
+			{
+				switch(index)
+				{
+				case 0:
+					return x;
+				case 1:
+					return y;
+				case 2:
+					return z;
+				default:
+					throw new System.ArgumentException(index.ToString() + " is out of range for vector");
+				}
+			}
+			set
+			{
+				switch(index)
+				{
+				case 0:
+					x = value;
+					break;
+				case 1:
+					y = value;
+					break;
+				case 2:
+					z = value;
+					break;
+				default:
+					throw new System.ArgumentException(index.ToString() + " is out of range for vector");
+				}
+			}
+		}
+
 		public double magnitudeSquare
 		{
 			get
@@ -254,4 +289,30 @@ namespace bjeb.math
 			z = child.attribute("z").getDouble();
 		}
 	}
+
+    class Matrix3x3
+    {
+        private double[,] _elements = new double[3, 3];
+
+        public double this[int i, int j] 
+        {
+            get { return _elements[i, j]; }
+            set { _elements[i, j] = value; }
+        }
+
+        public static Vector3 operator*(Matrix3x3 M, Vector3 v) 
+        {
+            Vector3 ret = Vector3.zero;
+
+            for(int i = 0; i < 3; i++)
+			{
+                for(int j = 0; j < 3; j++)
+				{
+                    ret[i] += M[i, j] * v[j];
+                }
+            }
+
+            return ret;
+        }
+    }
 }
