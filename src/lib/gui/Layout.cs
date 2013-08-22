@@ -59,9 +59,19 @@ namespace bjeb.gui
 
 #if UNITY
 			if(isVertical)
-				GUILayout.BeginVertical(area.layoutOptions());
+			{
+				if(style != Style.Default)
+					GUILayout.BeginVertical(unityStyle(), area.layoutOptions());
+				else
+					GUILayout.BeginVertical(area.layoutOptions());
+			}
 			else
-				GUILayout.BeginHorizontal(area.layoutOptions());
+			{
+				if(style != Style.Default)
+					GUILayout.BeginHorizontal(unityStyle(), area.layoutOptions());
+				else
+					GUILayout.BeginHorizontal(area.layoutOptions());
+			}
 
 			views.draw();
 

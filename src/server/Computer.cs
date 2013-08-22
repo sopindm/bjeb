@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using bjeb.net;
 using bjeb.gui;
@@ -16,16 +17,22 @@ namespace bjeb
 	public class Computer: IServer
 	{
 		private gui.Window _window = null;
-		private Label vesselInfo = null;
+
+		private List<Module> modules;
 
 		public Computer()
-		{
+		{										
+			modules = new List<Module>();
+
+			modules.Add(new InfoModule(this));
+
+			_switches = new Dictionary<Module, ModuleSwitch>();
 		}
 
 		public void onSetup(Screen screen)
 		{
 			_window = new gui.Window();
-			_window.area.set(screen.width - 550, 50, 200, 30);
+			_window.area.set(screen.width - 550, 50, 200, 50);
 
 			_window.title = "BJEB";
 			_window.draggable = true;
@@ -60,13 +67,64 @@ namespace bjeb
 						
 			_window.views.add(new Button("X") { area = new Area(_window.area.width.Value - 20, 5, 20, 20) });
 
-			vesselInfo = new Label();
+			_switches.Clear();
 
-			content.views.add(new Toggle("Sample module", false));
-			content.views.add(vesselInfo);
+			foreach(var module in modules)
+			{
+				_switches.Add(module, new ModuleSwitch(content, module));
+
+				module.hide();
+			}
 
 			_window.views.add(content);
 			_window.views.add(new Layout());
+
+			foreach(var module in modules)
+			{
+				module.setup(screen);
+			}
+		}
+
+		private class ModuleSwitch
+		{
+			private Toggle _toggle;
+
+			public ModuleSwitch(Layout layout, Module module)
+			{
+				_toggle = new Toggle(module.name, false);
+
+				_toggle.onSwitch = (m => 
+						{
+							if(m.toggled)
+								module.show();
+							else
+								module.hide();
+						});
+
+				layout.views.add(_toggle);
+			}
+
+			public void show()
+			{
+				_toggle.toggled = true;
+			}
+
+			public void hide()
+			{
+				_toggle.toggled = false;
+			}
+		}
+
+        private Dictionary<Module, ModuleSwitch> _switches;
+
+		public void show(Module module)
+		{
+			_switches[module].show();
+		}
+
+		public void hide(Module module)
+		{
+			_switches[module].hide();
 		}
 
 		public IEnumerable<Window> windows
@@ -76,16 +134,20 @@ namespace bjeb
 				List<Window> ret = new List<Window>();
 				ret.Add(_window);
 
+				foreach(var module in modules)
+				{
+					if(module.isShowing)
+						ret.Add(module.window);
+				}
+
 				return ret;
 			}
 		}
 
 		public void onUpdate(Vessel vessel)
 		{
-			vesselInfo.text = 
-				"Mass: " + vessel.body.mass.ToString("F2") + " " +
-				"Angular momentum: " + vessel.body.angularMomentum.ToString() + " " +
-				"Momentum of inertia: " + vessel.body.momentumOfInertia.ToString();
+			foreach(var module in modules)
+				module.update(vessel);
 		}
 	}
 }

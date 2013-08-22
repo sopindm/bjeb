@@ -23,6 +23,7 @@ namespace bjeb.gui
 		HorizontalSliderThumb,
 		Label,
 		Textbox,
+		TextArea,
 		Toggle,
 		VerticalSlider,
 		VerticalSliderThumb,
@@ -81,6 +82,8 @@ namespace bjeb.gui
 				return uskin.label;
 			case Style.Textbox:
 				return uskin.textField;
+			case Style.TextArea:
+				return uskin.textArea;
 			case Style.Toggle:
 				return uskin.toggle;
 			case Style.VerticalSlider:
