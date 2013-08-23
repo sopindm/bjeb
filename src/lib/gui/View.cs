@@ -14,6 +14,12 @@ namespace bjeb.gui
 			set;
 		}
 
+		public Font font
+		{
+			get;
+			set;
+		}
+
 		public Style style
 		{
 			get;
@@ -58,7 +64,15 @@ namespace bjeb.gui
 			if(style == Style.Default)
 				style = defaultStyle;
 
-			return AssetBase.unityStyle(style, skin);
+			UnityEngine.GUIStyle ustyle = AssetBase.unityStyle(style, skin);
+
+			if(!font.isDefault)
+			{
+				ustyle = new UnityEngine.GUIStyle(ustyle);
+				font.apply(ustyle);
+			}
+
+			return ustyle;
 		}
 #endif		
 
@@ -89,6 +103,7 @@ namespace bjeb.gui
 			isShowing = true;
 			skin = Skin.Default;
 			style = Style.Default;
+			font = new Font();
 			area = new Area();
 		}
 
@@ -99,6 +114,9 @@ namespace bjeb.gui
 			serializeStyle(style, "style", node);
 
 			node.attribute("isShowing").set(isShowing);
+
+			if(!font.isDefault)
+				font.serialize(node);
 
 			area.serialize(node);
 		}
@@ -112,6 +130,9 @@ namespace bjeb.gui
 			style = deserializeStyle("style", node);
 
 			isShowing = node.attribute("isShowing").getBool();
+
+			if(node.node("font") != null)
+				font.deserialize(node.node("font"));
 
 			area.deserialize(node);
 		}

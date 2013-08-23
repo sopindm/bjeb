@@ -73,7 +73,7 @@ namespace bjeb
 			{
 				_switches.Add(module, new ModuleSwitch(content, module));
 
-				module.hide();
+				module.show();
 			}
 
 			_window.views.add(content);

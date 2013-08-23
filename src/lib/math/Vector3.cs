@@ -265,7 +265,7 @@ namespace bjeb.math
 
 		public override string ToString()
 		{
-			return "(x: " + x.ToString("F2") + " y: " + y.ToString("F2") + " z: " + z.ToString("F2") + ")";
+			return "(" + x.ToString("F2") + ", " + y.ToString("F2") + ", " + z.ToString("F2") + ")";
 		}
 
 		public void serialize(string name, XmlNode node)
