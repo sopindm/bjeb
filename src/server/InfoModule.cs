@@ -56,7 +56,7 @@ namespace bjeb
 
 		override protected void onSetup(Screen screen)
 		{
-			window.area.set(0, 0, 300, 200);
+			window.area.set(1100, 200, 300, 200);
 			content.views.clear();
 
 			_stats.Clear();
