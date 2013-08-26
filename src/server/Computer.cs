@@ -21,7 +21,7 @@ namespace bjeb
 		private List<Module> modules;
 
 		public Computer()
-		{										
+		{			
 			modules = new List<Module>();
 
 			modules.Add(new InfoModule(this));

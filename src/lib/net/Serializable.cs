@@ -7,127 +7,120 @@ namespace bjeb.net
     class SerializationException: Exception
     {
         private string _error
-        {
-            get;
-            set;
-        }
+	{
+	    get;
+	    set;
+	}
 
         public SerializationException(string error)
-        {
-            _error = error;
-        }
+	{
+	    _error = error;
+	}
 
         public override string ToString()
-        {
-            return "Serialization exception: " + _error;
-        }
+	{
+	    return "Serialization exception: " + _error;
+	}
     }
 
     [AttributeUsage(AttributeTargets.Class,AllowMultiple=false,Inherited=false)]
-    public class XmlSerializableAttribute: Attribute
+    public class SerializableAttribute: Attribute
     {
-        public string nodeName
-        {
-            get;
-            private set;
-        }
+        public UInt16 tag
+	{
+	    get;
+	    private set;
+	}
 
-        public XmlSerializableAttribute(string nodeName)
-        {
-            this.nodeName = nodeName;
-        }
+        public SerializableAttribute(UInt16 tag)
+	{
+	    this.tag = tag;
+	}
     }
 
-	public abstract class Serializable
+    public abstract class Serializable
+    {
+        private static SerializableAttribute serializableAttribute(Type t)
 	{
-        private static XmlSerializableAttribute serializableAttribute(Type t)
-        {
-            return (XmlSerializableAttribute)Attribute.GetCustomAttribute(t, typeof(XmlSerializableAttribute));
-        }
+	    return (SerializableAttribute)Attribute.GetCustomAttribute(t, typeof(SerializableAttribute));
+	}
 
         private static bool isSerializable(Type t)
-        {
-            return serializableAttribute(t) != null;
-        }
-
-        static SortedDictionary<string, Type> _serializableTypes;
-
-		static Serializable()
-		{
-            List<Type> serializableTypes = (from ass in AppDomain.CurrentDomain.GetAssemblies() from t in ass.GetTypes() where isSerializable(t) select t).ToList();
-
-            _serializableTypes = new SortedDictionary<string, Type>();
-
-            foreach (Type t in serializableTypes)
-				_serializableTypes.Add(serializableAttribute(t).nodeName, t);
-        }
-
-		virtual public Serializable state() { return null; }
-
-        private string nodeName()
-        {
-            Type type = this.GetType();
-
-            XmlSerializableAttribute attribute = (XmlSerializableAttribute)Attribute.GetCustomAttribute(
-                type,
-                typeof(XmlSerializableAttribute)
-            );
-
-            if (attribute == null)
-                throw new SerializationException(type.Name + " is not serializable to xml");
-
-            return attribute.nodeName;
-        }
-
-		public XmlNode serialize(XmlNode parent)
-        {
-            XmlNode node = new XmlNode(nodeName(), parent);
-            doSerialize(node);
-
-            return node;
-        }
-
-		public XmlNode serializeState(XmlNode parent)
-		{
-            XmlNode node = new XmlNode(nodeName(), parent);
-            doSerializeState(node);
-
-            return node;
-		}
-
-        public static Serializable create(XmlNode node)
-        {
-            Type t = _serializableTypes[node.name];
-
-            if (t == null)
-                throw new SerializationException("No serializable type " + node.name);
-
-            Serializable ret = (Serializable)Activator.CreateInstance(t);
-            ret.deserialize(node);
-
-            return ret;
-        }
-
-		public void deserialize(XmlNode node)
-        {
-            if (nodeName() != node.name)
-                throw new SerializationException("Tried to deserialize from node with wrong name");
-
-            doDeserialize(node);
-        }
-
-		public void deserializeState(XmlNode node)
-        {
-            if (nodeName() != node.name)
-                throw new SerializationException("Tried to deserialize from node with wrong name");
-
-            doDeserializeState(node);
-        }
-
-        abstract protected void doSerialize(XmlNode node);
-        abstract protected void doDeserialize(XmlNode node);
-
-        virtual protected void doSerializeState(XmlNode node) {}
-        virtual protected void doDeserializeState(XmlNode node) {}
+	{
+	    return serializableAttribute(t) != null;
 	}
+
+        static SortedDictionary<UInt16, Type> _serializableTypes;
+
+	static Serializable()
+	{
+	    List<Type> serializableTypes = (from ass in AppDomain.CurrentDomain.GetAssemblies() from t in ass.GetTypes() where isSerializable(t) select t).ToList();
+
+	    _serializableTypes = new SortedDictionary<UInt16, Type>();
+
+	    foreach (Type t in serializableTypes)
+	    {
+		if(_serializableTypes.ContainsKey(serializableAttribute(t).tag))
+		    throw new SerializationException("Cannot define type " + t.ToString() + " with tag " + serializableAttribute(t).tag.ToString() + ". It's already defined.");
+
+		_serializableTypes.Add(serializableAttribute(t).tag, t);
+	    }
+	}
+
+        protected UInt16 tag()
+	{
+	    Type type = this.GetType();
+
+	    SerializableAttribute attribute = (SerializableAttribute)Attribute.GetCustomAttribute(GetType(), typeof(SerializableAttribute));
+
+	    if (attribute == null)
+		throw new SerializationException(type.Name + " is not serializable");
+
+	    return attribute.tag;
+	}
+
+	public void serialize(Stream stream)
+	{
+	    stream.writeTag(tag(), true);
+	    doSerialize(stream);
+	    stream.writeTag(tag(), false);
+	}
+
+	virtual public void serializeState(Stream stream) {}
+
+        public static Serializable create(Stream stream)
+	{
+	    var tag = stream.readTag(true);
+	    Type t = _serializableTypes[tag];
+
+	    if (t == null)
+		throw new SerializationException("No serializable type with tag " + tag.ToString());
+
+	    Serializable ret = (Serializable)Activator.CreateInstance(t);
+	    ret.deserialize(stream, tag);
+
+	    return ret;
+	}
+
+	public void deserialize(Stream stream)
+	{
+	    deserialize(stream, stream.readTag(true));
+	}
+
+	private void deserialize(Stream stream, UInt16 tag)
+	{
+	    if (this.tag() != tag)
+		throw new SerializationException("Tried to deserialize from node with wrong tag");
+
+	    doDeserialize(stream);
+
+	    if(stream.readTag(false) != tag)
+		throw new SerializationException("Wrong closing tag");
+	}
+
+	virtual public void deserializeState(Stream stream) {}
+
+        abstract protected void doSerialize(Stream node);
+        abstract protected void doDeserialize(Stream node);
+    }
 }

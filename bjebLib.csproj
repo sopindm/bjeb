@@ -32,7 +32,15 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="src\lib\net\Connection.cs" />
+    <Compile Include="src\lib\net\Serializable.cs" />
+    <Compile Include="src\lib\net\Server.cs" />
+    <Compile Include="src\lib\net\Xml.cs" />
+    <Compile Include="src\lib\net\Stream.cs" />
+    <Compile Include="src\lib\net\Client.cs" />
+    <Compile Include="src\lib\net\Protocol.cs" />
     <Compile Include="src\lib\gui\Screen.cs" />
+<!--
     <Compile Include="src\lib\gui\Window.cs" />
     <Compile Include="src\lib\gui\Area.cs" />
     <Compile Include="src\lib\gui\View.cs" />
@@ -45,17 +53,11 @@
     <Compile Include="src\lib\gui\Slider.cs" />
     <Compile Include="src\lib\gui\Layout.cs" />
     <Compile Include="src\lib\gui\Toggle.cs" />
-    <Compile Include="src\lib\net\Connection.cs" />
-    <Compile Include="src\lib\net\Serializable.cs" />
-    <Compile Include="src\lib\net\Server.cs" />
-    <Compile Include="src\lib\net\Xml.cs" />
-    <Compile Include="src\lib\net\Stream.cs" />
-    <Compile Include="src\lib\net\Client.cs" />
-    <Compile Include="src\lib\net\Protocol.cs" />
     <Compile Include="src\lib\math\Vector3.cs" />
     <Compile Include="src\lib\math\Quaternion.cs" />
     <Compile Include="src\lib\game\CelestialBody.cs" />
     <Compile Include="src\lib\game\Vessel.cs" />
+    -->
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using bjeb.net;
 using bjeb.gui;
-using bjeb.game;
+//using bjeb.game;
 
 namespace bjeb.test
 {
@@ -10,14 +10,13 @@ namespace bjeb.test
     {
 	public void setup(Connection connection)
 	{
-	    //Protocol.requestSetup(connection, 1000, 500);
+	    Protocol.requestSetup(connection, 1000, 500);
 	    System.Console.WriteLine("Set up");
 	}
 
 	public void update(Connection connection)
 	{
-	    connection.stream.writeTag(412, true);
-	    Console.WriteLine("Read: " + connection.stream.readFloat().ToString());
+	    Protocol.requestSetup(connection, 1000, 500);
 
 	    /*
 	    System.Console.WriteLine("Updating");

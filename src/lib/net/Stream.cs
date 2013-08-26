@@ -167,7 +167,7 @@ namespace bjeb
 	    private string _readString(int tag)
 	    {
 		if(tag != 5)
-		    throw new System.ArgumentException("Invalid string tag");
+		    throw new System.ArgumentException("Invalid string tag " + tag.ToString());
 
 		return _reader.ReadString();
 	    }
