@@ -29,15 +29,10 @@ namespace bjeb.test
 
             Console.WriteLine("Window ID: " + window.id + " X: " + window.area.x + "Y: " + window.area.y + " Width: " + window.area.width + " Height: " + window.area.height);
 
-/*
-	    Protocol.requestGuiUpdate(windows, connection);
 	    Protocol.requestWindowUpdate(window, connection);
+	    Protocol.requestGuiUpdate(windows, connection);
 
-	    Xml tmp = new net.Xml("msg");
-	    window.views.serialize(tmp.root);
-
-	    Console.WriteLine("Views: " + tmp.toString());
-
+/*
 	    Vessel vessel = new Vessel();
 
 	    Protocol.requestUpdate(vessel, connection);*/

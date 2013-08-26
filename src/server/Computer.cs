@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using bjeb.net;
 using bjeb.gui;
-using bjeb.game;
+//using bjeb.game;
 
 namespace bjeb
 {
@@ -24,9 +24,9 @@ namespace bjeb
 		{			
 			modules = new List<Module>();
 
-			modules.Add(new InfoModule(this));
+			//modules.Add(new InfoModule(this));
 
-			_switches = new Dictionary<Module, ModuleSwitch>();
+			//_switches = new Dictionary<Module, ModuleSwitch>();
 		}
 
 		public void onSetup(Screen screen)
@@ -40,6 +40,7 @@ namespace bjeb
 
 			_window.views.clear();
 
+/*
 			_window.views.add(new Button("D") { area = new Area(_window.area.width.Value - 60, 5, 20, 20),
 						onClick = ((b, m) => {
 								if(_window.draggable)
@@ -82,9 +83,10 @@ namespace bjeb
 			foreach(var module in modules)
 			{
 				module.setup(screen);
-			}
+			}*/
 		}
 
+/*
 		private class ModuleSwitch
 		{
 			private Toggle _toggle;
@@ -114,20 +116,21 @@ namespace bjeb
 				_toggle.toggled = false;
 			}
 		}
+		*/
 
-        private Dictionary<Module, ModuleSwitch> _switches;
+	    //private Dictionary<Module, ModuleSwitch> _switches;
 
 		public void show(Module module)
 		{
-			_switches[module].show();
+		    //_switches[module].show();
 		}
 
 		public void hide(Module module)
 		{
-			_switches[module].hide();
+		    //_switches[module].hide();
 		}
 
-		public IEnumerable<Window> windows
+		public List<Window> windows
 		{
 			get
 			{
@@ -144,11 +147,12 @@ namespace bjeb
 			}
 		}
 
+/*
 		public void onUpdate(Vessel vessel)
 		{
 			foreach(var module in modules)
 				module.update(vessel);
-		}
+		}*/
 	}
 }
 

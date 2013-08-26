@@ -6,60 +6,17 @@ using bjeb.net;
 
 namespace bjeb.server
 {
-    class TestServer: IServer
-    {
-	List<gui.Window> _windows;
-
-	public TestServer()
-	{
-	    _windows = new List<gui.Window>();
-
-	    _windows.Add(new gui.Window());
-
-	    _windows[0].area.set(100, 100, 200, 200);
-	}
-
-	public void onSetup(gui.Screen screen)
-	{
-	    Console.WriteLine("Set up with screen width: " + screen.width + " height: " + screen.height);
-	}
-
-	public List<gui.Window> windows
-	{
-	    get
-	    {
-		return _windows;
-	    }
-	}
-    }
-
     class MainClass
     {
 	private static void handleConnection(Connection connection)
 	{
-	    TestServer server = new TestServer();
-
-//			Computer computer = new Computer();
+	    Computer computer = new Computer();
 
 	    try
 	    {
 		while(true)
 		{
-		    Protocol.handle(connection, server);
-
-		    /*
-		      Xml request = Xml.read(connection);
-			
-		      Console.WriteLine("Request: " + request.toString());
-
-		      Xml response = Protocol.handle(request, computer);
-
-		      if(response != null)
-		      {
-		      Console.WriteLine("Response: " + response.toString());
-		      Console.WriteLine();
-		      response.write(connection);
-		      }*/
+		    Protocol.handle(connection, computer);
 		}
 	    }
 	    catch(ConnectionException)

@@ -33,10 +33,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="src\server\Main.cs" />
-<!--
     <Compile Include="src\server\AssemblyInfo.cs" />
     <Compile Include="src\server\Computer.cs" />
     <Compile Include="src\server\Module.cs" />
+<!--
     <Compile Include="src\server\InfoModule.cs" />
     -->
   </ItemGroup>

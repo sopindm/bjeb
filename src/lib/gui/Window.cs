@@ -99,7 +99,7 @@ namespace bjeb.gui
 	    stream.write(id);
 	    stream.write(title);
 
-	    doSerializeState(stream);
+	    area.serialize(stream);
 
 	    stream.write(draggable);
 
@@ -108,7 +108,6 @@ namespace bjeb.gui
 
 	override protected void doSerializeState(Stream stream)
 	{
-	    stream.write(id);
 	    area.serialize(stream);
 	}
 
@@ -119,7 +118,7 @@ namespace bjeb.gui
 	    id= stream.readInt();
 	    title = stream.readString();
 
-	    doDeserializeState(stream);
+	    area.deserialize(stream);
 
 	    draggable = stream.readBool();
 
@@ -128,7 +127,6 @@ namespace bjeb.gui
 
 	override protected void doDeserializeState(Stream stream)
 	{
-	    stream.readInt();
 	    area.deserialize(stream);
 	}
     }

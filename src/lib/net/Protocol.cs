@@ -42,34 +42,32 @@ namespace bjeb.net
 		    Window newWindow = new Window();
 		    newWindow.deserialize(connection.stream);
 
-		    //newWindow.onDrawFinished = (w => requestWindowUpdate(w, connection));
+		    newWindow.onDrawFinished = (w => requestWindowUpdate(w, connection));
 
 		    windows.Add(newWindow);
 		}
 
 		return windows;
 	    }
-/*
-	    public static void requestGuiUpdate(IEnumerable<Window> windows, Connection connection)
-		{
-		    Xml request = Xml.createMessage("guiUpdate");
 
-		    foreach(var window in windows)
-			window.serializeState(request.root);
+	    public static void requestGuiUpdate(List<Window> windows, Connection connection)
+	    {
+		connection.stream.write("guiUpdate");
+		connection.stream.write(windows.Count);
 
-		    request.tryWrite(connection);
-		}
+		foreach(var window in windows)
+		    window.serializeState(connection.stream);
+	    }
 
 	    public static void requestWindowUpdate(Window window, Connection connection)
-		{
-		    Xml request = Xml.createMessage("guiWindowUpdate");
+	    {
+		connection.stream.write("guiWindowUpdate");
 
-		    request.root.attribute("id").set(window.id);
-		    window.views.serializeState(request.root);
+		connection.stream.write(window.id);
+		window.views.serializeState(connection.stream);
+	    }
 
-		    request.tryWrite(connection);
-		}
-
+/*
 	    public static void requestUpdate(game.Vessel vessel, Connection connection)
 		{
 		    Xml request = Xml.createMessage("update");
@@ -87,12 +85,13 @@ namespace bjeb.net
 		case "gui":
 		    handleGui(connection, server);
 		    break;
-/*
-		case "guiUpdate":
-		    return handleGuiUpdate(request, server);
 		case "guiWindowUpdate":
-		    return handleWindowUpdate(request, server);
-		case "update":
+		    handleWindowUpdate(connection, server);
+		    break;
+		case "guiUpdate":
+		    handleGuiUpdate(connection, server);
+		    break;
+/*		case "update":
 		    return handleUpdate(request, server);*/
 		}
 	    }
@@ -115,41 +114,39 @@ namespace bjeb.net
 		    window.serialize(connection.stream);
 	    }
 
+	    private static Xml handleGuiUpdate(Connection connection, IServer server)
+	    {
+		int nodes = connection.stream.readInt();
+		var windows = server.windows;
+
+		var windowIterator = windows.GetEnumerator();
+
+		int i =0;
+		while(i < nodes && windowIterator.MoveNext())
+		{
+		    windowIterator.Current.deserializeState(connection.stream);
+		    i++;
+		}
+
+		return null;
+	    }
+
+	    private static void handleWindowUpdate(Connection connection, IServer server)
+	    {
+		int id = connection.stream.readInt();
+
+		foreach(var window in server.windows)
+		{
+		    if(window.id != id)
+			continue;
+
+		    window.views.deserializeState(connection.stream);
+		    return;
+		}
+
+		throw new System.ArgumentException();
+	    }
 /*
-	    private static Xml handleGuiUpdate(Xml request, IServer server)
-
-		{
-		    var nodes = request.root.nodes("window");
-		    var windows = server.windows;
-
-		    var nodeIterator = nodes.GetEnumerator();
-		    var windowIterator = windows.GetEnumerator();
-
-		    while(nodeIterator.MoveNext() && windowIterator.MoveNext())
-		    {
-			if(windowIterator.Current.id != nodeIterator.Current.attribute("id").getInt())
-			    throw new System.ArgumentException();
-
-			windowIterator.Current.deserializeState(nodeIterator.Current);
-		    }
-
-		    return null;
-		}
-
-	    private static Xml handleWindowUpdate(Xml request, IServer server)
-		{
-		    foreach(var window in server.windows)
-		    {
-			if(window.id != request.root.attribute("id").getInt())
-			    continue;
-
-			window.views.deserializeState(request.root);
-			return null;
-		    }
-
-		    throw new System.ArgumentException();
-		}
-
 	    private static Xml handleUpdate(Xml request, IServer server)
 		{
 		    var vessel = new game.Vessel();
