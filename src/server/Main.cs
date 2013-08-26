@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using bjeb.net;
 
 namespace bjeb.server
@@ -7,12 +8,16 @@ namespace bjeb.server
     {
 		private static void handleConnection(Connection connection)
 		{
-			Computer computer = new Computer();
+//			Computer computer = new Computer();
 
 			try
 			{
 				while(true)
 				{
+				    Console.WriteLine("Read: " + connection.stream.readTag(true).ToString());
+				    connection.stream.write(1.23F);
+
+					/*
 					Xml request = Xml.read(connection);
 			
 					Console.WriteLine("Request: " + request.toString());
@@ -24,15 +29,18 @@ namespace bjeb.server
 						Console.WriteLine("Response: " + response.toString());
 						Console.WriteLine();
 						response.write(connection);
-					}
+					}*/
 				}
 			}
 			catch(ConnectionException)
 			{
 			}
-			finally
+			catch(System.IO.IOException)
 			{
-				connection.close();
+			}
+			finally
+			{	
+			connection.close();
 			}
 		}
 

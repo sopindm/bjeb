@@ -45,7 +45,7 @@ namespace bjeb
 
 			public void write(Connection connection)
 			{
-				connection.write(toString());
+				connection.stream.write(toString());
 			}
 
 			public bool tryWrite(Connection connection)
@@ -64,7 +64,7 @@ namespace bjeb
 			public static Xml read(Connection connection)
 			{
 				System.Xml.XmlDocument document = new System.Xml.XmlDocument();
-				document.LoadXml(connection.read());
+				document.LoadXml(connection.stream.readString());
 
 				return new Xml(document);
 			}

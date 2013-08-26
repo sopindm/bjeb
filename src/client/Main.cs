@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using bjeb.net;
 using bjeb.gui;
 
@@ -8,6 +9,10 @@ namespace bjeb.test
     {
 	public static void update(Connection connection)
         {
+	    connection.stream.writeTag(412, true);
+	    Console.WriteLine("Read: " + connection.stream.readFloat().ToString());
+
+	    /*
             Screen screen = new Screen();
 
             screen.width = 1000;
@@ -40,25 +45,25 @@ namespace bjeb.test
 			request.root.attribute("id").set(window.id);
 			window.button.serializeState(request.root);
 
-			request.write(connection);
-		}
+			request.write(connection);*/
+	}
 
         public static void Main(string[] args)
         {
-			Client client = new Client("127.0.0.1", 4400);
+	    Client client = new Client("127.0.0.1", 4400);
 
             while (true)
             {
                 if(!client.execute(() => 
-						{
-							update(client.connection);
-							System.Threading.Thread.Sleep(1000);
-						}))
-				{
-					Console.WriteLine("No connection");
-					System.Threading.Thread.Sleep(1000);
-				}
-			}
+		    {
+		        update(client.connection);
+			System.Threading.Thread.Sleep(1000);
+		    }))
+		{
+		    Console.WriteLine("No connection");
+		    System.Threading.Thread.Sleep(1000);
 		}
+	    }
+	}
     }
 }

@@ -41,6 +41,7 @@
     <Compile Include="src\lib\net\Serializable.cs" />
     <Compile Include="src\lib\net\Server.cs" />
     <Compile Include="src\lib\net\Xml.cs" />
+    <Compile Include="src\lib\net\Stream.cs" />
     <Compile Include="src\lib\net\Client.cs" />
   </ItemGroup>
   <ItemGroup>
