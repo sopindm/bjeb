@@ -6,7 +6,7 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
-	[XmlSerializable("label")]
+	[Serializable(9)]
 	public class Label: LayoutView
 	{
 		public string text
@@ -47,24 +47,16 @@ namespace bjeb.gui
 #endif
 		}
 
-		override protected void doSerialize(XmlNode node)
+		override protected void doSerialize(Stream stream)
 		{
-			base.doSerialize(node);
-			node.attribute("text").set(text);
+			base.doSerialize(stream);
+			stream.write(text);
 		}
 
-		override protected void doSerializeState(XmlNode node)
+		override protected void doDeserialize(Stream stream)
 		{
-		}
-
-		override protected void doDeserialize(XmlNode node)
-        {
-			base.doDeserialize(node);
-			text = node.attribute("text").getString();
-		}
-
-		override protected void doDeserializeState(XmlNode node)
-		{
+			base.doDeserialize(stream);
+			text = stream.readString();
 		}
 	}
 }

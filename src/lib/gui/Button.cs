@@ -26,21 +26,23 @@ namespace bjeb.gui
 			return (ButtonState)System.Enum.Parse(typeof(ButtonState),str);
 		}
 
-		private void serializeState(XmlNode node, string button, ButtonState state)
+		private void serializeState(Stream stream, ButtonState state)
 		{
 			if(state == ButtonState.NONE)
-				return;
-
-			node.attribute(button).set(stateString(state));
+			    stream.writeNull();
+			else
+			    stream.write(stateString(state));
 		}
 
-		private ButtonState deserializeState(XmlNode node, string button)
-		{
-			if(!node.attribute(button).isSet())
-				return ButtonState.NONE;
+	    private ButtonState deserializeState(Stream stream)
+	    {
+		string stateString = stream.tryReadString();
 
-			return fromString(node.attribute(button).getString());
-		}
+		if(stateString == null)
+		    return ButtonState.NONE;
+
+		return fromString(stateString);
+	    }
 
 		private ButtonState _leftState = ButtonState.NONE;
 		private ButtonState _middleState = ButtonState.NONE;
@@ -69,19 +71,19 @@ namespace bjeb.gui
 		}
 #endif
 
-		public void serialize(XmlNode node)
+		public void serialize(Stream stream)
 		{
-			serializeState(node, "left", _leftState);
-			serializeState(node, "right", _rightState);
-			serializeState(node, "middle", _middleState);
+		    serializeState(stream, _leftState);
+		    serializeState(stream, _rightState);
+		    serializeState(stream, _middleState);
 		}
 
-		public void deserialize(XmlNode node)
-		{
-			_leftState = deserializeState(node, "left");
-			_rightState = deserializeState(node, "right");
-			_middleState = deserializeState(node, "middle");
-		}
+	    public void deserialize(Stream stream)
+	    {
+		_leftState = deserializeState(stream);
+		_rightState = deserializeState(stream);
+		_middleState = deserializeState(stream);
+	    }
 
 		public bool leftButtonDown
 		{
@@ -158,7 +160,7 @@ namespace bjeb.gui
 
 
 
-	[XmlSerializable("button")]
+	[Serializable(6)]
 	public class Button: LayoutView
 	{
 		public Button()
@@ -212,31 +214,31 @@ namespace bjeb.gui
 #endif
 		}
 
-		override protected void doSerialize(XmlNode node)
+		override protected void doSerialize(Stream stream)
 		{
-			base.doSerialize(node);
-
-			node.attribute("text").set(text);
+			base.doSerialize(stream);
+			stream.write(text);
 		}
 
-		override protected void doSerializeState(XmlNode node)
+		override protected void doSerializeState(Stream stream)
 		{
-			node.attribute("clicked").set(_clicked);
-			_state.serialize(node);
+		    _state.serialize(stream);
+		    stream.write(_clicked);
 		}
 
-		override protected void doDeserialize(XmlNode node)
-        {
-			base.doDeserialize(node);
-
-			text = node.attribute("text").getString();
-		}
-
-		override protected void doDeserializeState(XmlNode node)
+		override protected void doDeserialize(Stream stream)
 		{
-			_state.deserialize(node);
-			if(node.attribute("clicked").getBool() && onClick != null)
-				onClick(this, _state);
+			base.doDeserialize(stream);
+
+			text = stream.readString();
 		}
+
+	    override protected void doDeserializeState(Stream stream)
+	    {
+		_state.deserialize(stream);
+
+		if(stream.readBool() && onClick != null)
+		    onClick(this, _state);
+	    }
 	}
 }

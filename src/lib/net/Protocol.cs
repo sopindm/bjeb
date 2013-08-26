@@ -13,7 +13,7 @@ namespace bjeb.net
 		get;
 	    }
 
-//	    void onUpdate(game.Vessel vessel);
+	    void onUpdate(game.Vessel vessel);
 	}
 
 	public class Protocol
@@ -67,13 +67,12 @@ namespace bjeb.net
 		window.views.serializeState(connection.stream);
 	    }
 
-/*
 	    public static void requestUpdate(game.Vessel vessel, Connection connection)
-		{
-		    Xml request = Xml.createMessage("update");
-		    vessel.serialize(request.root);
-		    request.tryWrite(connection);
-		}*/
+	    {
+		connection.stream.write("update");
+
+		vessel.serialize(connection.stream);
+	    }
 		
 	    public static void handle(Connection connection, IServer server)
 	    {
@@ -91,8 +90,9 @@ namespace bjeb.net
 		case "guiUpdate":
 		    handleGuiUpdate(connection, server);
 		    break;
-/*		case "update":
-		    return handleUpdate(request, server);*/
+		case "update":
+		    handleUpdate(connection, server);
+		    break;
 		}
 	    }
 
@@ -146,15 +146,13 @@ namespace bjeb.net
 
 		throw new System.ArgumentException();
 	    }
-/*
-	    private static Xml handleUpdate(Xml request, IServer server)
-		{
-		    var vessel = new game.Vessel();
-		    vessel.deserialize(request.root.node("vessel"));
 
-		    server.onUpdate(vessel);
-			
-		    return null;
-		}*/
+	    private static void handleUpdate(Connection connection, IServer server)
+	    {
+		var vessel = new game.Vessel();
+		vessel.deserialize(connection.stream);
+
+		server.onUpdate(vessel);
+	    }
 	}
 }

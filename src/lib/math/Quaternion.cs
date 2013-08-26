@@ -2,7 +2,8 @@ using System;
 
 namespace bjeb.math
 {
-	public class Quaternion
+        [net.Serializable(15)]
+        public class Quaternion: net.Serializable
 	{
 		public double w
 		{
@@ -156,21 +157,16 @@ namespace bjeb.math
 			return _look(look1 * Vector3.up, upward) * look1;
 		}
 
-		public void serialize(string name, net.XmlNode node)
+	        override protected void doSerialize(net.Stream stream)
 		{
-			net.XmlNode child = node.node(name);
-
-			if(child == null)
-				child = new net.XmlNode(name, node);
-
-			child.attribute("w").set(w);
-			v.serialize(name, node);
+		    stream.write(w);
+		    v.serialize(stream);
 		}
 
-		public void deserialize(string name, net.XmlNode node)
+	        override protected void doDeserialize(net.Stream stream)
 		{
-			w = node.node(name).attribute("w").getDouble();
-			v.deserialize(name, node);
+		    w = stream.readDouble();
+		    v.deserialize(stream);
 		}
 
 		public static Quaternion makePitch(double angle)

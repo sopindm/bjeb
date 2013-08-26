@@ -107,7 +107,7 @@ namespace bjeb
 	    private bool _readBool(byte tag)
 	    {
 		if(tag != 1)
-		    throw new System.ArgumentException("Invalid boolean tag");
+		    throw new System.ArgumentException("Invalid boolean tag " + tag.ToString());
 
 		return _reader.ReadBoolean();
 	    }

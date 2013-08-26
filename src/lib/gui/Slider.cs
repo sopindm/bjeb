@@ -6,7 +6,7 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
-	[XmlSerializable("slider")]
+	[Serializable(11)]
 	public class Slider: LayoutView
 	{
 		public float minValue
@@ -131,48 +131,52 @@ namespace bjeb.gui
 #endif
 		}
 
-		override protected void doSerialize(XmlNode node)
+		override protected void doSerialize(Stream stream)
 		{
-			base.doSerialize(node);
+			base.doSerialize(stream);
 
-			node.attribute("minValue").set(minValue);
-			node.attribute("maxValue").set(maxValue);
-			node.attribute("value").set(value);
-			node.attribute("isHorizontal").set(isHorizontal);
+			stream.write(minValue);
+			stream.write(maxValue);
+			stream.write(value);
+			stream.write(isHorizontal);
 
-			serializeStyle(thumbStyle, "thumbStyle", node);
+			serializeStyle(thumbStyle, stream);
 		}
 
-		override protected void doSerializeState(XmlNode node)
+		override protected void doSerializeState(Stream stream)
 		{
 			if(_isUpdated)
 			{
 				_isUpdated = false;
-				node.attribute("value").set(value);
+				stream.write(value);
 			}
+			else
+			    stream.writeNull();
 		}
 
-		override protected void doDeserialize(XmlNode node)
-        {
-			base.doDeserialize(node);
-
-			minValue = node.attribute("minValue").getFloat();
-			maxValue = node.attribute("maxValue").getFloat();
-			value = node.attribute("value").getFloat();
-			isHorizontal = node.attribute("isHorizontal").getBool();
-
-			thumbStyle = deserializeStyle("thumbStyle", node);
-		}
-
-		override protected void doDeserializeState(XmlNode node)
+		override protected void doDeserialize(Stream stream)
 		{
-			if(!node.attribute("value").isSet())
-				return;
+			base.doDeserialize(stream);
 
-			value = node.attribute("value").getFloat();
+			minValue = stream.readFloat();
+			maxValue = stream.readFloat();
+			value = stream.readFloat();
+			isHorizontal = stream.readBool();
 
-			if(onUpdate != null)
-				onUpdate(this);
+			thumbStyle = deserializeStyle(stream);
+		}
+
+		override protected void doDeserializeState(Stream stream)
+		{
+		    float? data = stream.tryReadFloat();
+
+		    if(data == null)
+			return;
+
+		    value = data.Value;
+
+		    if(onUpdate != null)
+			onUpdate(this);
 		}
 	}
 }

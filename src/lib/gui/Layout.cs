@@ -6,106 +6,106 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
-	[XmlSerializable("layout")]
-	public class Layout: View
+    [Serializable(7)]
+    public class Layout: View
+    {
+	private ViewContainer _views;
+
+	public ViewContainer views
 	{
-		private ViewContainer _views;
-
-		public ViewContainer views
-		{
-			get
-			{
-				return _views;
-			}
-		}
+	    get
+	    {
+		return _views;
+	    }
+	}
 		
-		public bool isVertical
-		{
-			get;
-			set;
-		}
+	public bool isVertical
+	{
+	    get;
+	    set;
+	}
 
-		public Layout()
-		{
-			isVertical = true;
-			_views = new ViewContainer(this);
-		}
+	public Layout()
+	{
+	    isVertical = true;
+	    _views = new ViewContainer(this);
+	}
 
-		override protected Style defaultStyle
-		{
-			get
-			{
-				return Style.Default;
-			}
-		}
+	override protected Style defaultStyle
+	{
+	    get
+	    {
+		return Style.Default;
+	    }
+	}
 
-		public static Layout makeVertical()
-		{
-			return new Layout();
-		}
+	public static Layout makeVertical()
+	{
+	    return new Layout();
+	}
 
-		public static Layout makeHorizontal()
-		{
-			Layout ret = new Layout();
-			ret.isVertical = false;
+	public static Layout makeHorizontal()
+	{
+	    Layout ret = new Layout();
+	    ret.isVertical = false;
 
-			return ret;
-		}
+	    return ret;
+	}
 
-		public override void draw()
-		{
-			if(!isShowing)
-				return;
+	public override void draw()
+	{
+	    if(!isShowing)
+		return;
 
 #if UNITY
-			if(isVertical)
-			{
-				if(style != Style.Default)
-					GUILayout.BeginVertical(unityStyle(), area.layoutOptions());
-				else
-					GUILayout.BeginVertical(area.layoutOptions());
-			}
-			else
-			{
-				if(style != Style.Default)
-					GUILayout.BeginHorizontal(unityStyle(), area.layoutOptions());
-				else
-					GUILayout.BeginHorizontal(area.layoutOptions());
-			}
+	    if(isVertical)
+	    {
+		if(style != Style.Default)
+		    GUILayout.BeginVertical(unityStyle(), area.layoutOptions());
+		else
+		    GUILayout.BeginVertical(area.layoutOptions());
+	    }
+	    else
+	    {
+		if(style != Style.Default)
+		    GUILayout.BeginHorizontal(unityStyle(), area.layoutOptions());
+		else
+		    GUILayout.BeginHorizontal(area.layoutOptions());
+	    }
 
-			views.draw();
+	    views.draw();
 
-			if(isVertical)
-				GUILayout.EndVertical();
-			else
-				GUILayout.EndHorizontal();
+	    if(isVertical)
+		GUILayout.EndVertical();
+	    else
+		GUILayout.EndHorizontal();
 #endif
-		}
-
-		override protected void doSerialize(XmlNode node)
-		{
-			base.doSerialize(node);
-
-			node.attribute("isVertical").set(isVertical);
-			_views.serialize(node);
-		}
-
-		override protected void doSerializeState(XmlNode node)
-		{
-			_views.serializeState(node);
-		}
-
-		override protected void doDeserialize(XmlNode node)
-        {
-			base.doDeserialize(node);
-
-			isVertical = node.attribute("isVertical").getBool();
-			_views.deserialize(node);
-		}
-
-		override protected void doDeserializeState(XmlNode node)
-		{
-			_views.deserializeState(node);
-		}
 	}
+
+	override protected void doSerialize(Stream stream)
+	{
+	    base.doSerialize(stream);
+	    stream.write(isVertical);
+
+	    _views.serialize(stream);
+	}
+
+	override protected void doSerializeState(Stream stream)
+	{
+	    _views.serializeState(stream);
+	}
+
+	override protected void doDeserialize(Stream stream)
+        {
+	    base.doDeserialize(stream);
+
+	    isVertical = stream.readBool();
+	    _views.deserialize(stream);
+	}
+
+	override protected void doDeserializeState(Stream stream)
+	{
+	    _views.deserializeState(stream);
+	}
+    }
 }

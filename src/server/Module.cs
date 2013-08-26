@@ -1,4 +1,4 @@
-//using bjeb.game;
+using bjeb.game;
 using bjeb.gui;
 
 namespace bjeb
@@ -7,13 +7,11 @@ namespace bjeb
 	{
 		private Computer _computer;
 
-/*
 		protected Vessel vessel
 		{
 			get;
 			private set;
 		}
-		*/
 
 		public Window window
 		{
@@ -21,13 +19,11 @@ namespace bjeb
 			private set;
 		}
 
-/*
 		protected Layout content
 		{
 			get;
 			private set;
 		}
-		*/
 
 		public bool isShowing
 		{
@@ -55,7 +51,7 @@ namespace bjeb
 			//this.vessel = vessel;
 
 			window = new Window();
-			//content = Layout.makeVertical();
+			content = Layout.makeVertical();
 
 			isShowing = false;
 		}
@@ -68,7 +64,6 @@ namespace bjeb
 
 			window.views.clear();
 
-/*
 			window.views.add(content);
 			window.views.add(new Layout());
 
@@ -101,17 +96,15 @@ namespace bjeb
 						
 			window.views.add(new Button("X") { area = new Area(window.area.width.Value - 20, 5, 20, 20),
 						onClick= ((b, m) => hide())});
-						*/
 		}
 
 		abstract protected void onSetup(Screen screen);
 
-/*
 		public void update(Vessel vessel)
 		{
 			this.vessel = vessel;
 			onUpdate();
-		}*/
+		}
 
 		abstract protected void onUpdate();
 

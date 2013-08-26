@@ -6,7 +6,7 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
-	[XmlSerializable("toggle")]
+	[Serializable(8)]
 	public class Toggle: LayoutView
 	{
 		public bool toggled
@@ -51,7 +51,6 @@ namespace bjeb.gui
 
 		private bool _updated = false;
 
-
 		override protected void drawLayout()
 		{
 #if UNITY
@@ -78,40 +77,44 @@ namespace bjeb.gui
 #endif
 		}
 
-		override protected void doSerialize(XmlNode node)
+		override protected void doSerialize(Stream stream)
 		{
-			base.doSerialize(node);
+			base.doSerialize(stream);
 
-			node.attribute("text").set(text);
-			node.attribute("toggled").set(toggled);
+			stream.write(text);
+			stream.write(toggled);
 		}
 
-		override protected void doSerializeState(XmlNode node)
+		override protected void doSerializeState(Stream stream)
 		{
 			if(_updated)
 			{
 				_updated = false;
-				node.attribute("toggled").set(toggled);
+				stream.write(toggled);
 			}
+			else
+			    stream.writeNull();
 		}
 
-		override protected void doDeserialize(XmlNode node)
-        {
-			base.doDeserialize(node);
-
-			text = node.attribute("text").getString();
-			toggled = node.attribute("toggled").getBool();
-		}
-
-		override protected void doDeserializeState(XmlNode node)
+		override protected void doDeserialize(Stream stream)
 		{
-			if(node.attribute("toggled").isSet())
-			{
-				toggled = node.attribute("toggled").getBool();
+			base.doDeserialize(stream);
 
-				if(onSwitch != null)
-					onSwitch(this);
-			}
+			text = stream.readString();
+			toggled = stream.readBool();
+		}
+
+		override protected void doDeserializeState(Stream stream)
+		{
+		    bool? state = stream.tryReadBool();
+
+		    if(state != null)
+		    {
+			toggled = state.Value;
+
+			if(onSwitch != null)
+			    onSwitch(this);
+		    }
 		}
 	}
 }
