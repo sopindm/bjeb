@@ -24,7 +24,7 @@ namespace bjeb.gui
 		BoldAndItalic
 	}
 
-	[XmlSerializable("font")]
+	[bjeb.net.Serializable(3)]
 	public class Font: Serializable
 	{
 		public Alignment alignment
@@ -102,55 +102,81 @@ namespace bjeb.gui
 			onActive = null;
 		}
 
-		override protected void doSerialize(XmlNode node)
+		override protected void doSerialize(Stream stream)
 		{
 			if(alignment != Alignment.Default)
-				node.attribute("alignment").set(alignment.ToString());
+			    stream.write(alignment.ToString());
+			else
+			    stream.writeNull();
 
 			if(style != FontStyle.Default)
-				node.attribute("style").set(style.ToString());
+			    stream.write(style.ToString());
+			else
+			    stream.writeNull();
 
 			if(normal != null)
-				normal.serialize("normal", node);
+			    normal.serialize(stream);
+			else
+			    stream.writeNull();
 
 			if(onNormal != null)
-				onNormal.serialize("onNormal", node);
-
+			    onNormal.serialize(stream);
+			else
+			    stream.writeNull();
+			
 			if(hover != null)
-				hover.serialize("hover", node);
+			    hover.serialize(stream);
+			else
+			    stream.writeNull();
 
 			if(onHover != null)
-				onHover.serialize("onHover", node);
-
+			    onHover.serialize(stream);
+			else
+			    stream.writeNull();
+			
 			if(focused != null)
-				focused.serialize("focused", node);
+			    focused.serialize(stream);
+			else
+			    stream.writeNull();
 
 			if(onFocused != null)
-				onFocused.serialize("onFocused", node);
+			    onFocused.serialize(stream);
+			else
+			    stream.writeNull();
 
 			if(active != null)
-				active.serialize("active", node);
+			    active.serialize(stream);
+			else
+			    stream.writeNull();
 
 			if(onActive != null)
-				onActive.serialize("onActive", node);
+			    onActive.serialize(stream);
+			else
+			    stream.writeNull();
 		}
 
-		override protected void doDeserialize(XmlNode node)
+		override protected void doDeserialize(Stream stream)
 		{
-			if(node.attribute("alignment").isSet())
-				alignment = (Alignment)Enum.Parse(typeof(Alignment), node.attribute("alignment").getString());
+		    string alignmentString = stream.tryReadString();
+		    if(alignmentString != null)
+			alignment = (Alignment)Enum.Parse(typeof(Alignment), alignmentString);
+		    else
+			alignment = Alignment.Default;
 			
-			if(node.attribute("style").isSet())
-				style = (FontStyle)Enum.Parse(typeof(FontStyle), node.attribute("style").getString());
-			
-			normal = Color.create("normal", node);
-			onNormal = Color.create("onNormal", node);
-			hover = Color.create("hover", node);
-			onHover = Color.create("onHover", node);
-			focused = Color.create("focused", node);
-			onFocused = Color.create("onFocused", node);
-			active = Color.create("active", node);
-			onActive = Color.create("onActive", node);
+		    string styleString = stream.tryReadString();
+
+		    if(styleString != null)
+			style = (FontStyle)Enum.Parse(typeof(FontStyle), styleString);
+		    else style = FontStyle.Default;
+		    
+		    normal = Color.tryCreate(stream);
+		    onNormal = Color.tryCreate(stream);
+		    hover = Color.tryCreate(stream);
+		    onHover = Color.tryCreate(stream);
+		    focused = Color.tryCreate(stream);
+		    onFocused = Color.tryCreate(stream);
+		    active = Color.tryCreate(stream);
+		    onActive = Color.tryCreate(stream);
 		}
 
 		public bool isDefault

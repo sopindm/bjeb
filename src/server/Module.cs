@@ -48,7 +48,7 @@ namespace bjeb
 		public Module(Computer computer)
 		{
 			_computer = computer;
-			this.vessel = vessel;
+			//this.vessel = vessel;
 
 			window = new Window();
 			content = Layout.makeVertical();

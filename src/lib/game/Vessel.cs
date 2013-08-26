@@ -4,7 +4,7 @@ using bjeb.math;
 
 namespace bjeb.game
 {
-	[XmlSerializable("rigidBody")]
+	[net.Serializable(13)]
 	public class RigidBody: Serializable
 	{
 		public Vector3 centerOfMass
@@ -46,22 +46,22 @@ namespace bjeb.game
 			angularMomentum = Vector3.zero;
 		}
 
-		override protected void doSerialize(XmlNode node)
+		override protected void doSerialize(Stream stream)
 		{
-			centerOfMass.serialize("centerOfMass", node);
-			node.attribute("mass").set(mass);
-			torque.serialize("torque", node);
-			momentumOfInertia.serialize("momentumOfInertia", node);
-			angularMomentum.serialize("angularMomentum", node);
+		    centerOfMass.serialize(stream);
+		    stream.write(mass);
+		    torque.serialize(stream);
+		    momentumOfInertia.serialize(stream);
+		    angularMomentum.serialize(stream);
 		}
 
-		override protected void doDeserialize(XmlNode node)
+		override protected void doDeserialize(Stream stream)
 		{
-			centerOfMass.deserialize("centerOfMass", node);
-			mass = node.attribute("mass").getDouble();
-			torque.deserialize("torque", node);
-			momentumOfInertia.deserialize("momentumOfInertia", node);
-			angularMomentum.deserialize("angularMomentum", node);
+		    centerOfMass.deserialize(stream);
+		    mass = stream.readDouble();
+		    torque.deserialize(stream);
+		    momentumOfInertia.deserialize(stream);
+		    angularMomentum.deserialize(stream);
 		}
 
 #if UNITY
@@ -153,7 +153,7 @@ namespace bjeb.game
 	 orbit
 	 parts*/
 
-	[XmlSerializable("vessel")]
+        [net.Serializable(16)]
 	public class Vessel: Serializable
 	{
 		public RigidBody body
@@ -294,30 +294,30 @@ namespace bjeb.game
 		}
 #endif
 
-		override protected void doSerialize(XmlNode node)
+		override protected void doSerialize(Stream stream)
 		{
-			body.serialize(node);
-			mainBody.serialize(node);
+			body.serialize(stream);
+			mainBody.serialize(stream);
 
-			_rootRotation.serialize("rootRotation", node);
-			_rotatingFrameVelocity.serialize("rotatingFrameVelocity", node);
-			gravity.serialize("gravity", node);
+			_rootRotation.serialize(stream);
+			_rotatingFrameVelocity.serialize(stream);
+			gravity.serialize(stream);
 
-			node.attribute("altitude").set(altitude);
-			node.attribute("atmosphericDensity").set(atmosphericDensity);
+			stream.write(altitude);
+			stream.write(atmosphericDensity);
 		}
 
-		override protected void doDeserialize(XmlNode node)
+		override protected void doDeserialize(Stream stream)
 		{
-			body.deserialize(node.node("rigidBody"));
-			mainBody.deserialize(node.node("celestialBody"));
+		    body.deserialize(stream);
+		    mainBody.deserialize(stream);
 
-			_rootRotation.deserialize("rootRotation", node);
-			_rotatingFrameVelocity.deserialize("rotatingFrameVelocity", node);
-			gravity.deserialize("gravity", node);
+		    _rootRotation.deserialize(stream);
+		    _rotatingFrameVelocity.deserialize(stream);
+		    gravity.deserialize(stream);
 
-			altitude = node.attribute("altitude").getDouble();
-			atmosphericDensity = node.attribute("atmosphericDensity").getDouble();
+		    altitude = stream.readDouble();
+		    atmosphericDensity = stream.readDouble();
 		}
 	}
 }

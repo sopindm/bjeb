@@ -6,7 +6,7 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
-	[XmlSerializable("textbox")]
+        [Serializable(10)]
 	public class Textbox: LayoutView
 	{
 		public string text
@@ -83,40 +83,44 @@ namespace bjeb.gui
 #endif
 		}
 
-		override protected void doSerialize(XmlNode node)
+		override protected void doSerialize(Stream stream)
 		{
-			base.doSerialize(node);
+			base.doSerialize(stream);
 
-			node.attribute("text").set(text);
-			node.attribute("maxLength").set(maxLength);
+			stream.write(text);
+			stream.write(maxLength);
 		}
 
-		override protected void doSerializeState(XmlNode node)
+		override protected void doSerializeState(Stream stream)
 		{
 			if(_isUpdated)
 			{
 				_isUpdated = false;
-				node.attribute("text").set(text);
+				stream.write(text);
 			}
+			else
+			    stream.writeNull();
 		}
 
-		override protected void doDeserialize(XmlNode node)
-        {
-			base.doDeserialize(node);
-
-			text = node.attribute("text").getString();
-			maxLength = node.attribute("maxLength").getInt();
-		}
-
-		override protected void doDeserializeState(XmlNode node)
+		override protected void doDeserialize(Stream stream)
 		{
-			if(!node.attribute("text").isSet())
-				return;
+			base.doDeserialize(stream);
 
-			text = node.attribute("text").getString();
+			text = stream.readString();
+			maxLength = stream.readInt();
+		}
 
-			if(onUpdate != null)
-				onUpdate(this);
+		override protected void doDeserializeState(Stream stream)
+		{
+		    string textString = stream.tryReadString();
+
+		    if(textString == null)
+			return;
+
+		    text = stream.readString();
+
+		    if(onUpdate != null)
+			onUpdate(this);
 		}
 	}
 }

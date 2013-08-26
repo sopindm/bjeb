@@ -6,139 +6,145 @@ using UnityEngine;
 
 namespace bjeb.gui
 {
-	public abstract class View: net.Serializable
-	{
-		public Skin skin
-		{
-			get;
-			set;
-		}
+    public abstract class View: net.Serializable
+    {
+	public Skin skin
+	    {
+		get;
+		set;
+	    }
 
-		public Font font
-		{
-			get;
-			set;
-		}
+	public Font font
+	    {
+		get;
+		set;
+	    }
 
-		public Style style
-		{
-			get;
-			set;
-		}
+	public Style style
+	    {
+		get;
+		set;
+	    }
 
-		protected abstract Style defaultStyle
-		{
-			get;
-		}
+	protected abstract Style defaultStyle
+	    {
+		get;
+	    }
 
-		protected static void serializeStyle(Style style, string fieldName, XmlNode node)
-		{
-			if(style != Style.Default)
-				node.attribute(fieldName).set(style.ToString());
-		}
+	protected static void serializeStyle(Style style, Stream stream)
+	    {
+		if(style != Style.Default)
+		    stream.write(style.ToString());
+		else
+		    stream.writeNull();
+	    }
 
-		protected static Style deserializeStyle(string fieldName, XmlNode node)
-		{
-			if(!node.attribute(fieldName).isSet())
-				return Style.Default;
+	protected static Style deserializeStyle(Stream stream)
+	    {
+		string styleString = stream.tryReadString();
 
-			return (Style)System.Enum.Parse(typeof(Style), node.attribute(fieldName).getString());
-		}
+		if(styleString == null)
+		    return Style.Default;
+
+		return (Style)System.Enum.Parse(typeof(Style), styleString);
+	    }
 
 #if UNITY
-		public GUISkin unitySkin
+	public GUISkin unitySkin
+	    {
+		get
 		{
-			get
-			{
-				return AssetBase.unitySkin(skin);
-			}
+		    return AssetBase.unitySkin(skin);
+		}
+	    }
+
+	protected GUIStyle unityStyle()
+	    {
+		return unityStyle(style, defaultStyle);
+	    }
+
+	protected GUIStyle unityStyle(Style style, Style defaultStyle)
+	    {
+		if(style == Style.Default)
+		    style = defaultStyle;
+
+		UnityEngine.GUIStyle ustyle = AssetBase.unityStyle(style, skin);
+
+		if(!font.isDefault)
+		{
+		    ustyle = new UnityEngine.GUIStyle(ustyle);
+		    font.apply(ustyle);
 		}
 
-		protected GUIStyle unityStyle()
-		{
-			return unityStyle(style, defaultStyle);
-		}
-
-		protected GUIStyle unityStyle(Style style, Style defaultStyle)
-		{
-			if(style == Style.Default)
-				style = defaultStyle;
-
-			UnityEngine.GUIStyle ustyle = AssetBase.unityStyle(style, skin);
-
-			if(!font.isDefault)
-			{
-				ustyle = new UnityEngine.GUIStyle(ustyle);
-				font.apply(ustyle);
-			}
-
-			return ustyle;
-		}
+		return ustyle;
+	    }
 #endif		
 
-		public Area area
-		{
-			get;
-			set;
-		}
+	public Area area
+	    {
+		get;
+		set;
+	    }
 
-		public bool isShowing
-		{
-			get;
-			private set;
-		}
+	public bool isShowing
+	    {
+		get;
+		private set;
+	    }
 
-		public void show()
-		{
-			isShowing = true;
-		}
+	public void show()
+	    {
+		isShowing = true;
+	    }
 
-		public void hide()
-		{
-			isShowing = false;
-		}
+	public void hide()
+	    {
+		isShowing = false;
+	    }
 
-		public View()
-		{
-			isShowing = true;
-			skin = Skin.Default;
-			style = Style.Default;
-			font = new Font();
-			area = new Area();
-		}
+	public View()
+	    {
+		isShowing = true;
+		skin = Skin.Default;
+		style = Style.Default;
+		font = new Font();
+		area = new Area();
+	    }
 
-		override protected void doSerialize(net.XmlNode node)
-		{
-			if(skin != Skin.Default)
-				node.attribute("skin").set(skin.ToString());
-			serializeStyle(style, "style", node);
+	override protected void doSerialize(net.Stream stream)
+	    {
+		if(skin != Skin.Default)
+		    stream.write(skin.ToString());
+		else
+		    stream.writeNull();
 
-			node.attribute("isShowing").set(isShowing);
+		serializeStyle(style, stream);
 
-			if(!font.isDefault)
-				font.serialize(node);
+		stream.write(isShowing);
 
-			area.serialize(node);
-		}
+		font.serialize(stream);
+		area.serialize(stream);
+	    }
 
-		override protected void doDeserialize(net.XmlNode node)
-		{
-			if(node.attribute("skin").isSet())
-				skin = (Skin)System.Enum.Parse(typeof(Skin), node.attribute("skin").getString());
-			else
-				skin = Skin.Default;
-			style = deserializeStyle("style", node);
+	override protected void doDeserialize(net.Stream stream)
+	    {
+		string skinString = stream.tryReadString();
 
-			isShowing = node.attribute("isShowing").getBool();
+		if(skinString != null)
+		    skin = (Skin)System.Enum.Parse(typeof(Skin), skinString);
+		else
+		    skin = Skin.Default;
 
-			if(node.node("font") != null)
-				font.deserialize(node.node("font"));
+		style = deserializeStyle(stream);
 
-			area.deserialize(node);
-		}
+		isShowing = stream.readBool();
 
-		abstract public void draw();
-	}
+		font.deserialize(stream);
+		area.deserialize(stream);
+	    }
+
+	abstract public void draw();
+    }
 
 	public abstract class LayoutView: View
 	{
@@ -204,44 +210,48 @@ namespace bjeb.gui
 #endif
 		}
 
-		public void serialize(XmlNode node)
+	    public void serialize(Stream stream)
+	    {
+		stream.write(_childs.Count);
+
+		foreach(View view in _childs)
+		    view.serialize(stream);
+	    }
+
+	    public void deserialize(Stream stream)
+	    {
+		clear();
+
+		int size = stream.readInt();
+
+		for(int i=0;i<size;i++)
 		{
-			XmlNode childs = new XmlNode("views", node);
-
-			foreach(View view in _childs)
-				view.serialize(childs);
+		    System.Console.WriteLine("Updating window " + i.ToString());
+		    add((View)Serializable.create(stream));
 		}
+	    }
 
-		public void deserialize(XmlNode node)
+	    public void serializeState(Stream stream)
+	    {
+		stream.write(_childs.Count);
+
+		foreach(View view in _childs)
+		    view.serializeState(stream);
+	    }
+
+	    public void deserializeState(Stream stream)
+	    {
+		var views = _childs;
+		var viewIterator = views.GetEnumerator();
+
+		int size = stream.readInt();
+		int i=0;
+
+		while(viewIterator.MoveNext() && (i < size))
 		{
-			clear();
-
-			net.XmlNode childs = node.node("views");
-
-			foreach(var child in childs.nodes())
-				add((View)Serializable.create(child));
+		    viewIterator.Current.deserializeState(stream);		    
+		    i++;
 		}
-
-		public void serializeState(XmlNode node)
-		{
-			XmlNode childs = new XmlNode("views", node);
-
-			foreach(View view in _childs)
-				view.serializeState(childs);
-		}
-
-		public void deserializeState(XmlNode node)
-		{
-			net.XmlNode childs = node.node("views");
-
-            var nodes = childs.nodes();
-            var views = _childs;
-
-			var viewIterator = views.GetEnumerator();
-			var childIterator = nodes.GetEnumerator();
-
-			while(childIterator.MoveNext() && viewIterator.MoveNext())
-				viewIterator.Current.deserializeState(childIterator.Current);
-		}
+	    }
 	}
 }

@@ -91,6 +91,11 @@ namespace bjeb.net
 				disconnect();
 				return false;
 			}
+			catch(System.IO.IOException)
+			{
+				disconnect();
+				return false;
+			}
 		}
 	}
 }

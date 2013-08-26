@@ -11,7 +11,9 @@ namespace bjeb.math
 		}
 	}
 
-	public class Vector3
+        
+        [net.Serializable(14)]
+        public class Vector3: Serializable
 	{
 		public Vector3(): this(0, 0, 0)
 		{
@@ -268,25 +270,18 @@ namespace bjeb.math
 			return "(" + x.ToString("F2") + ", " + y.ToString("F2") + ", " + z.ToString("F2") + ")";
 		}
 
-		public void serialize(string name, XmlNode node)
+	        override protected void doSerialize(Stream stream)
 		{
-			XmlNode child = node.node(name);
-
-			if(child == null)
-				child = new XmlNode(name, node);
-
-			child.attribute("x").set(x);
-			child.attribute("y").set(y);
-			child.attribute("z").set(z);
+		    stream.write(x);
+		    stream.write(y);
+		    stream.write(z);
 		}
 
-		public void deserialize(string name, XmlNode node)
+	        override protected void doDeserialize(Stream stream)
 		{
-			XmlNode child = node.node(name);
-
-			x = child.attribute("x").getDouble();
-			y = child.attribute("y").getDouble();
-			z = child.attribute("z").getDouble();
+		    x = stream.readDouble();
+		    y = stream.readDouble();
+		    z = stream.readDouble();
 		}
 	}
 

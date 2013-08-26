@@ -12,7 +12,7 @@ using bjeb.math;
 
 namespace bjeb.game
 {
-	[XmlSerializable("celestialBody")]
+	[net.Serializable(12)]
 	public class CelestialBody: Serializable
 	{
 		public Vector3 position;
@@ -28,20 +28,18 @@ namespace bjeb.game
 			radius = 0;
 		}
 
-		override protected void doSerialize(XmlNode node)
+		override protected void doSerialize(Stream stream)
 		{
-			position.serialize("position", node);
-			rotation.serialize("rotation", node);
-			
-			node.attribute("radius").set(radius);
+		    position.serialize(stream);
+		    rotation.serialize(stream);
+		    stream.write(radius);
 		}
 
-		override protected void doDeserialize(XmlNode node)
+		override protected void doDeserialize(Stream stream)
 		{
-			position.deserialize("position", node);
-			rotation.deserialize("rotation", node);
-			
-			radius = node.attribute("radius").getDouble();
+		    position.deserialize(stream);
+		    rotation.deserialize(stream);
+		    radius = stream.readDouble();
 		}
 
 #if UNITY
