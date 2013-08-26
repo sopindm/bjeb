@@ -8,10 +8,10 @@ namespace bjeb.net
 	{
 	    void onSetup(Screen screen);
 
-//	    IEnumerable<Window> windows
-//	    {
-//		get;
-//	    }
+	    List<Window> windows
+	    {
+		get;
+	    }
 
 //	    void onUpdate(game.Vessel vessel);
 	}
@@ -29,29 +29,27 @@ namespace bjeb.net
 		requestSetup(connection, new Screen(width, height));
 	    }
 
-/*
 	    public static List<Window> requestGui(Connection connection)
+	    {
+		connection.stream.write("gui");
+
+		List<Window> windows = new List<gui.Window>();
+
+		int size = connection.stream.readInt();
+
+		for(int i=0;i<size;i++)
 		{
-		    Xml request = Xml.createMessage("gui");
-		    request.write(connection);
+		    Window newWindow = new Window();
+		    newWindow.deserialize(connection.stream);
 
-		    Xml response = Xml.read(connection);
-				
-		    List<Window> windows = new List<gui.Window>();
+		    //newWindow.onDrawFinished = (w => requestWindowUpdate(w, connection));
 
-		    foreach(var node in response.root.nodes("window"))
-		    {
-			Window newWindow = new Window();
-			newWindow.deserialize(node);
-
-			newWindow.onDrawFinished = (w => requestWindowUpdate(w, connection));
-
-			windows.Add(newWindow);
-		    }
-
-		    return windows;
+		    windows.Add(newWindow);
 		}
 
+		return windows;
+	    }
+/*
 	    public static void requestGuiUpdate(IEnumerable<Window> windows, Connection connection)
 		{
 		    Xml request = Xml.createMessage("guiUpdate");
@@ -86,9 +84,10 @@ namespace bjeb.net
 		case "setup":
 		    handleSetup(connection, server);
 		    break;
-/*
 		case "gui":
-		    return handleGui(request, server);
+		    handleGui(connection, server);
+		    break;
+/*
 		case "guiUpdate":
 		    return handleGuiUpdate(request, server);
 		case "guiWindowUpdate":
@@ -99,25 +98,26 @@ namespace bjeb.net
 	    }
 
 	    private static void handleSetup(Connection connection, IServer server)
-		{
-		    Screen screen = new Screen();
-		    screen.deserialize(connection.stream);
+	    {
+		Screen screen = new Screen();
+		screen.deserialize(connection.stream);
 
-		    server.onSetup(screen);
-		}
+		server.onSetup(screen);
+	    }
+
+	    private static void handleGui(Connection connection, IServer server)
+	    {
+		var windows = server.windows;
+
+		connection.stream.write(windows.Count);
+
+		foreach(var window in server.windows)
+		    window.serialize(connection.stream);
+	    }
 
 /*
-	    private static Xml handleGui(Xml request, IServer server)
-		{
-		    Xml response = new Xml("msg");
-
-		    foreach(var window in server.windows)
-			window.serialize(response.root);
-
-		    return response;
-		}
-
 	    private static Xml handleGuiUpdate(Xml request, IServer server)
+
 		{
 		    var nodes = request.root.nodes("window");
 		    var windows = server.windows;

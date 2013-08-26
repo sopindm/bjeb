@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using bjeb.net;
 //using bjeb.math;
@@ -7,9 +8,28 @@ namespace bjeb.server
 {
     class TestServer: IServer
     {
+	List<gui.Window> _windows;
+
+	public TestServer()
+	{
+	    _windows = new List<gui.Window>();
+
+	    _windows.Add(new gui.Window());
+
+	    _windows[0].area.set(100, 100, 200, 200);
+	}
+
 	public void onSetup(gui.Screen screen)
 	{
 	    Console.WriteLine("Set up with screen width: " + screen.width + " height: " + screen.height);
+	}
+
+	public List<gui.Window> windows
+	{
+	    get
+	    {
+		return _windows;
+	    }
 	}
     }
 
@@ -26,6 +46,7 @@ namespace bjeb.server
 		while(true)
 		{
 		    Protocol.handle(connection, server);
+
 		    /*
 		      Xml request = Xml.read(connection);
 			

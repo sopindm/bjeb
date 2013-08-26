@@ -16,12 +16,10 @@ namespace bjeb.test
 
 	public void update(Connection connection)
 	{
-	    Protocol.requestSetup(connection, 1000, 500);
-
-	    /*
 	    System.Console.WriteLine("Updating");
 	    var windows = Protocol.requestGui(connection);
-			
+	    System.Console.WriteLine("Updated");
+
             Window window = windows[0];
 
 	    window.area.x--;
@@ -31,6 +29,7 @@ namespace bjeb.test
 
             Console.WriteLine("Window ID: " + window.id + " X: " + window.area.x + "Y: " + window.area.y + " Width: " + window.area.width + " Height: " + window.area.height);
 
+/*
 	    Protocol.requestGuiUpdate(windows, connection);
 	    Protocol.requestWindowUpdate(window, connection);
 

@@ -86,11 +86,17 @@ namespace bjeb.net
 	    stream.writeTag(tag(), false);
 	}
 
-	virtual public void serializeState(Stream stream) {}
-
-        public static Serializable create(Stream stream)
+	virtual public void serializeState(Stream stream)
 	{
-	    var tag = stream.readTag(true);
+	    stream.writeTag(tag(), true);
+	    doSerializeState(stream);
+	    stream.writeTag(tag(), false);
+	}
+
+	virtual protected void doSerializeState(Stream stream) {}
+
+	private static Serializable _create(Stream stream, UInt16 tag)
+	{
 	    Type t = _serializableTypes[tag];
 
 	    if (t == null)
@@ -100,6 +106,21 @@ namespace bjeb.net
 	    ret.deserialize(stream, tag);
 
 	    return ret;
+	}
+
+        public static Serializable create(Stream stream)
+	{
+	    return _create(stream, stream.readTag(true));
+	}
+
+	public static Serializable tryCreate(Stream stream)
+	{
+	    var tag = stream.tryReadTag(true);
+
+	    if(tag == null)
+		return null;
+
+	    return _create(stream, tag.Value);
 	}
 
 	public void deserialize(Stream stream)
@@ -118,7 +139,20 @@ namespace bjeb.net
 		throw new SerializationException("Wrong closing tag");
 	}
 
-	virtual public void deserializeState(Stream stream) {}
+	virtual public void deserializeState(Stream stream)
+	{
+	    if (stream.readTag(true) != this.tag())
+		throw new SerializationException("Tried to deserialize state from node with wrong tag");
+
+	    doDeserializeState(stream);
+
+	    if(stream.readTag(false) != tag())
+		throw new SerializationException("Wrong closing tag");
+	}
+
+	virtual protected void doDeserializeState(Stream stream)
+	{
+	}
 
         abstract protected void doSerialize(Stream node);
         abstract protected void doDeserialize(Stream node);

@@ -40,13 +40,14 @@
     <Compile Include="src\lib\net\Client.cs" />
     <Compile Include="src\lib\net\Protocol.cs" />
     <Compile Include="src\lib\gui\Screen.cs" />
-<!--
-    <Compile Include="src\lib\gui\Window.cs" />
     <Compile Include="src\lib\gui\Area.cs" />
+    <Compile Include="src\lib\gui\AssetBase.cs" />
     <Compile Include="src\lib\gui\View.cs" />
     <Compile Include="src\lib\gui\Color.cs" />
     <Compile Include="src\lib\gui\Font.cs" />
-    <Compile Include="src\lib\gui\AssetBase.cs" />
+    <Compile Include="src\lib\gui\Window.cs" />
+<!--
+
     <Compile Include="src\lib\gui\Button.cs" />
     <Compile Include="src\lib\gui\Label.cs" />
     <Compile Include="src\lib\gui\Textbox.cs" />

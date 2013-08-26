@@ -32,10 +32,26 @@ namespace bjeb
 		_writer.Write(value);
 	    }
 
+	    public void write(bool? value)
+	    {
+		if(value != null)
+		    write(value.Value);
+		else
+		    writeNull();
+	    }
+
 	    public void write(int value)
 	    {
 		writeSimpleTag(2);
 		_writer.Write(value);
+	    }
+
+	    public void write(int? value)
+	    {
+		if(value != null)
+		    write(value.Value);
+		else
+		    writeNull();
 	    }
 
 	    public void write(float value)
@@ -44,10 +60,26 @@ namespace bjeb
 		_writer.Write(value);
 	    }
 
+	    public void write(float? value)
+	    {
+		if(value != null)
+		    write(value.Value);
+		else
+		    writeNull();
+	    }
+
 	    public void write(double value)
 	    {
 		writeSimpleTag(4);
 		_writer.Write(value);
+	    }
+
+	    public void write(double? value)
+	    {
+		if(value != null)
+		    write(value.Value);
+		else
+		    writeNull();
 	    }
 
 	    public void write(string value)
