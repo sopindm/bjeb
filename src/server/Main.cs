@@ -8,37 +8,43 @@ namespace bjeb.server
 {
     class MainClass
     {
-	private static void handleConnection(Connection connection)
-	{
-	    Computer computer = new Computer();
-
-	    try
-	    {
-		while(true)
+		private static void handleConnection(Connection connection)
 		{
-		    Protocol.handle(connection, computer);
+			Computer computer = new Computer();
+
+			DateTime startTime = DateTime.Now;
+			int responses = 0;
+
+			try
+			{
+				while(true)
+				{
+					Protocol.handle(connection, computer);
+
+					responses++;
+					Console.WriteLine(responses / (DateTime.Now - startTime).TotalSeconds + " responses in seconds.");
+				}
+			}
+			catch(ConnectionException)
+			{
+			}
+			catch(System.IO.IOException)
+			{
+			}
+			finally
+			{	
+				connection.close();
+			}
 		}
-	    }
-	    catch(ConnectionException)
-	    {
-	    }
-	    catch(System.IO.IOException)
-	    {
-	    }
-	    finally
-	    {	
-		connection.close();
-	    }
-	}
 
         public static void Main(string[] args)
 	    {
-		bjeb.net.Server server = new bjeb.net.Server("127.0.0.1", 4400);
+			bjeb.net.Server server = new bjeb.net.Server("127.0.0.1", 4400);
 
-		while(true)
-		{
-		    server.accept(handleConnection);
-		}
+			while(true)
+			{
+				server.accept(handleConnection);
+			}
 	    }
     }
 }

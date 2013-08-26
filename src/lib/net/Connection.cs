@@ -7,78 +7,78 @@ namespace bjeb
 {
     namespace net
     {
-	public class ConnectionException: System.Exception
+		public class ConnectionException: System.Exception
         {
-	    private string _error
-	    {
-		get;
-		set;
-	    }
+			private string _error
+			{
+				get;
+				set;
+			}
 
-	    public ConnectionException(string error)
-	    {
-		_error = error;
-	    }
+			public ConnectionException(string error)
+			{
+				_error = error;
+			}
 
-	    public override string ToString()
-	    {
-		return "Serialization exception: " + _error;
-	    }
+			public override string ToString()
+			{
+				return "Serialization exception: " + _error;
+			}
         }
 
-	public class Connection
-	{
-	    private TcpClient _connection;
-	    private NetworkStream _stream;
-	    private BinaryReader _reader;
-	    private BinaryWriter _writer;
-
-	    public Connection(string hostname, int port)
-	    {      
-		try
+		public class Connection
 		{
-		    _connection = new TcpClient(hostname, port);
-		    _connection.NoDelay = true;
+			private TcpClient _connection;
+			private System.IO.BufferedStream _stream;
+			private BinaryReader _reader;
+			private BinaryWriter _writer;
 
-		    _stream = _connection.GetStream();
-		    _reader = new BinaryReader(_stream);
-		    _writer = new BinaryWriter(_stream);
-		} 
-		catch (SocketException)
-		{
-		    _connection = null;
-		    _stream = null;
+			public Connection(string hostname, int port)
+			{      
+				try
+				{
+					_connection = new TcpClient(hostname, port);
+					_connection.NoDelay = true;
 
-		    throw new ConnectionException("Failed to connect to server");
+					_stream = new BufferedStream(_connection.GetStream());
+					_reader = new BinaryReader(_stream);
+					_writer = new BinaryWriter(_stream);
+				} 
+				catch (SocketException)
+				{
+					_connection = null;
+					_stream = null;
+
+					throw new ConnectionException("Failed to connect to server");
+				}
+			}	
+
+			public Connection(TcpClient connection)
+			{
+				_connection = connection;
+				_connection.NoDelay = true;
+
+				_stream = new BufferedStream(_connection.GetStream());
+				_reader = new BinaryReader(_stream);
+				_writer = new BinaryWriter(_stream);
+			}
+
+			public void flush()
+			{
+				_stream.Flush();
+			}
+
+			public bjeb.net.Stream stream
+			{
+				get
+				{
+					return new bjeb.net.Stream(_reader, _writer);
+				}
+			}
+
+			public void close()
+			{
+			}
 		}
-	    }	
-
-	    public Connection(TcpClient connection)
-	    {
-		_connection = connection;
-		_connection.NoDelay = true;
-
-		_stream = _connection.GetStream();
-		_reader = new BinaryReader(_stream);
-		_writer = new BinaryWriter(_stream);
-	    }
-
-	    public bjeb.net.Stream stream
-	    {
-		get
-		{
-		    return new bjeb.net.Stream(_reader, _writer);
-		}
-	    }
-
-	    public void close()
-	    {
-		_reader.Close();
-		_writer.Close();
-
-		_stream.Close();
-		_connection.Close();
-	    }
-	}
     }
 }

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using bjeb.net;
 using bjeb.gui;
-//using bjeb.game;
+using bjeb.game;
 
 namespace bjeb.test
 {
@@ -20,22 +20,20 @@ namespace bjeb.test
 	    var windows = Protocol.requestGui(connection);
 	    System.Console.WriteLine("Updated");
 
-            Window window = windows[0];
+		Window window = windows[0];
 
 	    window.area.x--;
 	    window.area.y++;
 	    window.area.width++;
 	    window.area.height--;
 
-            Console.WriteLine("Window ID: " + window.id + " X: " + window.area.x + "Y: " + window.area.y + " Width: " + window.area.width + " Height: " + window.area.height);
+		Console.WriteLine("Window ID: " + window.id + " X: " + window.area.x + "Y: " + window.area.y + " Width: " + window.area.width + " Height: " + window.area.height);
 
 	    Protocol.requestWindowUpdate(window, connection);
 	    Protocol.requestGuiUpdate(windows, connection);
 
-/*
 	    Vessel vessel = new Vessel();
-
-	    Protocol.requestUpdate(vessel, connection);*/
+	    Protocol.requestUpdate(vessel, connection);
 	}
     }
 	
@@ -51,7 +49,7 @@ namespace bjeb.test
                 if(!client.execute((c) => 
 		    {
 		        plugin.update(c);
-			System.Threading.Thread.Sleep(1000);
+				//System.Threading.Thread.Sleep(1000);
 		    }))
 		{
 		    Console.WriteLine("No connection");

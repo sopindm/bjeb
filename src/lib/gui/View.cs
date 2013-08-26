@@ -8,142 +8,142 @@ namespace bjeb.gui
 {
     public abstract class View: net.Serializable
     {
-	public Skin skin
+		public Skin skin
 	    {
-		get;
-		set;
+			get;
+			set;
 	    }
 
-	public Font font
+		public Font font
 	    {
-		get;
-		set;
+			get;
+			set;
 	    }
 
-	public Style style
+		public Style style
 	    {
-		get;
-		set;
+			get;
+			set;
 	    }
 
-	protected abstract Style defaultStyle
+		protected abstract Style defaultStyle
 	    {
-		get;
+			get;
 	    }
 
-	protected static void serializeStyle(Style style, Stream stream)
+		protected static void serializeStyle(Style style, Stream stream)
 	    {
-		if(style != Style.Default)
-		    stream.write(style.ToString());
-		else
-		    stream.writeNull();
+			if(style != Style.Default)
+				stream.write(style.ToString());
+			else
+				stream.writeNull();
 	    }
 
-	protected static Style deserializeStyle(Stream stream)
+		protected static Style deserializeStyle(Stream stream)
 	    {
-		string styleString = stream.tryReadString();
+			string styleString = stream.tryReadString();
 
-		if(styleString == null)
-		    return Style.Default;
+			if(styleString == null)
+				return Style.Default;
 
-		return (Style)System.Enum.Parse(typeof(Style), styleString);
+			return (Style)System.Enum.Parse(typeof(Style), styleString);
 	    }
 
 #if UNITY
-	public GUISkin unitySkin
+		public GUISkin unitySkin
 	    {
-		get
-		{
-		    return AssetBase.unitySkin(skin);
-		}
+			get
+			{
+				return AssetBase.unitySkin(skin);
+			}
 	    }
 
-	protected GUIStyle unityStyle()
+		protected GUIStyle unityStyle()
 	    {
-		return unityStyle(style, defaultStyle);
+			return unityStyle(style, defaultStyle);
 	    }
 
-	protected GUIStyle unityStyle(Style style, Style defaultStyle)
+		protected GUIStyle unityStyle(Style style, Style defaultStyle)
 	    {
-		if(style == Style.Default)
-		    style = defaultStyle;
+			if(style == Style.Default)
+				style = defaultStyle;
 
-		UnityEngine.GUIStyle ustyle = AssetBase.unityStyle(style, skin);
+			UnityEngine.GUIStyle ustyle = AssetBase.unityStyle(style, skin);
 
-		if(!font.isDefault)
-		{
-		    ustyle = new UnityEngine.GUIStyle(ustyle);
-		    font.apply(ustyle);
-		}
+			if(!font.isDefault)
+			{
+				ustyle = new UnityEngine.GUIStyle(ustyle);
+				font.apply(ustyle);
+			}
 
-		return ustyle;
+			return ustyle;
 	    }
 #endif		
 
-	public Area area
+		public Area area
 	    {
-		get;
-		set;
+			get;
+			set;
 	    }
 
-	public bool isShowing
+		public bool isShowing
 	    {
-		get;
-		private set;
+			get;
+			private set;
 	    }
 
-	public void show()
+		public void show()
 	    {
-		isShowing = true;
+			isShowing = true;
 	    }
 
-	public void hide()
+		public void hide()
 	    {
-		isShowing = false;
+			isShowing = false;
 	    }
 
-	public View()
+		public View()
 	    {
-		isShowing = true;
-		skin = Skin.Default;
-		style = Style.Default;
-		font = new Font();
-		area = new Area();
+			isShowing = true;
+			skin = Skin.Default;
+			style = Style.Default;
+			font = new Font();
+			area = new Area();
 	    }
 
-	override protected void doSerialize(net.Stream stream)
+		override protected void doSerialize(net.Stream stream)
 	    {
-		if(skin != Skin.Default)
-		    stream.write(skin.ToString());
-		else
-		    stream.writeNull();
+			if(skin != Skin.Default)
+				stream.write(skin.ToString());
+			else
+				stream.writeNull();
 
-		serializeStyle(style, stream);
+			serializeStyle(style, stream);
 
-		stream.write(isShowing);
+			stream.write(isShowing);
 
-		font.serialize(stream);
-		area.serialize(stream);
+			font.serialize(stream);
+			area.serialize(stream);
 	    }
 
-	override protected void doDeserialize(net.Stream stream)
+		override protected void doDeserialize(net.Stream stream)
 	    {
-		string skinString = stream.tryReadString();
+			string skinString = stream.tryReadString();
 
-		if(skinString != null)
-		    skin = (Skin)System.Enum.Parse(typeof(Skin), skinString);
-		else
-		    skin = Skin.Default;
+			if(skinString != null)
+				skin = (Skin)System.Enum.Parse(typeof(Skin), skinString);
+			else
+				skin = Skin.Default;
 
-		style = deserializeStyle(stream);
+			style = deserializeStyle(stream);
 
-		isShowing = stream.readBool();
+			isShowing = stream.readBool();
 
-		font.deserialize(stream);
-		area.deserialize(stream);
+			font.deserialize(stream);
+			area.deserialize(stream);
 	    }
 
-	abstract public void draw();
+		abstract public void draw();
     }
 
 	public abstract class LayoutView: View
@@ -212,46 +212,43 @@ namespace bjeb.gui
 
 	    public void serialize(Stream stream)
 	    {
-		stream.write(_childs.Count);
+			stream.write(_childs.Count);
 
-		foreach(View view in _childs)
-		    view.serialize(stream);
+			foreach(View view in _childs)
+				view.serialize(stream);
 	    }
 
 	    public void deserialize(Stream stream)
 	    {
-		clear();
+			clear();
 
-		int size = stream.readInt();
+			int size = stream.readInt();
 
-		for(int i=0;i<size;i++)
-		{
-		    System.Console.WriteLine("Updating window " + i.ToString());
-		    add((View)Serializable.create(stream));
-		}
+			for(int i=0;i<size;i++)
+				add((View)Serializable.create(stream));
 	    }
 
 	    public void serializeState(Stream stream)
 	    {
-		stream.write(_childs.Count);
+			stream.write(_childs.Count);
 
-		foreach(View view in _childs)
-		    view.serializeState(stream);
+			foreach(View view in _childs)
+				view.serializeState(stream);
 	    }
 
 	    public void deserializeState(Stream stream)
 	    {
-		var views = _childs;
-		var viewIterator = views.GetEnumerator();
+			var views = _childs;
+			var viewIterator = views.GetEnumerator();
 
-		int size = stream.readInt();
-		int i=0;
+			int size = stream.readInt();
+			int i=0;
 
-		while(viewIterator.MoveNext() && (i < size))
-		{
-		    viewIterator.Current.deserializeState(stream);		    
-		    i++;
-		}
+			while(viewIterator.MoveNext() && (i < size))
+			{
+				viewIterator.Current.deserializeState(stream);		    
+				i++;
+			}
 	    }
 	}
 }
