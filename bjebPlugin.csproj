@@ -33,9 +33,8 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="BasicModule.cs" />
-    <Compile Include="Core.cs" />
-    <Compile Include="Computer.cs" />
+    <Compile Include="src/plugin/BasicModule.cs" />
+    <Compile Include="src/plugin/Core.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">

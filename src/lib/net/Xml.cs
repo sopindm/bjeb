@@ -57,6 +57,7 @@ namespace bjeb
 				}
 				catch(ConnectionException)
 				{
+					connection.close();
 					return false;
 				}
 			}
@@ -110,6 +111,18 @@ namespace bjeb
 					return null;
 
 				return all[0];
+			}
+
+			public List<XmlNode> nodes()
+			{
+				System.Xml.XmlNodeList nodes = _node.ChildNodes;
+
+				List<XmlNode> ret = new List<XmlNode>();
+
+				foreach(System.Xml.XmlNode node in nodes)
+					ret.Add(new XmlNode(node));
+
+				return ret;
 			}
 
 			public List<XmlNode> nodes(string name)
@@ -167,6 +180,11 @@ namespace bjeb
 				set(value.ToString());
 			}
 
+			public void set(double value)
+			{
+				set(value.ToString());
+			}
+
 			public void set(bool value)
 			{
 				set(value.ToString());
@@ -190,6 +208,11 @@ namespace bjeb
 			public float getFloat()
 			{
 				return float.Parse(getString());
+			}
+
+			public double getDouble()
+			{
+				return double.Parse(getString());
 			}
 
 			public bool getBool()

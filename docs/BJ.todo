@@ -1,7 +1,7 @@
 CORE
 +  Activatable/needs energy
 +  Debug mode
-  Plugins system (with reloadable plugins)
+
   Save/Load subsystem:
     vessels
     vessel types
@@ -17,8 +17,8 @@ CORE
 
   GUI
     compact and default view
-    views/layouts system
-    skins system
+	+ views/layouts system
+	+ skins system
 
 CONTROLS
   Smartest SAS

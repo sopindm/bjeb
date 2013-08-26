@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1247FCA3-610B-4178-9BA0-836D00888B23}</ProjectGuid>
+    <ProjectGuid>{1247FCA3-610B-4178-9BA0-836D00888B25}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>bjeb</RootNamespace>
     <AssemblyName>bjebLibUnity</AssemblyName>
@@ -36,28 +36,41 @@
   <ItemGroup>
     <Compile Include="src\lib\gui\Screen.cs" />
     <Compile Include="src\lib\gui\Window.cs" />
+    <Compile Include="src\lib\gui\Area.cs" />
     <Compile Include="src\lib\gui\View.cs" />
+    <Compile Include="src\lib\gui\Color.cs" />
+    <Compile Include="src\lib\gui\Font.cs" />
     <Compile Include="src\lib\gui\AssetBase.cs" />
     <Compile Include="src\lib\gui\Button.cs" />
+    <Compile Include="src\lib\gui\Label.cs" />
+    <Compile Include="src\lib\gui\Textbox.cs" />
+    <Compile Include="src\lib\gui\Slider.cs" />
+    <Compile Include="src\lib\gui\Layout.cs" />
+    <Compile Include="src\lib\gui\Toggle.cs" />
     <Compile Include="src\lib\net\Connection.cs" />
     <Compile Include="src\lib\net\Serializable.cs" />
     <Compile Include="src\lib\net\Server.cs" />
     <Compile Include="src\lib\net\Xml.cs" />
     <Compile Include="src\lib\net\Stream.cs" />
     <Compile Include="src\lib\net\Client.cs" />
+    <Compile Include="src\lib\net\Protocol.cs" />
+    <Compile Include="src\lib\math\Vector3.cs" />
+    <Compile Include="src\lib\math\Quaternion.cs" />
+    <Compile Include="src\lib\game\CelestialBody.cs" />
+    <Compile Include="src\lib\game\Vessel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System">
-      <HintPath>..\..\ksp\KSP_Data\Managed\System.dll</HintPath>
+      <HintPath>..\ksp\KSP_Data\Managed\System.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml">
-      <HintPath>..\..\ksp\KSP_Data\Managed\System.Xml.dll</HintPath>
+      <HintPath>..\ksp\KSP_Data\Managed\System.Xml.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\ksp\KSP_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\ksp\KSP_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\ksp\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\ksp\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

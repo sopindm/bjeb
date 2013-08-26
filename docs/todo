@@ -1,36 +1,43 @@
-View base class
-  Subviews(Container and Containable)
-  Forward skin to subviews 
+Flight parameters
+  Universe:
+    time
+  	frame delta
 
-Layouts
+	space bodies orbits and physics data
 
-Labels 
-  Text
-  Event???
+  Vessel:
+     position:
+	   forward
+	   up
 
-Textboxs
-  Text
-  Event
+       north
+	   east
 
-Event arguments
-  Mouse state
-  Send mouse state for windows to server every frame (if mouse is inside of window)
+	   yaw, pitch, roll
 
-Scrollbars
+	   orbit
+	   rotatingFrameVelocity
 
-Style system
-  Default style taken from skin
-  Can be overriden (style expressions like 'Window1.button')
-  Style fields (font, color, background, ...)
-  Setting skin's styles ('label' = 'my.custom.style')
+	   altitude
+	   altitudeTrue
+	   altitudeBotton
 
-View
-  Min size/max size/expandable
-  Layout parameters
-  Coordinates translation(to/from parent coordinates, to/from window coordinates, to/from screen coordinates)
+	 physics:
+       centerOfMass
+       momentumOfInertia
 
-Font
-  Color
-  Size??
-  Family???
+	   mass
 
+	   angularVelocity
+	   angularMomentum
+
+	   torque
+	   thrustTorque
+
+Customizing styles
+  active, hover, focused, normal + on...
+    font color
+  alignment
+
+
+  

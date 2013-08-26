@@ -2,61 +2,62 @@ using System;
 using System.IO;
 using bjeb.net;
 using bjeb.gui;
+using bjeb.game;
 
 namespace bjeb.test
 {
-    class MainClass
+    class TestPlugin
     {
-	public static void update(Connection connection)
-        {
+	public void setup(Connection connection)
+	{
+	    //Protocol.requestSetup(connection, 1000, 500);
+	    System.Console.WriteLine("Set up");
+	}
+
+	public void update(Connection connection)
+	{
 	    connection.stream.writeTag(412, true);
 	    Console.WriteLine("Read: " + connection.stream.readFloat().ToString());
 
 	    /*
-            Screen screen = new Screen();
-
-            screen.width = 1000;
-            screen.height = 500;
-
-            Xml request = Xml.createMessage("gui");
-            screen.serialize(request.root);
-            request.write(connection);
-
-            Xml response = Xml.read(connection);
-
-            Window window = new Window();
-            window.deserialize(response.root.node("window"));
-
-			window.x--;
-			window.y++;
-			window.width++;
-			window.height--;
-
-            Console.WriteLine("Window ID: " + window.id + " X: " + window.x + "Y: " + window.y + " Width: " + window.width + " Height: " + window.height);
-			Console.WriteLine("Button: " + window.button.text);
-			Console.WriteLine();
-
-			request = Xml.createMessage("guiUpdate");
-			window.serializeState(request.root);
-			request.write(connection);
+	    System.Console.WriteLine("Updating");
+	    var windows = Protocol.requestGui(connection);
 			
-			request = new net.Xml("msg");
-			request.root.attribute("type").set("guiWindowUpdate");
-			request.root.attribute("id").set(window.id);
-			window.button.serializeState(request.root);
+            Window window = windows[0];
 
-			request.write(connection);*/
+	    window.area.x--;
+	    window.area.y++;
+	    window.area.width++;
+	    window.area.height--;
+
+            Console.WriteLine("Window ID: " + window.id + " X: " + window.area.x + "Y: " + window.area.y + " Width: " + window.area.width + " Height: " + window.area.height);
+
+	    Protocol.requestGuiUpdate(windows, connection);
+	    Protocol.requestWindowUpdate(window, connection);
+
+	    Xml tmp = new net.Xml("msg");
+	    window.views.serialize(tmp.root);
+
+	    Console.WriteLine("Views: " + tmp.toString());
+
+	    Vessel vessel = new Vessel();
+
+	    Protocol.requestUpdate(vessel, connection);*/
 	}
-
+    }
+	
+    class MainClass
+    {
         public static void Main(string[] args)
         {
-	    Client client = new Client("127.0.0.1", 4400);
+	    TestPlugin plugin = new TestPlugin();
+	    Client client = new Client("127.0.0.1", 4400, plugin.setup);
 
             while (true)
             {
-                if(!client.execute(() => 
+                if(!client.execute((c) => 
 		    {
-		        update(client.connection);
+		        plugin.update(c);
 			System.Threading.Thread.Sleep(1000);
 		    }))
 		{

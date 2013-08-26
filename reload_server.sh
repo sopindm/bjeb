@@ -27,4 +27,4 @@ fi
 
 echo "Running server ..."
 
-./server.sh
+LANG="POSIX C" ./server.sh

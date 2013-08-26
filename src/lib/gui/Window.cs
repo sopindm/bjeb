@@ -7,12 +7,16 @@ using bjeb.net;
 namespace bjeb.gui
 {
 	[XmlSerializable("window")]
-	public class Window: Serializable
+	public class Window: View
 	{
-		public Button button
+		private ViewContainer _views;
+
+		public ViewContainer views
 		{
-			get;
-			set;
+			get
+			{
+				return _views;
+			}
 		}
 
 		private static int _nextId = 92142814;
@@ -28,45 +32,23 @@ namespace bjeb.gui
 			private set;
 		}
 
+		override protected Style defaultStyle
+		{
+			get
+			{
+				return Style.Window;
+			}
+		}
+
 		public Window()
 		{
 			id = nextId();
 			draggable = false;
-			skin = AssetBase.Skin.Default;
-			button = new Button();
-		}
 
-		public float x
-		{
-			get;
-			set;
-		}
-
-		public float y
-		{
-			get;
-			set;
-		}
-
-		public float width
-		{
-			get;
-			set;
-		}
-
-		public float height
-		{
-			get;
-			set;
+			_views = new ViewContainer(this);
 		}
 
 		public string title
-		{
-			get;
-			set;
-		}
-
-		public AssetBase.Skin skin
 		{
 			get;
 			set;
@@ -86,23 +68,20 @@ namespace bjeb.gui
 			set;
 		}
 
-		public void draw()
+		public override void draw()
 		{
+			if(!isShowing)
+				return;
 #if UNITY
-			Rect area = GUILayout.Window( id, new Rect(x, y, width, height), drawContext, title, AssetBase.unitySkin(skin).window);
-
-			x = area.x;
-			y = area.y;
-			width = area.width;
-			height = area.height;
+			area.rectangle = GUILayout.Window( id, area.rectangle, drawContext, title, unityStyle(), area.layoutOptions());
 #endif
 		}
 
 		private void drawContext(int id)
 		{
 #if UNITY
-			button.draw();
-			
+			_views.draw();
+
 			if(draggable)
 				GUI.DragWindow();
 
@@ -113,46 +92,41 @@ namespace bjeb.gui
 
 		override protected void doSerialize(XmlNode node)
 		{
-			node.attribute("id").set(id);
+			base.doSerialize(node);
 
+			node.attribute("id").set(id);
 			node.attribute("title").set(title);
-			node.attribute("skin").set(skin.ToString());
 
 			doSerializeState(node);
 
 			node.attribute("draggable").set(draggable);
 
-			button.serialize(node);
+			_views.serialize(node);
 		}
 
 		override protected void doSerializeState(XmlNode node)
 		{
-			node.attribute("x").set(x);
-			node.attribute("y").set(y);
-			node.attribute("width").set(width);
-			node.attribute("height").set(height);
+			node.attribute("id").set(id);
+			area.serialize(node);
 		}
 
 		override protected void doDeserialize(XmlNode node)
         {
-            id = node.attribute("id").getInt();
+			base.doDeserialize(node);
 
+            id = node.attribute("id").getInt();
 			title = node.attribute("title").getString();
-			skin = (AssetBase.Skin)System.Enum.Parse(typeof(AssetBase.Skin), node.attribute("skin").getString());
 
 			doDeserializeState(node);
 
 			draggable = node.attribute("draggable").getBool();
 
-			button.deserialize(node.node("button"));
+			_views.deserialize(node);
 		}
 
 		override protected void doDeserializeState(XmlNode node)
 		{
-            x = node.attribute("x").getFloat();
-            y = node.attribute("y").getFloat();
-            width = node.attribute("width").getFloat();
-            height = node.attribute("height").getFloat();
+			area.deserialize(node);
 		}
 	}
 }

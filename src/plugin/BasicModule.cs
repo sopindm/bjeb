@@ -8,7 +8,7 @@ namespace bjeb
         public float EnergyConsumption;
 
         [KSPField]
-		public bool active = true;
+		public new bool active = true;
 
 		[KSPField]
 		public bool debug = false;
@@ -91,14 +91,20 @@ namespace bjeb
 			if(debug)
 				requiredEnergy = 0;
 
-			if(part.RequestResource("ElectricCharge", requiredEnergy) < requiredEnergy)
+			double got = part.RequestResource("ElectricCharge", requiredEnergy);
+
+			if(got < requiredEnergy - 1e-3)
+			{
 				_haveResources = false;
+				Debug.Log("Need: " + requiredEnergy.ToString() + " Got: " + got.ToString());
+			}
 			else 
 				_haveResources = true;
 
 			if(!_haveResources)
 				return;
 
+			onUpdate(TimeWarp.fixedDeltaTime);
 		}
 
         public override void OnStart(StartState state)
@@ -115,6 +121,7 @@ namespace bjeb
 			private set;
 		}
 
+		abstract protected void onUpdate(double delta);
 		abstract protected void drawGUI();
 
 		public BasicModule()

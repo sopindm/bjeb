@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using bjeb.net;
+using bjeb.math;
 
 namespace bjeb.server
 {
@@ -22,7 +23,7 @@ namespace bjeb.server
 			
 					Console.WriteLine("Request: " + request.toString());
 
-					Xml response = computer.handle(request);
+					Xml response = Protocol.handle(request, computer);
 
 					if(response != null)
 					{
@@ -52,8 +53,6 @@ namespace bjeb.server
 			{
 				server.accept(handleConnection);
 			}
-
-            server.stop();
         }
     }
 }
