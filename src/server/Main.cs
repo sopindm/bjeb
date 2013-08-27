@@ -15,6 +15,8 @@ namespace bjeb.server
 			DateTime startTime = DateTime.Now;
 			int responses = 0;
 
+			double rps = 0;
+
 			try
 			{
 				while(true)
@@ -22,7 +24,16 @@ namespace bjeb.server
 					Protocol.handle(connection, computer);
 
 					responses++;
-					Console.WriteLine(responses / (DateTime.Now - startTime).TotalSeconds + " responses in seconds.");
+					double delta = (DateTime.Now - startTime).TotalMilliseconds;
+
+					if(delta > 2000)
+					{
+						rps = responses / delta * 1000;
+						responses = 0;
+						startTime = DateTime.Now;
+					}
+
+					Console.WriteLine(rps.ToString("F2") + " responses in seconds.");
 				}
 			}
 			catch(ConnectionException)

@@ -25,7 +25,7 @@ namespace bjeb
 			modules = new List<Module>();
 
 			modules.Add(new InfoModule(this));
-			for(int i=0;i<10;i++)
+			for(int i=0;i<100;i++)
 				modules.Add(new ASASModule(this));
 
 			_switches = new Dictionary<Module, ModuleSwitch>();
