@@ -1,4 +1,5 @@
 using UnityEngine;
+using bjeb.util;
 
 namespace bjeb
 {
@@ -74,6 +75,9 @@ namespace bjeb
 		[KSPField(isPersistant=false, guiActive=true, guiName="State")]
 		public string statusMessage = "";
 
+		[KSPField(isPersistant=false, guiActive=true, guiName="gps")]
+		public string _guiFramesPerSecond = "";
+
 		public override void OnFixedUpdate()
 		{
 			if(!active)
@@ -115,18 +119,31 @@ namespace bjeb
 			part.force_activate();
         }
 
-		protected int windowID
-		{
-			get;
-			private set;
-		}
-
 		abstract protected void onUpdate(double delta);
-		abstract protected void drawGUI();
+		abstract protected void onDraw();
+
+		private Timer _guiTimer;
+
+		private void drawGUI()
+		{
+			if(!isActive)
+				return;
+
+            if (vessel == null)
+                return;
+
+            if (vessel != FlightGlobals.ActiveVessel)
+                return;
+
+			onDraw();
+
+			_guiTimer.update();
+			_guiFramesPerSecond = _guiTimer.rate.ToString("F1");
+		}
 
 		public BasicModule()
 		{
-			windowID = new System.Random().Next();
+			_guiTimer = new Timer();
 		}
 	}
 }

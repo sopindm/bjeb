@@ -21,13 +21,9 @@ namespace bjeb.net
 	    void onUpdate(game.Vessel vessel);
 	}
 
-	public class ClientProtocol
+	public partial class Protocol
 	{
-		public ClientProtocol()
-		{
-		}
-
-	    public DebugSettings requestSetup(Connection connection, Screen screen)
+	    public static DebugSettings requestSetup(Connection connection, Screen screen)
 	    {
 			connection.stream.write("setup");
 			screen.serialize(connection.stream);
@@ -39,12 +35,12 @@ namespace bjeb.net
 			return settings;
 	    }
 
-	    public DebugSettings requestSetup(Connection connection, int width, int height)
+	    public static DebugSettings requestSetup(Connection connection, int width, int height)
 	    {
 			return requestSetup(connection, new Screen(width, height));
 	    }
 
-	    public List<Window> requestGui(Connection connection, Window.OnDrawFinished onWindowFinished)
+	    public static List<Window> requestGui(Connection connection, Window.OnDrawFinished onWindowFinished)
 	    {
 			connection.stream.write("gui");
 			connection.flush();
@@ -66,18 +62,18 @@ namespace bjeb.net
 			return windows;
 	    }
 
-	    public void requestGuiUpdate(List<Window> windows, Connection connection)
+	    public static void requestGuiUpdate(List<Window> windows, Connection connection)
 	    {
 			connection.stream.write("guiUpdate");
 			connection.stream.write(windows.Count);
 
 			foreach(var window in windows)
 				window.serializeState(connection.stream);
-
+				
 			connection.flush();
 	    }
 
-	    public void requestWindowUpdate(Window window, Connection connection)
+	    public static void requestWindowUpdate(Window window, Connection connection)
 	    {
 			connection.stream.write("guiWindowUpdate");
 
@@ -87,7 +83,7 @@ namespace bjeb.net
 			connection.flush();
 	    }
 
-	    public void requestUpdate(game.Vessel vessel, Connection connection)
+	    public static void requestUpdate(game.Vessel vessel, Connection connection)
 	    {
 			connection.stream.write("update");
 			vessel.serialize(connection.stream);
@@ -96,7 +92,7 @@ namespace bjeb.net
 	    }
 	}
 	
-	public class ServerProtocol
+	public partial class Protocol
 	{
 		public static void handle(Connection connection, IServer server)
 	    {

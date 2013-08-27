@@ -14,7 +14,7 @@ namespace bjeb.net
 			private set;
 		}
 
-		public delegate void OnSetup(Connection connection);
+		public delegate void OnSetup();
 
 		public OnSetup onSetup
 		{
@@ -68,7 +68,7 @@ namespace bjeb.net
 			_setup = false;
 		}
 
-		public delegate void ClientRequest(Connection connection);
+		public delegate void ClientRequest();
 
 		public bool execute(ClientRequest request)
 		{
@@ -79,11 +79,11 @@ namespace bjeb.net
 
 				if(!_setup && onSetup != null)
 				{
-					onSetup(connection);
+					onSetup();
 					_setup = true;
 				}
 
-				request(connection);
+				request();
 				return true;
 			}
 			catch(net.ConnectionException)

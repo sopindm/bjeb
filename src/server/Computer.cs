@@ -31,18 +31,16 @@ namespace bjeb
 			modules = new List<Module>();
 
 			modules.Add(new InfoModule(this));
-			for(int i=0;i<100;i++)
-				modules.Add(new ASASModule(this));
+			for(int i=0;i<15;i++)
+				modules.Add(new InfoModule(this));
 
 			_switches = new Dictionary<Module, ModuleSwitch>();
 
-			settings = new DebugSettings()
-				{
-					guiUpdateRate = 512,
+			settings = new DebugSettings() { 
+					guiUpdateRate = 30f,
 					updateState = false,
-					updateGui = false,
-					updateWindows = false
-				};
+					updateGui = true,
+					updateWindows = false };
 		}
 
 		public void onSetup(Screen screen)
@@ -74,12 +72,12 @@ namespace bjeb
 			_window.views.add(new Button("_")
 				{ area = new Area(_window.area.width.Value - 40, 5, 20, 20),
 						onClick = ((b, m) => { 
-							if(content.isShowing) 
-							{
-							    content.hide(); 
-							    _window.area.height = 50;
-							}
-							else content.show(); })});
+								if(content.isShowing) 
+								{
+									content.hide(); 
+									_window.area.height = 50;
+								}
+								else content.show(); })});
 						
 			_window.views.add(new Button("X") { area = new Area(_window.area.width.Value - 20, 5, 20, 20) });
 
@@ -162,7 +160,7 @@ namespace bjeb
 		public void onUpdate(Vessel vessel)
 		{
 		    foreach(var module in modules)
-			module.update(vessel);
+				module.update(vessel);
 		}
 	}
 }

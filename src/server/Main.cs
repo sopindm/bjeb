@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using bjeb.net;
-//using bjeb.math;
+using bjeb.util;
 
 namespace bjeb.server
 {
@@ -12,28 +12,17 @@ namespace bjeb.server
 		{
 			Computer computer = new Computer();
 
-			DateTime startTime = DateTime.Now;
-			int responses = 0;
-
-			double rps = 0;
+			Timer timer = new Timer();
 
 			try
 			{
 				while(true)
 				{
-					ServerProtocol.handle(connection, computer);
+					Protocol.handle(connection, computer);
 
-					responses++;
-					double delta = (DateTime.Now - startTime).TotalMilliseconds;
+					timer.update();
 
-					if(delta > 2000)
-					{
-						rps = responses / delta * 1000;
-						responses = 0;
-						startTime = DateTime.Now;
-					}
-
-					Console.WriteLine(rps.ToString("F2") + " responses in seconds.");
+					Console.WriteLine(timer.rate.ToString("F2") + " responses in seconds.");
 				}
 			}
 			catch(ConnectionException)

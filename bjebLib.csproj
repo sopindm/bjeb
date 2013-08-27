@@ -40,6 +40,7 @@
     <Compile Include="src\lib\net\DebugSettings.cs" />
     <Compile Include="src\lib\net\UpdateHandler.cs" />
     <Compile Include="src\lib\net\Protocol.cs" />
+    <Compile Include="src\lib\net\ClientProtocol.cs" />
     <Compile Include="src\lib\gui\Screen.cs" />
     <Compile Include="src\lib\gui\Area.cs" />
     <Compile Include="src\lib\gui\AssetBase.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="src\lib\math\Quaternion.cs" />
     <Compile Include="src\lib\game\CelestialBody.cs" />
     <Compile Include="src\lib\game\Vessel.cs" />
+    <Compile Include="src\lib\util\Timer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -8,30 +8,27 @@ namespace bjeb.test
 {
     class TestPlugin
     {
-		private DebugSettings _settings;
-		private UpdateHandler _guiHandler;
-		private ClientProtocol _protocol;
+		private ClientProtocol _protocol = null;
 
-		public TestPlugin()
+		public TestPlugin(Client client)
 		{
+			_protocol = new ClientProtocol(client);
 		}
 
-		public void setup(Connection connection)
+		public void setup()
 		{
-			_protocol = new ClientProtocol();
-			_settings = _protocol.requestSetup(connection, 1000, 500);
+			_protocol.setup(1000, 500);
 			System.Console.WriteLine("Set up");
-
-			_guiHandler = new UpdateHandler(_settings.guiUpdateRate);
 		}
 
-		private void updateGui(Connection connection)
+		private void updateGui()
 		{
-			if(!_guiHandler.update())
+			var windows = _protocol.windows;
+
+			if(windows == null)
 				return;
 
 			System.Console.WriteLine("Updating gui");
-			var windows = _protocol.requestGui(connection, (w => { if(_settings.updateWindows) _protocol.requestWindowUpdate(w, connection); }));
 
 			Window window = windows[0];
 
@@ -42,24 +39,17 @@ namespace bjeb.test
 
 			Console.WriteLine("Window ID: " + window.id + " X: " + window.area.x + "Y: " + window.area.y + " Width: " + window.area.width + " Height: " + window.area.height);
 
-			if(_settings.updateWindows)
-				foreach(var w in windows)
-					_protocol.requestWindowUpdate(w, connection);
+			foreach(var w in windows)
+				_protocol.updateWindow(w);
 
-			if(_settings.updateGui)
-				_protocol.requestGuiUpdate(windows, connection);
+			_protocol.updateGui();
 		}
 
-		public void update(Connection connection)
+		public void update()
 		{
-			if(_settings.showGui)
-				updateGui(connection);
-
-			if(_settings.updateState)
-			{
-				Vessel vessel = new Vessel();
-				_protocol.requestUpdate(vessel, connection);
-			}
+			updateGui();
+			
+			_protocol.updateState(new Vessel());
 		}
     }
 	
@@ -67,16 +57,16 @@ namespace bjeb.test
     {
         public static void Main(string[] args)
 		{
-			TestPlugin plugin = new TestPlugin();
-			Client client = new Client("127.0.0.1", 4400, plugin.setup);
+			Client client = new Client("127.0.0.1", 4400);
+			TestPlugin plugin = new TestPlugin(client);
+
+			client.onSetup = plugin.setup;
 
             while (true)
             {
-                if(!client.execute((c) => 
-					{
-						plugin.update(c);
-						//System.Threading.Thread.Sleep(1000);
-					}))
+				plugin.update();
+
+				if(!client.connected)
 				{
 					Console.WriteLine("No connection");
 					System.Threading.Thread.Sleep(1000);
