@@ -20,6 +20,12 @@ namespace bjeb
 
 		private List<Module> modules;
 
+		public DebugSettings settings
+		{
+			get;
+			private set;
+		}
+
 		public Computer()
 		{			
 			modules = new List<Module>();
@@ -29,6 +35,14 @@ namespace bjeb
 				modules.Add(new ASASModule(this));
 
 			_switches = new Dictionary<Module, ModuleSwitch>();
+
+			settings = new DebugSettings()
+				{
+					guiUpdateRate = 512,
+					updateState = false,
+					updateGui = false,
+					updateWindows = false
+				};
 		}
 
 		public void onSetup(Screen screen)

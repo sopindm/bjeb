@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using bjeb.gui;
-//using bjeb.game;
+using bjeb.game;
 
 namespace bjeb.net
 {
@@ -13,24 +13,38 @@ namespace bjeb.net
 			get;
 	    }
 
+		DebugSettings settings
+		{
+			get;
+		}
+
 	    void onUpdate(game.Vessel vessel);
 	}
 
-	public class Protocol
+	public class ClientProtocol
 	{
-	    public static void requestSetup(Connection connection, Screen screen)
+		public ClientProtocol()
+		{
+		}
+
+	    public DebugSettings requestSetup(Connection connection, Screen screen)
 	    {
 			connection.stream.write("setup");
 			screen.serialize(connection.stream);
 			connection.flush();
+
+			DebugSettings settings = new DebugSettings();
+			settings.deserialize(connection.stream);
+
+			return settings;
 	    }
 
-	    public static void requestSetup(Connection connection, int width, int height)
+	    public DebugSettings requestSetup(Connection connection, int width, int height)
 	    {
-			requestSetup(connection, new Screen(width, height));
+			return requestSetup(connection, new Screen(width, height));
 	    }
 
-	    public static List<Window> requestGui(Connection connection)
+	    public List<Window> requestGui(Connection connection, Window.OnDrawFinished onWindowFinished)
 	    {
 			connection.stream.write("gui");
 			connection.flush();
@@ -44,7 +58,7 @@ namespace bjeb.net
 				Window newWindow = new Window();
 				newWindow.deserialize(connection.stream);
 
-				//newWindow.onDrawFinished = (w => requestWindowUpdate(w, connection));
+				newWindow.onDrawFinished = onWindowFinished;
 
 				windows.Add(newWindow);
 			}
@@ -52,7 +66,7 @@ namespace bjeb.net
 			return windows;
 	    }
 
-	    public static void requestGuiUpdate(List<Window> windows, Connection connection)
+	    public void requestGuiUpdate(List<Window> windows, Connection connection)
 	    {
 			connection.stream.write("guiUpdate");
 			connection.stream.write(windows.Count);
@@ -63,7 +77,7 @@ namespace bjeb.net
 			connection.flush();
 	    }
 
-	    public static void requestWindowUpdate(Window window, Connection connection)
+	    public void requestWindowUpdate(Window window, Connection connection)
 	    {
 			connection.stream.write("guiWindowUpdate");
 
@@ -73,15 +87,18 @@ namespace bjeb.net
 			connection.flush();
 	    }
 
-	    public static void requestUpdate(game.Vessel vessel, Connection connection)
+	    public void requestUpdate(game.Vessel vessel, Connection connection)
 	    {
 			connection.stream.write("update");
 			vessel.serialize(connection.stream);
 
 			connection.flush();
 	    }
-		
-	    public static void handle(Connection connection, IServer server)
+	}
+	
+	public class ServerProtocol
+	{
+		public static void handle(Connection connection, IServer server)
 	    {
 			switch(connection.stream.readString())
 			{
@@ -109,6 +126,9 @@ namespace bjeb.net
 			screen.deserialize(connection.stream);
 
 			server.onSetup(screen);
+
+			server.settings.serialize(connection.stream);
+			connection.flush();
 	    }
 
 	    private static void handleGui(Connection connection, IServer server)

@@ -5,42 +5,6 @@ using bjeb.net;
 
 namespace bjeb
 {
-	class UpdateHandler
-	{
-		public float updateRate
-		{
-			get;
-			private set;
-		}
-
-		DateTime? _start;
-
-		public UpdateHandler(float rate)
-		{
-			updateRate = rate;
-			_start = null;
-		}
-
-		public bool update()
-		{
-			DateTime newTime = DateTime.Now;
-
-			if(_start == null)
-			{
-				_start = newTime;
-				return true;
-			}
-
-			if((newTime - _start.Value).TotalMilliseconds > (1000 / updateRate))
-			{
-				_start = newTime;
-				return true;
-			}
-
-			return false;
-		}
-	}
-
     public class BJeb: BasicModule
     {
 		private net.Client _client;

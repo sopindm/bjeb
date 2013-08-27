@@ -37,6 +37,8 @@
     <Compile Include="src\lib\net\Server.cs" />
     <Compile Include="src\lib\net\Stream.cs" />
     <Compile Include="src\lib\net\Client.cs" />
+    <Compile Include="src\lib\net\DebugSettings.cs" />
+    <Compile Include="src\lib\net\UpdateHandler.cs" />
     <Compile Include="src\lib\net\Protocol.cs" />
     <Compile Include="src\lib\gui\Screen.cs" />
     <Compile Include="src\lib\gui\Area.cs" />

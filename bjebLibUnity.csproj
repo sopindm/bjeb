@@ -53,6 +53,8 @@
     <Compile Include="src\lib\net\Xml.cs" />
     <Compile Include="src\lib\net\Stream.cs" />
     <Compile Include="src\lib\net\Client.cs" />
+    <Compile Include="src\lib\net\DebugSettings.cs" />
+    <Compile Include="src\lib\net\UpdateHandler.cs" />
     <Compile Include="src\lib\net\Protocol.cs" />
     <Compile Include="src\lib\math\Vector3.cs" />
     <Compile Include="src\lib\math\Quaternion.cs" />

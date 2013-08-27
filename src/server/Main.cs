@@ -21,7 +21,7 @@ namespace bjeb.server
 			{
 				while(true)
 				{
-					Protocol.handle(connection, computer);
+					ServerProtocol.handle(connection, computer);
 
 					responses++;
 					double delta = (DateTime.Now - startTime).TotalMilliseconds;
