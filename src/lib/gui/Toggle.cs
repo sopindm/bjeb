@@ -60,6 +60,7 @@ namespace bjeb.gui
 			{
 				_updated = true;
 				toggled = newState;
+				update();
 			}
 #endif
 		}
@@ -73,6 +74,7 @@ namespace bjeb.gui
 			{
 				_updated = true;
 				toggled = newState;
+				update();
 			}
 #endif
 		}

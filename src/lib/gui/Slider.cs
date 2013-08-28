@@ -105,6 +105,7 @@ namespace bjeb.gui
 			{
 				value = newValue;
 				_isUpdated = true;
+				update();
 			}
 #endif
 		}
@@ -127,6 +128,7 @@ namespace bjeb.gui
 			{
 				value = newValue;
 				_isUpdated = true;
+				update();
 			}
 #endif
 		}

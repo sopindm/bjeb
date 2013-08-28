@@ -43,10 +43,12 @@ namespace bjeb
 			var windows = _protocol.windows;
 
 			if(windows != null)
+			{
 				foreach(var window in windows)
 					window.draw();
 
-			_protocol.updateGui();
+				_protocol.updateGui();
+			}
         }
     }
 }

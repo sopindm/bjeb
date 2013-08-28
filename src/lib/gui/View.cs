@@ -102,6 +102,24 @@ namespace bjeb.gui
 			isShowing = false;
 	    }
 
+		public ViewContainer container
+		{
+			get;
+			set;
+		}
+
+		public void update()
+		{
+			doUpdate();
+
+			if(container != null)
+				container.update();
+		}
+
+		virtual protected void doUpdate()
+		{
+		}
+
 		public View()
 	    {
 			isShowing = true;
@@ -109,6 +127,8 @@ namespace bjeb.gui
 			style = Style.Default;
 			font = new Font();
 			area = new Area();
+
+			container = null;
 	    }
 
 		override protected void doSerialize(net.Stream stream)
@@ -185,11 +205,18 @@ namespace bjeb.gui
 		public void add(View view)
 		{
 			_childs.Add(view);
+			view.container = this;
 		}
 
 		public void remove(View view)
 		{
 			_childs.Remove(view);
+			view.container = null;
+		}
+
+		public void update()
+		{
+			_parent.update();
 		}
 
 		public void clear()

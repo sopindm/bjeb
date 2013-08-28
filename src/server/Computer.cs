@@ -30,17 +30,12 @@ namespace bjeb
 		{			
 			modules = new List<Module>();
 
+			modules.Add(new ASASModule(this));
 			modules.Add(new InfoModule(this));
-			for(int i=0;i<15;i++)
-				modules.Add(new InfoModule(this));
 
 			_switches = new Dictionary<Module, ModuleSwitch>();
 
-			settings = new DebugSettings() { 
-					guiUpdateRate = 30f,
-					updateState = false,
-					updateGui = true,
-					updateWindows = false };
+			settings = new DebugSettings() { guiUpdateRate = 30f, stateUpdateRate = 30f };
 		}
 
 		public void onSetup(Screen screen)

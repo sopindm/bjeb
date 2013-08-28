@@ -40,7 +40,7 @@ namespace bjeb.net
 			return requestSetup(connection, new Screen(width, height));
 	    }
 
-	    public static List<Window> requestGui(Connection connection, Window.OnDrawFinished onWindowFinished)
+	    public static List<Window> requestGui(Connection connection, Window.OnUpdate onUpdate)
 	    {
 			connection.stream.write("gui");
 			connection.flush();
@@ -54,7 +54,7 @@ namespace bjeb.net
 				Window newWindow = new Window();
 				newWindow.deserialize(connection.stream);
 
-				newWindow.onDrawFinished = onWindowFinished;
+				newWindow.onUpdate = onUpdate;
 
 				windows.Add(newWindow);
 			}

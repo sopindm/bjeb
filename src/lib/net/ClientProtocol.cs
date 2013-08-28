@@ -49,6 +49,7 @@ namespace bjeb.net
 		}
 
 		private UpdateHandler _guiUpdateHandler;
+		private UpdateHandler _stateUpdateHandler;
 
 		public ClientProtocol(Client client)
 		{
@@ -56,6 +57,7 @@ namespace bjeb.net
 
 			_settings = new DebugSettings();
 			_guiUpdateHandler = new UpdateHandler(_settings.guiUpdateRate);
+			_stateUpdateHandler = new UpdateHandler(_settings.stateUpdateRate);
 
 			_windows = null;
 
@@ -78,6 +80,7 @@ namespace bjeb.net
 
 			_settings = Protocol.requestSetup(_connection, screen);			
 			_guiUpdateHandler = new UpdateHandler(_settings.guiUpdateRate);
+			_stateUpdateHandler = new UpdateHandler(_settings.stateUpdateRate);
 
 			_background.wait();
 			_background = new Task(() => 
@@ -129,19 +132,28 @@ namespace bjeb.net
 		public void updateWindow(gui.Window window)
 		{
 			if(_settings.updateWindows) 
+			{
+				_background.wait();
+
 				_client.execute(() => Protocol.requestWindowUpdate(window, _connection));
+				_requestGui();
+			}
 		}
 
 		public void updateGui()
 		{
 			if(_guiUpdateHandler.update())
+			{
+				_background.wait();
 				_background.run();
+			}
 		}
 
 		public void updateState(game.Vessel vessel)
 		{
-			if(_settings.updateState)
+			if(_stateUpdateHandler.update() && _settings.updateState)
 			{
+				_background.wait();
 				_client.execute(() => Protocol.requestUpdate(vessel, _connection));
 			}
 		}

@@ -203,6 +203,9 @@ namespace bjeb.gui
 #if UNITY
 			_clicked = GUILayout.Button(text, unityStyle(), area.layoutOptions());
 			_state.update();
+
+			if(_clicked)
+				update();
 #endif
 		}
 
@@ -211,6 +214,9 @@ namespace bjeb.gui
 #if UNITY
 			_clicked = GUI.Button(area.rectangle, text, unityStyle());
 			_state.update();
+
+			if(_clicked)
+				update();
 #endif
 		}
 

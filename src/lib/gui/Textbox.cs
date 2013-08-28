@@ -66,6 +66,7 @@ namespace bjeb.gui
 			{
 				_isUpdated = true;
 				text = newText;
+				update();
 			}
 #endif
 		}
@@ -79,6 +80,7 @@ namespace bjeb.gui
 			{
 				_isUpdated = true;
 				text = newText;
+				update();
 			}
 #endif
 		}

@@ -62,9 +62,9 @@ namespace bjeb.gui
 	    set;
 	}
 
-	public delegate void OnDrawFinished(Window window);
+	public delegate void OnUpdate(Window window);
 
-	public OnDrawFinished onDrawFinished
+	public OnUpdate onUpdate
 	{
 	    get;
 	    set;
@@ -79,6 +79,21 @@ namespace bjeb.gui
 #endif
 	}
 
+	private bool _isUpdated = false;
+
+	public bool isUpdated
+	{
+		get
+		{
+			return _isUpdated;
+		}
+	}
+
+	override protected void doUpdate()
+	{
+		_isUpdated = true;
+	}
+
 	private void drawContext(int id)
 	{
 #if UNITY
@@ -87,8 +102,11 @@ namespace bjeb.gui
 	    if(draggable)
 		GUI.DragWindow();
 
-	    if(onDrawFinished != null)
-		onDrawFinished(this);
+		if(_isUpdated)
+		{
+			onUpdate(this);
+			_isUpdated = false;
+		}
 #endif
 	}
 

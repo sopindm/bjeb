@@ -39,8 +39,7 @@ namespace bjeb.test
 
 			Console.WriteLine("Window ID: " + window.id + " X: " + window.area.x + "Y: " + window.area.y + " Width: " + window.area.width + " Height: " + window.area.height);
 
-			foreach(var w in windows)
-				_protocol.updateWindow(w);
+			_protocol.updateWindow(window);
 
 			_protocol.updateGui();
 		}
