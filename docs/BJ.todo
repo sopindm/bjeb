@@ -1,12 +1,8 @@
 CORE
-+  Activatable/needs energy
-+  Debug mode
-
   Save/Load subsystem:
-    vessels
+    vessels - store GUID in safe file
     vessel types
     space bodies
-    games
     global
 
     cleanup for destroyed vessels
@@ -15,27 +11,47 @@ CORE
     locking modules
     locking module parts
 
-  GUI
-    compact and default view
-	+ views/layouts system
-	+ skins system
+CONTROLLERS
+  Position controller (yaw, pitch, roll, forward, up, right multipliers)
+    Orientation 
+	   Yaw, pitch, roll sensetivity
+	   Available rotation moment
+	   Hold selected orientation (in world space, lock each axis separate, eps for each axis
 
-CONTROLS
-  Smartest SAS
-  Aero-navigation
-  Rover controller
-  RCS translation controller
+    Basic values for available rotation and translation moments
+
+  Rotation (yaw, pitch, roll) controller
+  Translation controller
   Warp controller
-  Burn controller
+  Throttle controller
+    Throttle
+	Prevent overheat
+	Control jets
+  Rover controller
+    Direction
+	Speed
   Staging controller
+    Activate next state
+	Autostaging
   Action-groups controller
-  
+    ASAS
+	RCS
+	Gears
+	Breaks
+	Abort	
+
 STATS
   Ascent stats
   Landing stats
+  Orbit status
   Rendevouz stats
+  Transfer stats
+  Gravyassist
 
 MODULES
+   ASAS
+   Aero SAS
+   Spaceplane module
    Ascent autopilot
    Orbital autopilot (changing Ap/Pe, Inc, Ap/Pe instant)
    Transfer autopilot
