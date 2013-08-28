@@ -54,6 +54,7 @@
     <Compile Include="src\lib\gui\Label.cs" />
     <Compile Include="src\lib\gui\Textbox.cs" />
     <Compile Include="src\lib\gui\Slider.cs" />
+    <Compile Include="src\lib\gui\Space.cs" />
     <Compile Include="src\lib\math\Vector3.cs" />
     <Compile Include="src\lib\math\Quaternion.cs" />
     <Compile Include="src\lib\game\CelestialBody.cs" />

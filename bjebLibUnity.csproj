@@ -47,6 +47,7 @@
     <Compile Include="src\lib\gui\Slider.cs" />
     <Compile Include="src\lib\gui\Layout.cs" />
     <Compile Include="src\lib\gui\Toggle.cs" />
+    <Compile Include="src\lib\gui\Space.cs" />
     <Compile Include="src\lib\net\Connection.cs" />
     <Compile Include="src\lib\net\Serializable.cs" />
     <Compile Include="src\lib\net\Server.cs" />
