@@ -1,9 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using bjeb.util;
 
 namespace bjeb
 {
-	public abstract class BasicModule: PartModule
+	public abstract class BasicModule: PartModule, IComparable<BasicModule>
 	{
         [KSPField(isPersistant = false)]
         public float EnergyConsumption;
@@ -78,6 +81,51 @@ namespace bjeb
 		[KSPField(isPersistant=false, guiActive=true, guiName="gps")]
 		public string _guiFramesPerSecond = "";
 
+		private Vessel _controlled = null;
+
+        bool checkControlledVessel()
+        {
+            if (_controlled == vessel) 
+				return true;
+
+            if (_controlled != null) 
+				_controlled.OnFlyByWire -= onFlyByWire;
+
+            if (vessel != null)
+            {
+                vessel.OnFlyByWire -= onFlyByWire;
+                vessel.OnFlyByWire += onFlyByWire;
+            }
+
+            _controlled = vessel;
+
+            return false;
+        }
+
+        public int importance
+        {
+			get
+			{
+				if (part.State == PartStates.DEAD)
+				{
+					return 0;
+				}
+				else
+				{
+					return GetInstanceID();
+				}
+			}
+        }
+
+        public int CompareTo(BasicModule other)
+        {
+            if (other == null) 
+				return 1;
+
+            return importance.CompareTo(other.importance);
+        }
+
+
 		public override void OnFixedUpdate()
 		{
 			if(!active)
@@ -108,15 +156,47 @@ namespace bjeb
 			if(!_haveResources)
 				return;
 
+            if (vessel == null) 
+				return;
+
+            checkControlledVessel();
+
+            if (this != masterModule())
+                return;
+
 			onUpdate(TimeWarp.fixedDeltaTime);
 		}
 
+		private BasicModule masterModule()
+		{
+            List<Part> parts;
+            if (HighLogic.LoadedSceneIsEditor) 
+				parts = EditorLogic.SortedShipList;
+            else if (vessel == null) 
+				return null;
+            else 
+				parts = vessel.Parts;
+
+            return (from part in parts from module in part.Modules.OfType<BasicModule>() select module).Max();
+        }
+
         public override void OnStart(StartState state)
         {
+            if (state == PartModule.StartState.None) 
+				return;
+
             if (state != StartState.Editor)
                 RenderingManager.AddToPostDrawQueue(0, drawGUI);
 
 			part.force_activate();
+
+            if (vessel != null)
+            {
+                vessel.OnFlyByWire -= onFlyByWire;
+                vessel.OnFlyByWire += onFlyByWire;
+
+                _controlled = vessel;
+            }
         }
 
 		abstract protected void onUpdate(double delta);
@@ -129,13 +209,17 @@ namespace bjeb
 			if(!isActive)
 				return;
 
-            if (vessel == null)
+            if(vessel == null)
                 return;
 
-            if (vessel != FlightGlobals.ActiveVessel)
+            if(vessel != FlightGlobals.ActiveVessel)
                 return;
 
-			onDraw();
+			if(this != masterModule())
+				return;
+
+			if(HighLogic.LoadedSceneIsEditor || (FlightGlobals.ready && (vessel == FlightGlobals.ActiveVessel) && (part.State != PartStates.DEAD)))
+				onDraw();
 
 			_guiTimer.update();
 			_guiFramesPerSecond = _guiTimer.rate.ToString("F1");
@@ -145,5 +229,57 @@ namespace bjeb
 		{
 			_guiTimer = new Timer();
 		}
+
+        public void OnDestroy()
+		{
+            if (vessel != null)
+                vessel.OnFlyByWire -= onFlyByWire;
+
+            _controlled = null;
+        }
+
+        public void checkFlightCtrlState(FlightCtrlState s)
+        {
+            if (float.IsNaN(s.mainThrottle)) 
+				s.mainThrottle = 0;
+            if (float.IsNaN(s.yaw)) 
+				s.yaw = 0;
+            if (float.IsNaN(s.pitch)) 
+				s.pitch = 0;
+            if (float.IsNaN(s.roll)) 
+				s.roll = 0;
+            if (float.IsNaN(s.X)) 
+				s.X = 0;
+            if (float.IsNaN(s.Y)) 
+				s.Y = 0;
+            if (float.IsNaN(s.Z)) 
+				s.Z = 0;
+
+            s.mainThrottle = Mathf.Clamp01(s.mainThrottle);
+            s.yaw = Mathf.Clamp(s.yaw, -1, 1);
+            s.pitch = Mathf.Clamp(s.pitch, -1, 1);
+            s.roll = Mathf.Clamp(s.roll, -1, 1);
+            s.X = Mathf.Clamp(s.X, -1, 1);
+            s.Y = Mathf.Clamp(s.Y, -1, 1);
+            s.Z = Mathf.Clamp(s.Z, -1, 1);
+        }
+
+		abstract protected void onDrive(FlightCtrlState s);
+
+        private void onFlyByWire(FlightCtrlState s)
+        {
+            if (!checkControlledVessel() || this != masterModule())
+            {
+                return;
+            }
+
+			onDrive(s);
+            checkFlightCtrlState(s);
+
+            if (vessel == FlightGlobals.ActiveVessel)
+            {
+                FlightInputHandler.state.mainThrottle = s.mainThrottle;
+            }
+        }
 	}
 }

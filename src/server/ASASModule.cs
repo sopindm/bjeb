@@ -121,12 +121,15 @@ namespace bjeb
 		{
 			Layout optionsLayout = Layout.makeHorizontal();
 			
-			optionsLayout.views.add(new Toggle("OFF", false));
+			optionsLayout.views.add(new Button("OFF"));
 
 			optionsLayout.views.add(new Space());
 
-			Toggle grabInputToggle = new Toggle("GRAB", false);
-			grabInputToggle.area.width = 80;
+			optionsLayout.views.add(new Button("SIM"));
+
+			optionsLayout.views.add(new Space());
+
+			var grabInputToggle = new Button("GRAB");
 			
 			optionsLayout.views.add(grabInputToggle);
 

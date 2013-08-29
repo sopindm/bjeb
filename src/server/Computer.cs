@@ -157,6 +157,11 @@ namespace bjeb
 		    foreach(var module in modules)
 				module.update(vessel);
 		}
+
+		public void onControl(FlightControl control)
+		{
+			control.yaw = 1.0f;
+		}
 	}
 }
 

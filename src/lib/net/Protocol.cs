@@ -19,6 +19,7 @@ namespace bjeb.net
 		}
 
 	    void onUpdate(game.Vessel vessel);
+		void onControl(game.FlightControl control);
 	}
 
 	public partial class Protocol
@@ -90,6 +91,15 @@ namespace bjeb.net
 
 			connection.flush();
 	    }
+
+		public static void requestControl(game.FlightControl c, Connection connection)
+		{
+			connection.stream.write("control");
+			c.serialize(connection.stream);
+			connection.flush();
+
+			c.deserialize(connection.stream);
+		}
 	}
 	
 	public partial class Protocol
@@ -112,6 +122,9 @@ namespace bjeb.net
 				break;
 			case "update":
 				handleUpdate(connection, server);
+				break;
+			case "control":
+				handleControl(connection, server);
 				break;
 			}
 	    }
@@ -176,5 +189,16 @@ namespace bjeb.net
 
 			server.onUpdate(vessel);
 	    }
+
+		private static void handleControl(Connection connection, IServer server)
+		{
+			var control = new game.FlightControl();
+			control.deserialize(connection.stream);
+
+			server.onControl(control);
+
+			control.serialize(connection.stream);
+			connection.flush();
+		}
 	}
 }

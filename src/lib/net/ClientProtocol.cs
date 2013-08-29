@@ -129,6 +129,16 @@ namespace bjeb.net
 			_client.execute(() => _windows = Protocol.requestGui(_connection, updateWindow));
 		}
 
+		public void requestControl(game.FlightControl control)
+		{
+			if(_settings.control)
+			{
+				_background.wait();
+				
+				_client.execute(() => Protocol.requestControl(control, _connection));
+			}
+		}
+
 		public void updateWindow(gui.Window window)
 		{
 			if(_settings.updateWindows) 

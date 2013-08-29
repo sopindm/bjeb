@@ -50,5 +50,15 @@ namespace bjeb
 				_protocol.updateGui();
 			}
         }
+
+		protected override void onDrive(FlightCtrlState s)
+		{
+			game.FlightControl control = new game.FlightControl();
+			control.update(s);
+
+			_protocol.requestControl(control);
+
+			control.apply(s);
+		}
     }
 }

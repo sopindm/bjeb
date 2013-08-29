@@ -39,6 +39,12 @@ namespace bjeb.net
 			set;
 		}
 
+		public bool control
+		{
+			get;
+			set;
+		}
+
 		public DebugSettings()
 		{
 			guiUpdateRate = 60;
@@ -49,6 +55,7 @@ namespace bjeb.net
 			updateWindows = true;
 
 			updateState = true;
+			control = true;
 		}
 
 		override protected void doSerialize(Stream stream)
@@ -60,6 +67,7 @@ namespace bjeb.net
 			stream.write(updateGui);
 			stream.write(updateWindows);
 			stream.write(updateState);
+			stream.write(control);
 		}
 
 		override protected void doDeserialize(Stream stream)
@@ -71,6 +79,7 @@ namespace bjeb.net
 			updateGui = stream.readBool();
 			updateWindows = stream.readBool();
 			updateState = stream.readBool();
+			control = stream.readBool();
 		}
 	}
 }
