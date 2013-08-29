@@ -32,6 +32,7 @@ namespace bjeb
 
 			modules.Add(new ASASModule(this));
 			modules.Add(new InfoModule(this));
+			modules.Add(new OrientationController(this));
 
 			_switches = new Dictionary<Module, ModuleSwitch>();
 
