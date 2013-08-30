@@ -112,5 +112,9 @@ namespace bjeb
 		{
 			get;
 		}
+
+		virtual public void onControl(FlightControl c)
+		{
+		}
 	}
 }

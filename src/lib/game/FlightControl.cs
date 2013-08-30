@@ -51,6 +51,23 @@ namespace bjeb.game
 			set;
 		}
 
+		public FlightControl copy()
+		{
+			FlightControl ret = new FlightControl();
+
+			ret.throttle = throttle;
+
+			ret.yaw = yaw;
+			ret.pitch = pitch;
+			ret.roll = roll;
+
+			ret.dx = dx;
+			ret.dy = dy;
+			ret.dz = dz;
+
+			return ret;
+		} 
+
 #if UNITY
 		public void update(global::FlightCtrlState s)
 		{

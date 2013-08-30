@@ -24,6 +24,8 @@ namespace bjeb
 			_layout.views.add(nameLabel);
 
 			_valueLabel = new Label();
+			_valueLabel.area.width = 150;
+
 			_layout.views.add(_valueLabel);
 
 			_updateHandler = onUpdate;
@@ -62,8 +64,8 @@ namespace bjeb
 			_stats.Clear();
 
 			_stats.Add(new StatLabel("Mass", (() => vessel.body.mass.ToString("F2") + " t")));
-			_stats.Add(new StatLabel("Angular momentum", (() => vessel.body.angularMomentum.ToString())));
-			_stats.Add(new StatLabel("Momentum of inertia", (() => vessel.body.momentumOfInertia.ToString())));
+			_stats.Add(new StatLabel("Forward", (() => vessel.rotation.forward.ToString())));
+			_stats.Add(new StatLabel("Up", (() => vessel.up.ToString())));
 
 			_statsLayout.views.clear();
 			_statsLayout.style = Style.TextArea;

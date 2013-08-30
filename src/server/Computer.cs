@@ -161,7 +161,9 @@ namespace bjeb
 
 		public void onControl(FlightControl control)
 		{
-			control.yaw = 1.0f;
+			foreach(var module in modules)
+				if(module.isShowing)
+					module.onControl(control);
 		}
 	}
 }
