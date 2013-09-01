@@ -39,6 +39,7 @@
     <Compile Include="src\server\ASASModule.cs" />
     <Compile Include="src\server\InfoModule.cs" />
     <Compile Include="src\server\OrientationController.cs" />
+    <Compile Include="src\server\PIDController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

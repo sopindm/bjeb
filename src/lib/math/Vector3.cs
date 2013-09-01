@@ -12,8 +12,8 @@ namespace bjeb.math
 	}
 
         
-        [net.Serializable(14)]
-        public class Vector3: Serializable
+	[net.Serializable(14)]
+	public class Vector3: Serializable
 	{
 		public Vector3(): this(0, 0, 0)
 		{
@@ -31,7 +31,7 @@ namespace bjeb.math
 		}
 
 		#if UNITY
-        public Vector3(UnityEngine.Vector3 vector):this(vector.x, vector.y, vector.z)
+		public Vector3(UnityEngine.Vector3 vector):this(vector.x, vector.y, vector.z)
 		{
 		}
 		#endif
@@ -61,9 +61,32 @@ namespace bjeb.math
 			return v * x;
 		}
 
+		public static Vector3 operator*(Vector3 v1, Vector3 v2)
+		{
+			return new Vector3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
+		}
+
 		public static Vector3 operator/(Vector3 v, double x)
 		{
 			return new Vector3(v.x / x, v.y / x, v.z / x);
+		}
+
+		public Vector3 sign
+		{
+			get
+			{
+				return new Vector3(x > 0 ? 1 : -1,
+								   y > 0 ? 1 : -1,
+								   z > 0 ? 1 : -1);
+			}
+		}
+
+		public Vector3 invert
+		{
+			get
+			{
+				return new Vector3(1 / x, 1 / y, 1 / z);
+			}
 		}
 
 		public bool equals(Vector3 v)
@@ -151,6 +174,24 @@ namespace bjeb.math
 
 				return this / mag;
 			}
+		}
+
+		private static double clamp1(double val, double min, double max)
+		{
+			if(val > max)
+				return max;
+
+			if(val < min)
+				return min;
+
+			return val;
+		}
+
+		public Vector3 clamp(double min, double max)
+		{
+			return new Vector3(clamp1(x, min, max), 
+							   clamp1(y, min, max),
+							   clamp1(z, min, max));
 		}
 
 		public double dot(Vector3 vector)
@@ -270,14 +311,14 @@ namespace bjeb.math
 			return "(" + x.ToString("F2") + ", " + y.ToString("F2") + ", " + z.ToString("F2") + ")";
 		}
 
-	        override protected void doSerialize(Stream stream)
+		override protected void doSerialize(Stream stream)
 		{
 		    stream.write(x);
 		    stream.write(y);
 		    stream.write(z);
 		}
 
-	        override protected void doDeserialize(Stream stream)
+		override protected void doDeserialize(Stream stream)
 		{
 		    x = stream.readDouble();
 		    y = stream.readDouble();

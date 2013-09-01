@@ -25,6 +25,12 @@ namespace bjeb.game
 			private set;
 		}
 
+		public double timeDelta
+		{
+			get;
+			private set;
+		}
+
 		public Vector3 momentumOfInertia
 		{
 			get;
@@ -53,6 +59,7 @@ namespace bjeb.game
 		    torque.serialize(stream);
 		    momentumOfInertia.serialize(stream);
 		    angularMomentum.serialize(stream);
+			stream.write(timeDelta);
 		}
 
 		override protected void doDeserialize(Stream stream)
@@ -62,6 +69,7 @@ namespace bjeb.game
 		    torque.deserialize(stream);
 		    momentumOfInertia.deserialize(stream);
 		    angularMomentum.deserialize(stream);
+			timeDelta = stream.readDouble();
 		}
 
 #if UNITY
@@ -73,6 +81,8 @@ namespace bjeb.game
 			torque = new Vector3(0, 0, 0);
 			momentumOfInertia = new Vector3(0, 0, 0);
 			angularMomentum = new Vector3(0, 0, 0);
+
+			timeDelta = TimeWarp.fixedDeltaTime;
 
 			foreach(Part p in vessel.parts)
             {

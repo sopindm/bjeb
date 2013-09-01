@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using bjeb.gui;
 using bjeb.game;
+using bjeb.math;
 
 namespace bjeb
 {
@@ -83,7 +85,17 @@ namespace bjeb
 		}
 
 		private Selector _sensetivity;
-		private Selector _inertia;
+
+		private Selector _x;
+		private Selector _y;
+		private Selector _z;
+		private Selector _roll;
+
+		private Label _actLabel;
+
+		private PIDController _controllerX;
+		private PIDController _controllerY;
+		private PIDController _controllerZ;
 
 		override protected void onSetup(Screen screen)
 		{
@@ -91,40 +103,90 @@ namespace bjeb
 			content.views.clear();
 
 			_sensetivity = new Selector(0.1f, 1, 10, "Sensetivity");
-			_inertia = new Selector(1, 1, 10, "Inertia");
+
+			_x = new Selector(-1, -1, 1, "X");
+			_y = new Selector(-1, -1, 1, "Y");
+			_z = new Selector(-1, -1, 1, "Z");
+			_roll = new Selector(0, 0, (float)(2 * Math.PI), "Roll");
 
 			content.views.add(_sensetivity.view);
-			content.views.add(_inertia.view);
-			content.views.add(new Selector(-1, -1, 1, "X").view);
-			content.views.add(new Selector(-1, -1, 1, "Y").view);
-			content.views.add(new Selector(-1, -1, 1, "Z").view);
 
-			_lastControl = null;
+			content.views.add(_x.view);
+			content.views.add(_y.view);
+			content.views.add(_z.view);
+			content.views.add(_roll.view);
+
+			_actLabel = new Label("");
+
+			content.views.add(_actLabel);
+
+			_controllerX = new PIDController(100, 0, 8000, -1000000, 1000000);
+			_controllerY = new PIDController(100, 0, 8000, -1000000, 1000000);
+			_controllerZ = new PIDController(100, 0, 8000, -1000000, 1000000);
 		}
+
+		Vector3 _act = null;
+		private double _lastRoll = 0;
 
 		override protected void onUpdate()
 		{
+            double rollDelta = Math.Abs(vessel.rotation.roll - _lastRoll);
+
+            if (rollDelta > Math.PI) 
+				rollDelta = 2 * Math.PI - rollDelta;
+
+            if (rollDelta > Math.PI / 36)
+            {
+				_controllerX.reset();
+				_controllerY.reset();
+
+                _lastRoll = vessel.rotation.roll;
+            }
+
+            double precision = Math.Max(0.5, Math.Min(10.0, Math.Min(vessel.body.torque.x, vessel.body.torque.y) * 20.0 / vessel.body.momentumOfInertia.magnitude));
+
+			Quaternion target = Quaternion.look(vessel.north, vessel.up);
+			target = target * Quaternion.makeRoll(_roll.value);
+
+            Quaternion delta = (target.inverse * vessel.rotation).inverse;
+
+            Vector3 err = new Vector3((delta.pitch > Math.PI ? (delta.pitch - 2 * Math.PI) : delta.pitch),
+									  (delta.yaw > Math.PI ? (delta.yaw - 2 * Math.PI) : delta.yaw),
+									  (delta.roll > Math.PI ? (delta.roll - 2 * Math.PI) : delta.roll));
+				
+            Vector3 torque = vessel.body.torque;
+
+            Vector3 inertia = vessel.body.angularMomentum.sign * vessel.body.angularMomentum * vessel.body.angularMomentum * (torque * vessel.body.momentumOfInertia).invert;
+
+			err += inertia;
+			err *= vessel.body.momentumOfInertia * torque.invert;
+
+            _act = new Vector3(_controllerX.compute(err.x, vessel.body.timeDelta), 
+							   _controllerY.compute(err.y, vessel.body.timeDelta),
+							   _controllerZ.compute(err.z, vessel.body.timeDelta));
+
+			double limit = Math.Max(-1, Math.Min(1, (err.magnitude * 10000 / precision)));
+
+			_act = _act.clamp(-limit, limit);
 		}
 
-		private FlightControl _lastControl = null;
+		private void controlRotation(FlightControl control)
+		{
+			if(_act == null)
+				return;
+
+			control.yaw = (float)_act.y;
+			control.pitch = (float)_act.x;
+			control.roll = (float)_act.z;
+		}
 
 		override public void onControl(FlightControl control)
 		{
+			controlRotation(control);
+
 			control.yaw *= _sensetivity.value;
 			control.pitch *= _sensetivity.value;
 			control.roll *= _sensetivity.value;
-
-			if(_lastControl != null)
-			{
-				float a = 1 / (_inertia.value * _inertia.value);
-				a = a * a;
-
-				control.yaw = control.yaw * a + _lastControl.yaw * (1 - a);
-				control.pitch = control.pitch * a + _lastControl.pitch * (1 - a);
-				control.roll = control.roll * a + _lastControl.roll * (1 - a);
-			}
-
-			_lastControl = control.copy();
 		}
 
 		override public string name

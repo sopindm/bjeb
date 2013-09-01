@@ -273,6 +273,9 @@ namespace bjeb
                 return;
             }
 
+			if(!isActive)
+				return;
+
 			onDrive(s);
             checkFlightCtrlState(s);
 

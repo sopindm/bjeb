@@ -174,11 +174,21 @@ namespace bjeb.math
 			return angleAxis(angle, Vector3.right);
 		}
 
+		public static Quaternion makeRoll(double angle)
+		{
+			return angleAxis(-angle, Vector3.forward);
+		}
+
 		public double yaw
 		{
 			get
 			{
-				double ret = Vector3.right.angleInPlane(Vector3.up.cross(this * Vector3.forward), Vector3.up);
+				Vector3 cross = Vector3.up.cross(this * Vector3.forward);
+
+				if(cross.magnitude < 1e-1)
+					return 0;
+
+				double ret = Vector3.right.angleInPlane(cross, Vector3.up);
 
 				if(ret < 0)
 					ret = 2 * Math.PI + ret;
