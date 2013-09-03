@@ -35,6 +35,12 @@
   <ItemGroup>
     <Compile Include="src/plugin/BasicModule.cs" />
     <Compile Include="src/plugin/Core.cs" />
+    <Compile Include="src/plugin/MechJebModuleAttitudeController.cs" />
+    <Compile Include="src/plugin/PIDController.cs" />
+    <Compile Include="src/plugin/VesselState.cs" />
+    <Compile Include="src/plugin/MathExtensions.cs" />
+    <Compile Include="src/plugin/MuUtils.cs" />
+    <Compile Include="src/plugin/PartExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">

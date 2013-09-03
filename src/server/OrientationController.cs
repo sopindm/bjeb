@@ -120,9 +120,9 @@ namespace bjeb
 
 			content.views.add(_actLabel);
 
-			_controllerX = new PIDController(100, 0, 8000, -1000000, 1000000);
-			_controllerY = new PIDController(100, 0, 8000, -1000000, 1000000);
-			_controllerZ = new PIDController(100, 0, 8000, -1000000, 1000000);
+			_controllerX = new PIDController(10000, 0, 800, -1000000, 1000000);
+			_controllerY = new PIDController(10000, 0, 800, -1000000, 1000000);
+			_controllerZ = new PIDController(10000, 0, 800, -1000000, 1000000);
 		}
 
 		Vector3 _act = null;
@@ -154,20 +154,27 @@ namespace bjeb
 									  (delta.yaw > Math.PI ? (delta.yaw - 2 * Math.PI) : delta.yaw),
 									  (delta.roll > Math.PI ? (delta.roll - 2 * Math.PI) : delta.roll));
 				
+
             Vector3 torque = vessel.body.torque;
 
-            Vector3 inertia = vessel.body.angularMomentum.sign * vessel.body.angularMomentum * vessel.body.angularMomentum * (torque * vessel.body.momentumOfInertia).invert;
-
+            Vector3 inertia = vessel.body.angularMomentum.sign * vessel.body.angularMomentum * vessel.body.angularMomentum * (vessel.body.momentumOfInertia * torque).invert;
 			err += inertia;
 			err *= vessel.body.momentumOfInertia * torque.invert;
 
-            _act = new Vector3(_controllerX.compute(err.x, vessel.body.timeDelta), 
-							   _controllerY.compute(err.y, vessel.body.timeDelta),
-							   _controllerZ.compute(err.z, vessel.body.timeDelta));
+            Vector3 newAct = new Vector3(_controllerX.compute(err.x, vessel.body.timeDelta), 
+										 _controllerY.compute(err.y, vessel.body.timeDelta),
+										 _controllerZ.compute(err.z, vessel.body.timeDelta));
 
-			double limit = Math.Max(-1, Math.Min(1, (err.magnitude * 10000 / precision)));
+			double limit = Math.Max(-1, Math.Min(1, (err.magnitude * 100 / precision)));
 
-			_act = _act.clamp(-limit, limit);
+			newAct = newAct.clamp(-limit, limit);
+
+			//			if(_act != null)
+			//_act = _act + (newAct - _act) * (vessel.body.timeDelta / 0.1);
+			//else
+			_act = newAct;
+
+			_actLabel.text = (inertia * vessel.body.momentumOfInertia * torque.invert).ToString();	
 		}
 
 		private void controlRotation(FlightControl control)
@@ -176,6 +183,9 @@ namespace bjeb
 				return;
 
 			control.yaw = (float)_act.y;
+			if(Math.Abs(control.yaw) < 0.05)
+				control.yaw = 0;
+
 			control.pitch = (float)_act.x;
 			control.roll = (float)_act.z;
 		}

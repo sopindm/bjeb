@@ -8,10 +8,13 @@ namespace bjeb
     public class BJeb: BasicModule
     {
 		private net.ClientProtocol _protocol;
+		private MuMech.MechJebModuleAttitudeController _controller;
 
 		private void onConnectionSetup()
 		{
 			_protocol.setup(Screen.width, Screen.height);
+
+			_controller = new MuMech.MechJebModuleAttitudeController();
 		}
 
 		public override void OnStart(StartState state)
@@ -36,6 +39,7 @@ namespace bjeb
 				statusMessage = "No connection";
 
 			_protocol.updateState(vessel);
+			_controller.Update(this.vessel);
 		}
 
         protected override void onDraw()
@@ -59,6 +63,8 @@ namespace bjeb
 			_protocol.requestControl(control);
 
 			control.apply(s);
+
+			_controller.Drive(s);
 		}
     }
 }
