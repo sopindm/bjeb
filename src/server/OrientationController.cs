@@ -148,7 +148,7 @@ namespace bjeb
 			Quaternion target = Quaternion.look(vessel.north, vessel.up);
 			target = target * Quaternion.makeRoll(_roll.value);
 
-            Quaternion delta = (target.inverse * vessel.rotation).inverse;
+            Quaternion delta = (vessel.rotation.inverse * target).inverse;
 
             Vector3 err = new Vector3((delta.pitch > Math.PI ? (delta.pitch - 2 * Math.PI) : delta.pitch),
 									  (delta.yaw > Math.PI ? (delta.yaw - 2 * Math.PI) : delta.yaw),

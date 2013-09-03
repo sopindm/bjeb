@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using bjeb.math;
+using UnityEngine;
 
 namespace MuMech
 {
@@ -45,29 +45,20 @@ namespace MuMech
 			vesselState.Update(vessel);
 		}
 
-        public void Drive(FlightCtrlState s)
+        public void Drive(bjeb.game.Vessel bv, FlightCtrlState s)
         {
             // Used in the killRot activation calculation and drive_limit calculation
-            double precision = Math.Max(
-                0.5,
-                Math.Min(
-                10.0,
-                (Math.Min(
-                vesselState.torqueAvailable.x,
-                vesselState.torqueAvailable.z
-            ) + vesselState.torqueThrustPYAvailable * s.mainThrottle) * 20.0 / vesselState.MoI.magnitude
-            )
-            );
+            double precision = Math.Max(0.5, Math.Min(10.0, (Math.Min(bv.body.torque.x, bv.body.torque.y) * 20.0 / vesselState.MoI.magnitude)));
 
             // Reset the PID controller during roll to keep pitch and yaw errors
             // from accumulating on the wrong axis.
-            double rollDelta = Mathf.Abs((float)(vesselState.vesselRoll - lastResetRoll));
-            if (rollDelta > 180)
-                rollDelta = 360 - rollDelta;
-            if (rollDelta > 5)
+            double rollDelta = Mathf.Abs((float)(bv.surfaceRotation.roll - lastResetRoll));
+            if (rollDelta > Math.PI)
+                rollDelta = 2 * Math.PI - rollDelta;
+            if (rollDelta > Math.PI / 36)
             {
                 pid.Reset();
-                lastResetRoll = vesselState.vesselRoll;
+                lastResetRoll = bv.surfaceRotation.roll;
             }
 
             // Direction we want to be facing

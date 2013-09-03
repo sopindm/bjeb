@@ -30,16 +30,20 @@ namespace bjeb
             base.OnLoad(sfsNode);
 		}
 
+		private game.Vessel _vessel = null;
+
 		protected override void onUpdate(double delta)
 		{
-			game.Vessel vessel = new game.Vessel();
-			vessel.update(this.vessel);
+			if(_vessel == null)
+				_vessel = new game.Vessel();
+
+			_vessel.update(this.vessel);
 
 			if(!_protocol.connected)
 				statusMessage = "No connection";
 
-			_protocol.updateState(vessel);
-			_controller.Update(this.vessel);
+			_protocol.updateState(_vessel);
+			_controller.Update(vessel);
 		}
 
         protected override void onDraw()
@@ -64,7 +68,7 @@ namespace bjeb
 
 			control.apply(s);
 
-			_controller.Drive(s);
+			_controller.Drive(_vessel, s);
 		}
     }
 }
