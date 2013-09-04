@@ -43,7 +43,6 @@ namespace bjeb
 				statusMessage = "No connection";
 
 			_protocol.updateState(_vessel);
-			_controller.Update(vessel);
 		}
 
         protected override void onDraw()
@@ -67,10 +66,9 @@ namespace bjeb
 			_vessel.updateState(this.vessel);
 
 			_protocol.requestControl(control);
-
+			_controller.drive(_vessel, control);
+			
 			control.apply(s);
-
-			_controller.Drive(_vessel, s);
 		}
     }
 }
