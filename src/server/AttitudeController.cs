@@ -93,9 +93,7 @@ namespace bjeb
 
 		private Label _actLabel;
 
-		private PIDController _controllerX;
-		private PIDController _controllerY;
-		private PIDController _controllerZ;
+		private PIDControllerV _controller;
 
 		override protected void onSetup(Screen screen)
 		{
@@ -120,79 +118,87 @@ namespace bjeb
 
 			content.views.add(_actLabel);
 
-			_controllerX = new PIDController(10000, 0, 800, -1000000, 1000000);
-			_controllerY = new PIDController(10000, 0, 800, -1000000, 1000000);
-			_controllerZ = new PIDController(10000, 0, 800, -1000000, 1000000);
+			_controller = new PIDControllerV(10000, 0, 800, -1000000, 1000000);
 		}
-
-		Vector3 _act = null;
-		private double _lastRoll = 0;
 
 		override protected void onUpdate()
 		{
-            double rollDelta = Math.Abs(vessel.rotation.roll - _lastRoll);
+		}
 
-            if (rollDelta > Math.PI) 
-				rollDelta = 2 * Math.PI - rollDelta;
+		private Vector3 _act = Vector3.zero;
+		private double _lastRoll = 0;
 
+        private const double Tf = 0.1;
+        private const double driveFactor = 100000;
+
+        private void drive(FlightControl c)
+        {
+            double rollDelta = Math.Abs(vessel.surfaceRotation.roll - _lastRoll);
+            if (rollDelta > Math.PI)
+                rollDelta = 2 * Math.PI - rollDelta;
             if (rollDelta > Math.PI / 36)
             {
-				_controllerX.reset();
-				_controllerY.reset();
-
-                _lastRoll = vessel.rotation.roll;
+                _controller.reset();
+                _lastRoll = vessel.surfaceRotation.roll;
             }
 
-            double precision = Math.Max(0.5, Math.Min(10.0, Math.Min(vessel.body.torque.x, vessel.body.torque.y) * 20.0 / vessel.body.momentumOfInertia.magnitude));
-
+            // Direction we want to be facing
 			Quaternion target = Quaternion.look(vessel.north, vessel.up);
-			target = target * Quaternion.makeRoll(_roll.value);
+			Quaternion delta = target.inverse * vessel.rotation;
 
-            Quaternion delta = (vessel.rotation.inverse * target).inverse;
-
-            Vector3 err = new Vector3((delta.pitch > Math.PI ? (delta.pitch - 2 * Math.PI) : delta.pitch),
-									  (delta.yaw > Math.PI ? (delta.yaw - 2 * Math.PI) : delta.yaw),
-									  (delta.roll > Math.PI ? (delta.roll - 2 * Math.PI) : delta.roll));
-				
+            Vector3 err = new Vector3(-((delta.pitch > Math.PI) ? (delta.pitch - 2 * Math.PI) : delta.pitch),
+									  -((delta.yaw > Math.PI) ? (delta.yaw - 2 * Math.PI) : delta.yaw),
+									  -((delta.roll > Math.PI) ? (delta.roll - 2 * Math.PI) : delta.roll));
 
             Vector3 torque = vessel.body.torque;
 
-            Vector3 inertia = vessel.body.angularMomentum.sign * vessel.body.angularMomentum * vessel.body.angularMomentum * (vessel.body.momentumOfInertia * torque).invert;
-			err += inertia;
+            Vector3 inertia = vessel.body.angularMomentum.sign *
+				vessel.body.angularMomentum * vessel.body.angularMomentum * 
+				(torque * vessel.body.momentumOfInertia).invert;
+
+            err += inertia;
 			err *= vessel.body.momentumOfInertia * torque.invert;
 
-            Vector3 newAct = new Vector3(_controllerX.compute(err.x, vessel.body.timeDelta), 
-										 _controllerY.compute(err.y, vessel.body.timeDelta),
-										 _controllerZ.compute(err.z, vessel.body.timeDelta));
+            Vector3 act = _controller.compute(err, vessel.body.timeDelta);
 
-			double limit = Math.Max(-1, Math.Min(1, (err.magnitude * 100 / precision)));
+            double precision = (Math.Min(vessel.body.torque.x, vessel.body.torque.y) * 20.0 / vessel.body.momentumOfInertia.magnitude).clamp(0.5, 10);
+            double driveLimit = (err.magnitude * driveFactor / precision).clamp(0, 1);
 
-			newAct = newAct.clamp(-limit, limit);
+			act = act.clamp(-driveLimit, driveLimit);
 
-			//			if(_act != null)
-			//_act = _act + (newAct - _act) * (vessel.body.timeDelta / 0.1);
-			//else
-			_act = newAct;
+            act = _act + (act - _act) * (vessel.body.timeDelta / Tf);
 
-			_actLabel.text = vessel.rootRotation.ToString();	
-		}
+            setControls(act, c, driveLimit);
 
-		private void controlRotation(FlightControl control)
-		{
-			if(_act == null)
-				return;
+            _act = new Vector3(c.pitch, c.yaw, c.roll);
+        }
 
-			control.yaw = (float)_act.y;
-			if(Math.Abs(control.yaw) < 0.05)
-				control.yaw = 0;
+        private void setControls(Vector3 act, FlightControl c, double driveLimit)
+        {
+			if (!double.IsNaN(act.z)) 
+				c.roll = (float)act.z.clamp(-driveLimit, driveLimit);
 
-			control.pitch = (float)_act.x;
-			control.roll = (float)_act.z;
-		}
+			if (Math.Abs(c.roll) < 0.05)
+				c.roll = 0;
+
+			if (!double.IsNaN(act.x))
+				c.pitch = (float)act.x.clamp(-driveLimit, driveLimit);
+
+			if (Math.Abs(c.pitch) < 0.05)
+				c.pitch = 0;
+
+			if (!double.IsNaN(act.y)) 
+				c.yaw = (float)act.y.clamp(-driveLimit, driveLimit);
+
+			if (Math.Abs(c.yaw) < 0.05)
+			{
+				c.yaw = 0;
+			}
+        }
 
 		override public void onControl(FlightControl control)
 		{
-			controlRotation(control);
+			drive(control);
 
 			control.yaw *= _sensetivity.value;
 			control.pitch *= _sensetivity.value;
