@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using bjeb.math;
 
-namespace bjeb;
+namespace bjeb
 {
     public class AttitudeController
     {
@@ -28,7 +28,7 @@ namespace bjeb;
                 rollDelta = 2 * Math.PI - rollDelta;
             if (rollDelta > Math.PI / 36)
             {
-                _pid.Reset();
+                _pid.reset();
                 _lastRoll = vessel.surfaceRotation.roll;
             }
 
@@ -49,7 +49,7 @@ namespace bjeb;
             err += inertia;
 			err *= vessel.body.momentumOfInertia * torque.invert;
 
-            Vector3 act = new Vector3(_pid.Compute(err.unity));
+            Vector3 act = _pid.compute(err, vessel.body.timeDelta);
 
             double precision = (Math.Min(vessel.body.torque.x, vessel.body.torque.y) * 20.0 / vessel.body.momentumOfInertia.magnitude).clamp(0.5, 10);
             double driveLimit = (err.magnitude * driveFactor / precision).clamp(0, 1);

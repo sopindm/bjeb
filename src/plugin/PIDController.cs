@@ -2,122 +2,93 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
+using bjeb.math;
 
-namespace MuMech
+namespace bjeb
 {
-    public class PIDController : IConfigNode
+    public class PIDController
     {
-        public double prevError, intAccum, Kp, Ki, Kd, max, min;
+		private double _lastError;
+		private double _intAccum;
 
-        public PIDController(double Kp = 0, double Ki = 0, double Kd = 0, double max = double.MaxValue, double min = double.MinValue)
+		private double Kp, Ki, Kd;
+		private double _min, _max;
+
+        public PIDController(double Kp, double Ki, double Kd, double max = double.MaxValue, double min = double.MinValue)
         {
             this.Kp = Kp;
             this.Ki = Ki;
             this.Kd = Kd;
-            this.max = max;
-            this.min = min;
-            Reset();
+            this._max = max;
+            this._min = min;
+
+            reset();
         }
 
-        public double Compute(double error)
+        public double compute(double error, double delta)
         {
-            intAccum += error * TimeWarp.fixedDeltaTime;
-            double action = (Kp * error) + (Ki * intAccum) + (Kd * (error - prevError) / TimeWarp.fixedDeltaTime);
-            double clamped = Math.Max(min, Math.Min(max, action));
+            _intAccum += error * delta;
+
+            double action = (Kp * error) + (Ki * _intAccum) + (Kd * (error - _lastError) / delta);
+
+            double clamped = action.clamp(_min, _max);
             if (clamped != action)
-            {
-                intAccum -= error * TimeWarp.fixedDeltaTime;
-            }
-            prevError = error;
+                _intAccum -= error *delta;
+
+            _lastError = error;
 
             return action;
         }
 
-        public void Reset()
+        public void reset()
         {
-            prevError = intAccum = 0;
-        }
-
-        public void Load(ConfigNode node)
-        {
-            if (node.HasValue("Kp"))
-            {
-                Kp = Convert.ToDouble(node.GetValue("Kp"));
-            }
-            if (node.HasValue("Ki"))
-            {
-                Ki = Convert.ToDouble(node.GetValue("Ki"));
-            }
-            if (node.HasValue("Kd"))
-            {
-                Kd = Convert.ToDouble(node.GetValue("Kd"));
-            }
-        }
-
-        public void Save(ConfigNode node)
-        {
-            node.SetValue("Kp", Kp.ToString());
-            node.SetValue("Ki", Ki.ToString());
-            node.SetValue("Kd", Kd.ToString());
+			_lastError = 0;
+			_intAccum = 0;
         }
     }
 
-    public class PIDControllerV : IConfigNode
+    public class PIDControllerV
     {
-        public Vector3d prevError, intAccum;
-        public double Kp, Ki, Kd, max, min;
+		private Vector3 _lastError;
+		private Vector3 _intAccum;
 
-        public PIDControllerV(double Kp = 0, double Ki = 0, double Kd = 0, double max = double.MaxValue, double min = double.MinValue)
+		private double Kp, Ki, Kd;
+		private double _min, _max;
+
+        public PIDControllerV(double Kp, double Ki, double Kd, double max = double.MaxValue, double min = double.MinValue)
         {
             this.Kp = Kp;
             this.Ki = Ki;
             this.Kd = Kd;
-            this.max = max;
-            this.min = min;
-            Reset();
+
+            this._min = min;
+            this._max = max;
+
+
+            reset();
         }
 
-        public Vector3d Compute(Vector3d error)
+        public Vector3 compute(Vector3 error, double delta)
         {
-            intAccum += error * TimeWarp.fixedDeltaTime;
-            Vector3d action = (Kp * error) + (Ki * intAccum) + (Kd * (error - prevError) / TimeWarp.fixedDeltaTime);
-            Vector3d clamped = new Vector3d(Math.Max(min, Math.Min(max, action.x)), Math.Max(min, Math.Min(max, action.y)), Math.Max(min, Math.Min(max, action.z)));
-            if (Math.Abs((clamped - action).magnitude) > 0.01)
+            _intAccum += error * delta;
+
+            Vector3 action = (Kp * error) + (Ki * _intAccum) + (Kd * (error - _lastError) / delta);
+
+            Vector3 clamped = action.clamp(_min, _max);
+            if(!clamped.equals(action))
             {
-                intAccum -= error * TimeWarp.fixedDeltaTime;
+                _intAccum -= error * delta;
             }
-            prevError = error;
+
+            _lastError = error;
 
             return action;
         }
 
-        public void Reset()
+        public void reset()
         {
-            prevError = intAccum = Vector3d.zero;
-        }
-
-        public void Load(ConfigNode node)
-        {
-            if (node.HasValue("Kp"))
-            {
-                Kp = Convert.ToDouble(node.GetValue("Kp"));
-            }
-            if (node.HasValue("Ki"))
-            {
-                Ki = Convert.ToDouble(node.GetValue("Ki"));
-            }
-            if (node.HasValue("Kd"))
-            {
-                Kd = Convert.ToDouble(node.GetValue("Kd"));
-            }
-        }
-
-        public void Save(ConfigNode node)
-        {
-            node.SetValue("Kp", Kp.ToString());
-            node.SetValue("Ki", Ki.ToString());
-            node.SetValue("Kd", Kd.ToString());
+			_lastError = Vector3.zero;
+			_intAccum = Vector3.zero;
         }
     }
 }

@@ -8,13 +8,13 @@ namespace bjeb
     public class BJeb: BasicModule
     {
 		private net.ClientProtocol _protocol;
-		private MuMech.MechJebModuleAttitudeController _controller;
+		private AttitudeController _controller;
 
 		private void onConnectionSetup()
 		{
 			_protocol.setup(Screen.width, Screen.height);
 
-			_controller = new MuMech.MechJebModuleAttitudeController();
+			_controller = new AttitudeController();
 		}
 
 		public override void OnStart(StartState state)
