@@ -42,11 +42,6 @@ namespace bjeb.test
 			_protocol.updateWindow(window);
 
 			_protocol.updateGui();
-
-			game.FlightControl control = new game.FlightControl();
-			_protocol.requestControl(control);
-
-			Console.WriteLine("Throttle: " + control.throttle.ToString("F2"));
 		}
 
 		public void update()
@@ -54,6 +49,8 @@ namespace bjeb.test
 			updateGui();
 			
 			_protocol.updateState(new Vessel());
+			_protocol.requestControl(new Vessel(), new FlightControl());
+
 		}
     }
 	

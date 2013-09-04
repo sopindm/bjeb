@@ -9,8 +9,10 @@ namespace bjeb
 
 		protected Vessel vessel
 		{
-			get;
-			private set;
+			get
+			{
+				return _computer.vessel;
+			}
 		}
 
 		public Window window
@@ -48,7 +50,6 @@ namespace bjeb
 		public Module(Computer computer)
 		{
 			_computer = computer;
-			//this.vessel = vessel;
 
 			window = new Window();
 			content = Layout.makeVertical();
@@ -100,9 +101,8 @@ namespace bjeb
 
 		abstract protected void onSetup(Screen screen);
 
-		public void update(Vessel vessel)
+		public void update()
 		{
-			this.vessel = vessel;
 			onUpdate();
 		}
 

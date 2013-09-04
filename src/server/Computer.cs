@@ -20,6 +20,12 @@ namespace bjeb
 
 		private List<Module> modules;
 
+		public Vessel vessel
+		{
+			get;
+			private set;
+		}
+
 		public DebugSettings settings
 		{
 			get;
@@ -32,11 +38,13 @@ namespace bjeb
 
 			modules.Add(new ASASModule(this));
 			modules.Add(new InfoModule(this));
-			//modules.Add(new OrientationController(this));
+			modules.Add(new OrientationController(this));
 
 			_switches = new Dictionary<Module, ModuleSwitch>();
 
 			settings = new DebugSettings() { guiUpdateRate = 30f, stateUpdateRate = 30f };
+
+			vessel = new Vessel();
 		}
 
 		public void onSetup(Screen screen)
@@ -153,10 +161,10 @@ namespace bjeb
 			}
 		}
 
-		public void onUpdate(Vessel vessel)
+		public void onUpdate()
 		{
 		    foreach(var module in modules)
-				module.update(vessel);
+				module.update();
 		}
 
 		public void onControl(FlightControl control)

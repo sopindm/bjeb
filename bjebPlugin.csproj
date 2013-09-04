@@ -35,8 +35,6 @@
   <ItemGroup>
     <Compile Include="src/plugin/BasicModule.cs" />
     <Compile Include="src/plugin/Core.cs" />
-    <Compile Include="src/plugin/AttitudeController.cs" />
-    <Compile Include="src/plugin/PIDController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">

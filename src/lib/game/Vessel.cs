@@ -343,5 +343,15 @@ namespace bjeb.game
 		    altitude = stream.readDouble();
 		    atmosphericDensity = stream.readDouble();
 		}
+
+		override protected void doSerializeState(Stream stream)
+		{
+			_rootRotation.serialize(stream);
+		}
+
+		override protected void doDeserializeState(Stream stream)
+		{
+			_rootRotation.deserialize(stream);
+		}
 	}
 }

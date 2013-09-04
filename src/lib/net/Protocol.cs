@@ -13,12 +13,17 @@ namespace bjeb.net
 			get;
 	    }
 
+		game.Vessel vessel
+		{
+			get;
+		}
+
 		DebugSettings settings
 		{
 			get;
 		}
 
-	    void onUpdate(game.Vessel vessel);
+	    void onUpdate();
 		void onControl(game.FlightControl control);
 	}
 
@@ -92,9 +97,10 @@ namespace bjeb.net
 			connection.flush();
 	    }
 
-		public static void requestControl(game.FlightControl c, Connection connection)
+		public static void requestControl(game.Vessel vessel, game.FlightControl c, Connection connection)
 		{
 			connection.stream.write("control");
+			vessel.serialize(connection.stream);
 			c.serialize(connection.stream);
 			connection.flush();
 
@@ -184,15 +190,14 @@ namespace bjeb.net
 
 	    private static void handleUpdate(Connection connection, IServer server)
 	    {
-			var vessel = new game.Vessel();
-			vessel.deserialize(connection.stream);
-
-			server.onUpdate(vessel);
+			server.vessel.deserialize(connection.stream);
+			server.onUpdate();
 	    }
 
 		private static void handleControl(Connection connection, IServer server)
 		{
 			var control = new game.FlightControl();
+			server.vessel.deserialize(connection.stream);
 			control.deserialize(connection.stream);
 
 			server.onControl(control);

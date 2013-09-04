@@ -85,6 +85,7 @@ namespace bjeb
 		}
 
 		private Selector _sensetivity;
+		private Selector _inertia;
 
 		private Selector _x;
 		private Selector _y;
@@ -101,6 +102,7 @@ namespace bjeb
 			content.views.clear();
 
 			_sensetivity = new Selector(0.1f, 1, 10, "Sensetivity");
+			_inertia = new Selector(1, 1, 10, "Inertia");
 
 			_x = new Selector(-1, -1, 1, "X");
 			_y = new Selector(-1, -1, 1, "Y");
@@ -144,11 +146,13 @@ namespace bjeb
 
             // Direction we want to be facing
 			Quaternion target = Quaternion.look(vessel.north, vessel.up);
-			Quaternion delta = target.inverse * vessel.rotation;
+			target *= Quaternion.makeRoll(_roll.value);
 
-            Vector3 err = new Vector3(-((delta.pitch > Math.PI) ? (delta.pitch - 2 * Math.PI) : delta.pitch),
-									  -((delta.yaw > Math.PI) ? (delta.yaw - 2 * Math.PI) : delta.yaw),
-									  -((delta.roll > Math.PI) ? (delta.roll - 2 * Math.PI) : delta.roll));
+			Quaternion delta = vessel.rotation.inverse * target;
+
+            Vector3 err = new Vector3((delta.pitch > Math.PI) ? (delta.pitch - 2 * Math.PI) : delta.pitch,
+									  (delta.yaw > Math.PI) ? (delta.yaw - 2 * Math.PI) : delta.yaw,
+									  (delta.roll > Math.PI) ? (delta.roll - 2 * Math.PI) : delta.roll);
 
             Vector3 torque = vessel.body.torque;
 

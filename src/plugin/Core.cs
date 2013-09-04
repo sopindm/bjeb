@@ -8,13 +8,11 @@ namespace bjeb
     public class BJeb: BasicModule
     {
 		private net.ClientProtocol _protocol;
-		private AttitudeController _controller;
 
 		private void onConnectionSetup()
 		{
 			_protocol.setup(Screen.width, Screen.height);
-
-			_controller = new AttitudeController();
+			_vessel = null;
 		}
 
 		public override void OnStart(StartState state)
@@ -34,14 +32,16 @@ namespace bjeb
 
 		protected override void onUpdate(double delta)
 		{
+			if(!_protocol.connected)
+			{
+				statusMessage = "No connection";
+				return;
+			}
+
 			if(_vessel == null)
 				_vessel = new game.Vessel();
 
 			_vessel.update(this.vessel);
-
-			if(!_protocol.connected)
-				statusMessage = "No connection";
-
 			_protocol.updateState(_vessel);
 		}
 
@@ -60,13 +60,15 @@ namespace bjeb
 
 		protected override void onDrive(FlightCtrlState s)
 		{
+			if(_vessel == null)
+				return;
+
 			game.FlightControl control = new game.FlightControl();
 
 			control.update(s);
 			_vessel.updateState(this.vessel);
 
-			_protocol.requestControl(control);
-			_controller.drive(_vessel, control);
+			_protocol.requestControl(_vessel, control);
 			
 			control.apply(s);
 		}
