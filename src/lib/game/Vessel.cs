@@ -190,13 +190,11 @@ namespace bjeb.game
 			}
 		}
 
-		private Quaternion _rotation;
-
 		public Quaternion rotation
 		{
 			get
 			{
-				return _rotation;
+				return _rootRotation * Quaternion.makePitch(-Math.PI / 2);
 			}
 		}
 
@@ -273,7 +271,6 @@ namespace bjeb.game
 		public Vessel()
 		{
 			_rootRotation = new Quaternion();
-			_rotation = new Quaternion();
 			_rotatingFrameVelocity = new Vector3();
 			gravity = new Vector3();
 
@@ -288,7 +285,6 @@ namespace bjeb.game
 			mainBody.update(vessel.mainBody);
 
 			_rootRotation = new Quaternion(vessel.GetTransform().rotation);
-			_rotation = new Quaternion(vessel.GetTransform().rotation * UnityEngine.Quaternion.Euler(-90, 0, 0));
 
 			_rotatingFrameVelocity = new Vector3(vessel.mainBody.getRFrmVel(position.unity));
 

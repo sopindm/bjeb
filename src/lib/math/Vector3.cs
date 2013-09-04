@@ -9,6 +9,11 @@ namespace bjeb.math
 		{
 			return Math.Abs(d1 - d2) < 1e-5;
 		}
+
+		public static double clamp(this double value, double min, double max)
+		{
+			return Math.Max(min, Math.Min(value, max));
+		}
 	}
 
         

@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using bjeb.math;
 
 namespace MuMech
 {
     public class MechJebModuleAttitudeController
     {
-		private Vessel vessel;
 		private VesselState vesselState;
 
         public PIDControllerV pid;
         public Vector3d lastAct = Vector3d.zero;
-        private double lastResetRoll = 0;
+
 
         public double Kp = 10000;
         public double Ki = 0;
@@ -34,8 +34,6 @@ namespace MuMech
 
 		public void Update(Vessel vessel)
 		{
-			this.vessel = vessel;
-
 			if(vesselState == null)
 				vesselState = new VesselState();
 
@@ -45,57 +43,39 @@ namespace MuMech
 			vesselState.Update(vessel);
 		}
 
-        public void Drive(bjeb.game.Vessel bv, FlightCtrlState s)
-        {
-            // Used in the killRot activation calculation and drive_limit calculation
-            double precision = Math.Max(0.5, Math.Min(10.0, (Math.Min(bv.body.torque.x, bv.body.torque.y) * 20.0 / vesselState.MoI.magnitude)));
+        private double _lastRoll = 0;
 
-            // Reset the PID controller during roll to keep pitch and yaw errors
-            // from accumulating on the wrong axis.
-            double rollDelta = Mathf.Abs((float)(bv.surfaceRotation.roll - lastResetRoll));
+        public void Drive(bjeb.game.Vessel vessel, FlightCtrlState s)
+        {
+            double precision = (Math.Min(vessel.body.torque.x, vessel.body.torque.y) * 20.0 / vessel.body.momentumOfInertia.magnitude).clamp(0.5, 10);
+
+            double rollDelta = Math.Abs(vessel.surfaceRotation.roll - _lastRoll);
             if (rollDelta > Math.PI)
                 rollDelta = 2 * Math.PI - rollDelta;
             if (rollDelta > Math.PI / 36)
             {
                 pid.Reset();
-                lastResetRoll = bv.surfaceRotation.roll;
+                _lastRoll = vessel.surfaceRotation.roll;
             }
 
             // Direction we want to be facing
-            Quaternion target = Quaternion.LookRotation(bv.north.unity, bv.up.unity);
+			bjeb.math.Quaternion target = bjeb.math.Quaternion.look(vessel.north, vessel.up);
+			bjeb.math.Quaternion delta = target.inverse * vessel.rotation;
 
-			Quaternion delta = Quaternion.Inverse(target) * bv.rotation.unity;
+            bjeb.math.Vector3 err = new bjeb.math.Vector3(-((delta.pitch > Math.PI) ? (delta.pitch - 2 * Math.PI) : delta.pitch),
+														  -((delta.yaw > Math.PI) ? (delta.yaw - 2 * Math.PI) : delta.yaw),
+														  -((delta.roll > Math.PI) ? (delta.roll - 2 * Math.PI) : delta.roll));
 
-            Vector3d deltaEuler = new Vector3d(
-                                                    (delta.eulerAngles.x > 180) ? (delta.eulerAngles.x - 360.0F) : delta.eulerAngles.x,
-                                                    -((delta.eulerAngles.y > 180) ? (delta.eulerAngles.y - 360.0F) : delta.eulerAngles.y),
-                                                    (delta.eulerAngles.z > 180) ? (delta.eulerAngles.z - 360.0F) : delta.eulerAngles.z
-            );
+            bjeb.math.Vector3 torque = vessel.body.torque;
 
-            Vector3d torque = new Vector3d(vesselState.torqueAvailable.x + vesselState.torqueThrustPYAvailable * s.mainThrottle,
-										   vesselState.torqueAvailable.y,
-										   vesselState.torqueAvailable.z + vesselState.torqueThrustPYAvailable * s.mainThrottle );
+            bjeb.math.Vector3 inertia = vessel.body.angularMomentum.sign *
+				vessel.body.angularMomentum * vessel.body.angularMomentum * 
+				(torque * vessel.body.momentumOfInertia).invert;
 
-            Vector3d inertia = Vector3d.Scale(
-                                                    vesselState.angularMomentum.Sign(),
-                                                    Vector3d.Scale(
-                                                        Vector3d.Scale(
-                vesselState.angularMomentum,
-                vesselState.angularMomentum
-            ),
-                                                        Vector3d.Scale(
-                torque,
-                vesselState.MoI
-            )
-                .Invert()
-            )
-            );
+            err += inertia;
+			err *= vessel.body.momentumOfInertia * torque.invert;
 
-            Vector3d err = deltaEuler * Math.PI / 180.0F;
-            err += inertia.Reorder(132);
-            err.Scale(Vector3d.Scale(vesselState.MoI, torque.Invert()).Reorder(132));
-
-            Vector3d act = pid.Compute(err);
+            Vector3d act = pid.Compute(err.unity);
 
             float drive_limit = Mathf.Clamp01((float)(err.magnitude * drive_factor / precision));
 
@@ -105,13 +85,13 @@ namespace MuMech
 
             act = lastAct + (act - lastAct) * (TimeWarp.fixedDeltaTime / Tf);
 
-            SetFlightCtrlState(act, deltaEuler, s, precision, drive_limit);
+            SetFlightCtrlState(act, s, precision, drive_limit);
 
             act = new Vector3d(s.pitch, s.yaw, s.roll);
             lastAct = act;
         }
 
-        private void SetFlightCtrlState(Vector3d act, Vector3d deltaEuler, FlightCtrlState s, double precision, float drive_limit)
+        private void SetFlightCtrlState(Vector3d act, FlightCtrlState s, double precision, float drive_limit)
         {
 			if (!double.IsNaN(act.z)) s.roll = Mathf.Clamp((float)(act.z), -drive_limit, drive_limit);
 			if (Math.Abs(s.roll) < 0.05)
