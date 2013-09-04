@@ -181,11 +181,22 @@ namespace bjeb.game
 		}
 
 		private Quaternion _rootRotation;
+
+		public Quaternion rootRotation
+		{
+			get
+			{
+				return _rootRotation;
+			}
+		}
+
+		private Quaternion _rotation;
+
 		public Quaternion rotation
 		{
 			get
 			{
-				return _rootRotation * Quaternion.makePitch(-Math.PI / 2);
+				return _rotation;
 			}
 		}
 
@@ -262,6 +273,7 @@ namespace bjeb.game
 		public Vessel()
 		{
 			_rootRotation = new Quaternion();
+			_rotation = new Quaternion();
 			_rotatingFrameVelocity = new Vector3();
 			gravity = new Vector3();
 
@@ -276,6 +288,7 @@ namespace bjeb.game
 			mainBody.update(vessel.mainBody);
 
 			_rootRotation = new Quaternion(vessel.GetTransform().rotation);
+			_rotation = new Quaternion(vessel.GetTransform().rotation * UnityEngine.Quaternion.Euler(-90, 0, 0));
 
 			_rotatingFrameVelocity = new Vector3(vessel.mainBody.getRFrmVel(position.unity));
 
@@ -301,6 +314,11 @@ namespace bjeb.game
             atmosphericDensity = FlightGlobals.getAtmDensity(atmosphericPressure);
 
 			//parts (info for rcs, engines, intakes, tanks)
+		}
+
+		public void updateState(global::Vessel vessel)
+		{
+			_rootRotation = new Quaternion(vessel.GetTransform().rotation);
 		}
 #endif
 

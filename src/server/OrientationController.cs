@@ -174,7 +174,7 @@ namespace bjeb
 			//else
 			_act = newAct;
 
-			_actLabel.text = (inertia * vessel.body.momentumOfInertia * torque.invert).ToString();	
+			_actLabel.text = vessel.rootRotation.ToString();	
 		}
 
 		private void controlRotation(FlightControl control)

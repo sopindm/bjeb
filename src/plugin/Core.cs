@@ -62,7 +62,9 @@ namespace bjeb
 		protected override void onDrive(FlightCtrlState s)
 		{
 			game.FlightControl control = new game.FlightControl();
+
 			control.update(s);
+			_vessel.updateState(this.vessel);
 
 			_protocol.requestControl(control);
 

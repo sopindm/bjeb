@@ -62,8 +62,9 @@ namespace MuMech
             }
 
             // Direction we want to be facing
-            Quaternion target = Quaternion.LookRotation(vesselState.north, vesselState.up);
-            Quaternion delta = Quaternion.Inverse(Quaternion.Euler(90, 0, 0) * Quaternion.Inverse(vessel.GetTransform().rotation) * target);
+            Quaternion target = Quaternion.LookRotation(bv.north.unity, bv.up.unity);
+
+			Quaternion delta = Quaternion.Inverse(target) * bv.rotation.unity;
 
             Vector3d deltaEuler = new Vector3d(
                                                     (delta.eulerAngles.x > 180) ? (delta.eulerAngles.x - 360.0F) : delta.eulerAngles.x,
@@ -71,13 +72,9 @@ namespace MuMech
                                                     (delta.eulerAngles.z > 180) ? (delta.eulerAngles.z - 360.0F) : delta.eulerAngles.z
             );
 
-            Vector3d torque = new Vector3d(
-                                                    vesselState.torqueAvailable.x + vesselState.torqueThrustPYAvailable * s.mainThrottle,
-                                                    vesselState.torqueAvailable.y,
-                                                    vesselState.torqueAvailable.z + vesselState.torqueThrustPYAvailable * s.mainThrottle
-            );
-
-			
+            Vector3d torque = new Vector3d(vesselState.torqueAvailable.x + vesselState.torqueThrustPYAvailable * s.mainThrottle,
+										   vesselState.torqueAvailable.y,
+										   vesselState.torqueAvailable.z + vesselState.torqueThrustPYAvailable * s.mainThrottle );
 
             Vector3d inertia = Vector3d.Scale(
                                                     vesselState.angularMomentum.Sign(),

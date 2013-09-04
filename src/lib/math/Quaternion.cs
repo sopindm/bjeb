@@ -4,221 +4,221 @@ namespace bjeb.math
 {
         [net.Serializable(15)]
         public class Quaternion: net.Serializable
-	{
-		public double w
 		{
-			get;
-			private set;
-		}
-
-		public Vector3 v
-		{
-			get;
-			private set;
-		}
-
-		public Quaternion()
-		{
-			w = 0;
-			v = new Vector3();
-		}
-
-		public Quaternion(double w, Vector3 v)
-		{
-			this.w = w;
-			this.v = v;
-		}
-
-		#if UNITY
-		public Quaternion(UnityEngine.Quaternion q)
-		{
-			w = q.w;
-
-			v = new Vector3(q.x, q.y, q.z);
-		}
-		#endif
-
-		public static Quaternion identity
-		{
-			get
+			public double w
 			{
-				return new Quaternion(1, new Vector3(0, 0, 0));
+				get;
+				private set;
 			}
-		}
 
-		public Vector3 forward
-		{
-			get
+			public Vector3 v
 			{
-				return this * Vector3.forward;
+				get;
+				private set;
 			}
-		}
 
-		public Vector3 up
-		{
-			get
+			public Quaternion()
 			{
-				return this * Vector3.up;
+				w = 0;
+				v = new Vector3();
 			}
-		}
 
-		public Vector3 right
-		{
-			get
+			public Quaternion(double w, Vector3 v)
 			{
-				return this * Vector3.right;
+				this.w = w;
+				this.v = v;
 			}
-		}
 
-		public double magnitudeSquare
-		{
-			get
+			#if UNITY
+			public Quaternion(UnityEngine.Quaternion q)
 			{
-				return w * w + v.magnitudeSquare;
-			}
-		}
+				w = q.w;
 
-		public double magnitude
-		{
-			get
+				v = new Vector3(q.x, q.y, q.z);
+			}
+			#endif
+
+			public static Quaternion identity
 			{
-				return Math.Sqrt(magnitudeSquare);
+				get
+				{
+					return new Quaternion(1, new Vector3(0, 0, 0));
+				}
 			}
-		}
 
-		public override string ToString()
-		{
-			return "(" + w.ToString("F2") + " " + v.ToString() + ")";
-		}
-
-		#if UNITY
-		public UnityEngine.Quaternion unity
-		{
-			get
+			public Vector3 forward
 			{
-				return new UnityEngine.Quaternion((float)v.x, (float)v.y, (float)v.z, (float)w);
+				get
+				{
+					return this * Vector3.forward;
+				}
 			}
-		}
-		#endif
 
-		public static Quaternion operator*(Quaternion q, double s)
-		{
-			return new Quaternion(q.w * s, q.v * s);
-		}
-
-		public static Quaternion operator/(Quaternion q, double s)
-		{
-			return new Quaternion(q.w / s, q.v / s);
-		}
-
-		public Quaternion inverse
-		{
-			get
+			public Vector3 up
 			{
-				return new Quaternion(w, -v) / magnitudeSquare;
+				get
+				{
+					return this * Vector3.up;
+				}
 			}
-		}
 
-		public static Quaternion operator*(Quaternion q1, Quaternion q2)
-		{
-			return new Quaternion(q1.w * q2.w - q1.v.dot(q2.v),
-								  q1.w * q2.v + q2.w * q1.v + q1.v.cross(q2.v));
-		}
+			public Vector3 right
+			{
+				get
+				{
+					return this * Vector3.right;
+				}
+			}
 
-		public static Vector3 operator*(Quaternion q, Vector3 v)
-		{
-			return (q * new Quaternion(0, v) * q.inverse).v;
-		}
+			public double magnitudeSquare
+			{
+				get
+				{
+					return w * w + v.magnitudeSquare;
+				}
+			}
 
-		public static Quaternion angleAxis(double angle, Vector3 axis)
-		{
-			double s = Math.Sin(angle / 2);
+			public double magnitude
+			{
+				get
+				{
+					return Math.Sqrt(magnitudeSquare);
+				}
+			}
 
-			return new Quaternion(Math.Cos(angle / 2), axis.normalize * s);
-		}
+			public override string ToString()
+			{
+				return "(" + w.ToString("F2") + " " + v.ToString() + ")";
+			}
 
-		private static Quaternion _look(Vector3 from, Vector3 to)
-		{
-			if(from.equals(to))
-				return identity;
+			#if UNITY
+				public UnityEngine.Quaternion unity
+				{
+					get
+					{
+						return new UnityEngine.Quaternion((float)v.x, (float)v.y, (float)v.z, (float)w);
+					}
+				}
+			#endif
 
-			return angleAxis(from.angle(to), from.cross(to));
-		}
+				public static Quaternion operator*(Quaternion q, double s)
+			{
+				return new Quaternion(q.w * s, q.v * s);
+			}
 
-		public static Quaternion look(Vector3 forward)
-		{
-			return _look(Vector3.forward, forward);
-		}
+			public static Quaternion operator/(Quaternion q, double s)
+			{
+				return new Quaternion(q.w / s, q.v / s);
+			}
 
-		public static Quaternion look(Vector3 forward, Vector3 upward)
-		{
-			Quaternion look1 = look(forward);
+			public Quaternion inverse
+			{
+				get
+				{
+					return new Quaternion(w, -v) / magnitudeSquare;
+				}
+			}
 
-			return _look(look1 * Vector3.up, upward) * look1;
-		}
+			public static Quaternion operator*(Quaternion q1, Quaternion q2)
+			{
+				return new Quaternion(q1.w * q2.w - q1.v.dot(q2.v),
+									  q1.w * q2.v + q2.w * q1.v + q1.v.cross(q2.v));
+			}
+
+			public static Vector3 operator*(Quaternion q, Vector3 v)
+			{
+				return (q * new Quaternion(0, v) * q.inverse).v;
+			}
+
+			public static Quaternion angleAxis(double angle, Vector3 axis)
+			{
+				double s = Math.Sin(angle / 2);
+
+				return new Quaternion(Math.Cos(angle / 2), axis.normalize * s);
+			}
+
+			private static Quaternion _look(Vector3 from, Vector3 to)
+			{
+				if(from.equals(to))
+					return identity;
+
+				return angleAxis(from.angle(to), from.cross(to));
+			}
+
+			public static Quaternion look(Vector3 forward)
+			{
+				return _look(Vector3.forward, forward);
+			}
+
+			public static Quaternion look(Vector3 forward, Vector3 upward)
+			{
+				Quaternion look1 = look(forward);
+
+				return _look(look1 * Vector3.up, upward) * look1;
+			}
 
 	        override protected void doSerialize(net.Stream stream)
-		{
-		    stream.write(w);
-		    v.serialize(stream);
-		}
+			{
+				stream.write(w);
+				v.serialize(stream);
+			}
 
 	        override protected void doDeserialize(net.Stream stream)
-		{
-		    w = stream.readDouble();
-		    v.deserialize(stream);
-		}
-
-		public static Quaternion makePitch(double angle)
-		{
-			return angleAxis(angle, Vector3.right);
-		}
-
-		public static Quaternion makeRoll(double angle)
-		{
-			return angleAxis(-angle, Vector3.forward);
-		}
-
-		public double yaw
-		{
-			get
 			{
-				Vector3 cross = Vector3.up.cross(this * Vector3.forward);
+				w = stream.readDouble();
+				v.deserialize(stream);
+			}
 
-				if(cross.magnitude < 1e-1)
-					return 0;
+			public static Quaternion makePitch(double angle)
+			{
+				return angleAxis(angle, Vector3.right);
+			}
 
-				double ret = Vector3.right.angleInPlane(cross, Vector3.up);
+			public static Quaternion makeRoll(double angle)
+			{
+				return angleAxis(-angle, Vector3.forward);
+			}
 
-				if(ret < 0)
-					ret = 2 * Math.PI + ret;
+			public double yaw
+			{
+				get
+				{
+					Vector3 cross = Vector3.up.cross(this * Vector3.forward);
 
-				return ret;
+					if(cross.magnitude < 1e-1)
+						return 0;
+
+					double ret = Vector3.right.angleInPlane(cross, Vector3.up);
+
+					if(ret < 0)
+						ret = 2 * Math.PI + ret;
+
+					return ret;
+				}
+			}
+
+			public double pitch
+			{
+				get
+				{
+					Quaternion yawTransform = Quaternion.angleAxis(yaw, Vector3.up);
+
+					Vector3 forward1 = yawTransform * Vector3.forward;
+					Vector3 right1 = yawTransform * Vector3.right;
+
+					double ret = forward1.angleInPlane(this * Vector3.forward, right1);
+					return -ret;
+				}
+			}
+
+			public double roll
+			{
+				get
+				{
+					Vector3 up2 = Quaternion.angleAxis(yaw, Vector3.up) * Quaternion.angleAxis(-pitch, Vector3.right) * Vector3.up;
+
+					return -up2.angleInPlane(this * Vector3.up, this * Vector3.forward);
+				}
 			}
 		}
-
-		public double pitch
-		{
-			get
-			{
-				Quaternion yawTransform = Quaternion.angleAxis(yaw, Vector3.up);
-
-				Vector3 forward1 = yawTransform * Vector3.forward;
-				Vector3 right1 = yawTransform * Vector3.right;
-
-				double ret = forward1.angleInPlane(this * Vector3.forward, right1);
-				return -ret;
-			}
-		}
-
-		public double roll
-		{
-			get
-			{
-				Vector3 up2 = Quaternion.angleAxis(yaw, Vector3.up) * Quaternion.angleAxis(-pitch, Vector3.right) * Vector3.up;
-
-				return -up2.angleInPlane(this * Vector3.up, this * Vector3.forward);
-			}
-		}
-	}
 }
