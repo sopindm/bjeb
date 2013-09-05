@@ -171,7 +171,12 @@ namespace bjeb.math
 
 			public static Quaternion makePitch(double angle)
 			{
-				return angleAxis(angle, Vector3.right);
+				return angleAxis(-angle, Vector3.right);
+			}
+
+			public static Quaternion makeYaw(double angle)
+			{
+				return angleAxis(angle, Vector3.up);
 			}
 
 			public static Quaternion makeRoll(double angle)

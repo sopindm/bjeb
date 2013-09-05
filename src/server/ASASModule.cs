@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using bjeb.gui;
+using bjeb.math;
 
 namespace bjeb
 {
@@ -33,39 +35,43 @@ namespace bjeb
 		{
 			if(onFrontSide)
 			{
-				if(value >= 180)
-					value = 270 + (270 - value);
+				if(_value >= 180)
+					_value = 270 + (270 - _value);
 				else
-					value = 90 - (value - 90);
+					_value = 90 - (_value - 90);
 			}
 			else
 			{
-				if(value >= 0)
-					value = 90 + (90 - value);
+				if(_value >= 0)
+					_value = 90 + (90 - _value);
 				else
-					value = 270 - (value - 270);
+					_value = 270 - (_value - 270);
 			}
 
 			updateValue();
 		}
 
-		public int value
+		private int _value;
+
+		public double value
 		{
-			get;
-			private set;
+			get
+			{
+				return _value * Math.PI / 180;
+			}
 		}
 
 		private float sliderValue()
 		{
 			if(onFrontSide)
-				return value > 90 ? value - 360 : value;
+				return _value > 90 ? _value - 360 : _value;
 			else
-				return value - 180;
+				return _value - 180;
 		}
 
 		private void updateSliderValue(float svalue)
 		{
-			value = onFrontSide ? (int)svalue : (int)svalue + 180;
+			_value = onFrontSide ? (int)svalue : (int)svalue + 180;
 			updateValue();
 		}
 
@@ -73,33 +79,33 @@ namespace bjeb
 		{
 			if(_fullCircle)
 			{
-				if(value < 0)
-					value += 360;
-				if(value >= 360)
-					value -= 360;
+				if(_value < 0)
+					_value += 360;
+				if(_value >= 360)
+					_value -= 360;
 			}
 			
 			if(!_fullCircle)
 			{
-				if(value > 90)
-					value = 90;
-				else if(value < -90)
-					value = -90;
+				if(_value > 90)
+					_value = 90;
+				else if(_value < -90)
+					_value = -90;
 			}
 
-			if((value > 90 && value < 270) && onFrontSide)
+			if((_value > 90 && _value < 270) && onFrontSide)
 			{
 				_onFrontSide = false;
 				_sideSwitch.text = "-";
 			}
-			else if ((value > 270 || value < 90) && !onFrontSide)
+			else if ((_value > 270 || _value < 90) && !onFrontSide)
 			{
 				_onFrontSide = true;
 				_sideSwitch.text = "+";
 			}
 
 			_slider.value = sliderValue();
-			_info.text = value.ToString("F0"); 
+			_info.text = _value.ToString("F0"); 
 		}
 
 		private Button _sideSwitch = null;
@@ -201,7 +207,7 @@ namespace bjeb
 
 			button.font.style = FontStyle.Bold;
 
-			button.onClick = ((b, m) => { value = value + delta; updateValue(); });
+			button.onClick = ((b, m) => { _value = _value + delta; updateValue(); });
 
 			return button;
 		}
@@ -221,6 +227,8 @@ namespace bjeb
 		{
 		}
 
+		private AxisController _yaw, _pitch, _roll;
+
 		override protected void onSetup(Screen screen)
 		{
 			window.area.set(0, 200, 400, 200);
@@ -232,23 +240,54 @@ namespace bjeb
 			referenceLayout.views.add(new Button("SUR"));
 			referenceLayout.views.add(new Button("TRG"));
 
+			active = false;
+
+			_yaw = new AxisController("YAW", true);
+			_pitch = new AxisController("PITCH", false);
+			_roll = new AxisController("ROLL", true);
+
 			content.views.add(referenceLayout);
 			content.views.add(new Space(10));
-			content.views.add(new AxisController("YAW", true).view);
+			content.views.add(_yaw.view);
 			content.views.add(new Space(10));
-			content.views.add(new AxisController("PITCH", false).view);
+			content.views.add(_pitch.view);
 			content.views.add(new Space(10));
-			content.views.add(new AxisController("ROLL", true).view);
+			content.views.add(_roll.view);
 			content.views.add(new Space(10));
 
 			content.views.add(makeOptionsLayout());
+		}
+
+		private bool active = false;
+
+		private Toggle switchToggle = null;
+
+		private void deactivate()
+		{
+			active = false;
+			switchToggle.text = "OFF";
+		}
+
+		private void activate()
+		{
+			active = true;
+			switchToggle.text = "ON";
 		}
 
 		private View makeOptionsLayout()
 		{
 			Layout optionsLayout = Layout.makeHorizontal();
 			
-			optionsLayout.views.add(new Button("OFF"));
+			switchToggle = new Toggle("OFF", false);
+			switchToggle.onSwitch = (t =>
+					{
+						if(active)
+							deactivate();
+						else
+							activate();
+					});
+
+			optionsLayout.views.add(switchToggle);
 
 			optionsLayout.views.add(new Space());
 
@@ -265,6 +304,34 @@ namespace bjeb
 
 		override protected void onUpdate()
 		{
+			if(!active)
+			{
+				computer.attitude.controlYaw = AttitudeController.Control.No;
+				computer.attitude.controlPitch = AttitudeController.Control.No;
+				computer.attitude.controlRoll = AttitudeController.Control.No;
+
+				return;
+			}
+
+			computer.attitude.target = Quaternion.look(vessel.north, vessel.up);
+
+			if(_yaw.active)
+			{
+				computer.attitude.target *= Quaternion.makeYaw(_yaw.value);
+				computer.attitude.controlYaw = AttitudeController.Control.Full;
+			}
+
+			if(_pitch.active)
+			{
+				computer.attitude.target *= Quaternion.makePitch(_pitch.value);
+				computer.attitude.controlPitch = AttitudeController.Control.Full;
+			}
+
+			if(_roll.active)
+			{
+				computer.attitude.target *= Quaternion.makeRoll(_roll.value);
+				computer.attitude.controlRoll = AttitudeController.Control.Full;
+			}
 		}
 
 		override public string name

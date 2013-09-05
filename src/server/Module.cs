@@ -3,9 +3,17 @@ using bjeb.gui;
 
 namespace bjeb
 {
-	public abstract class Module
+	abstract class Module
 	{
 		private Computer _computer;
+
+		protected Computer computer
+		{
+			get
+			{
+				return _computer;
+			}
+		}
 
 		protected Vessel vessel
 		{

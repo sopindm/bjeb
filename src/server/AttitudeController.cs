@@ -78,23 +78,47 @@ namespace bjeb
 		}
 	}
 
-	class OrientationController: Module
+	class AttitudeController: Module
 	{
-		public OrientationController(Computer computer): base(computer)
+		public AttitudeController(Computer computer): base(computer)
 		{
 		}
 
 		private Selector _sensetivity;
 		private Selector _inertia;
 
-		private Selector _x;
-		private Selector _y;
-		private Selector _z;
-		private Selector _roll;
-
-		private Label _actLabel;
-
 		private PIDControllerV _controller;
+
+		public Quaternion target
+		{
+			get;
+			set;
+		}
+
+		public enum Control
+		{
+			No,
+			KillRotation,
+			Full
+		}
+
+		public Control controlYaw
+		{
+			get;
+			set;
+		}
+
+		public Control controlPitch
+		{
+			get;
+			set;
+		}
+
+		public Control controlRoll
+		{
+			get;
+			set;
+		}
 
 		override protected void onSetup(Screen screen)
 		{
@@ -104,23 +128,15 @@ namespace bjeb
 			_sensetivity = new Selector(0.1f, 1, 10, "Sensetivity");
 			_inertia = new Selector(1, 1, 10, "Inertia");
 
-			_x = new Selector(-1, -1, 1, "X");
-			_y = new Selector(-1, -1, 1, "Y");
-			_z = new Selector(-1, -1, 1, "Z");
-			_roll = new Selector(0, 0, (float)(2 * Math.PI), "Roll");
-
 			content.views.add(_sensetivity.view);
 
-			content.views.add(_x.view);
-			content.views.add(_y.view);
-			content.views.add(_z.view);
-			content.views.add(_roll.view);
-
-			_actLabel = new Label("");
-
-			content.views.add(_actLabel);
-
 			_controller = new PIDControllerV(10000, 0, 800, -1000000, 1000000);
+			
+			target = Quaternion.identity;
+
+			controlYaw = Control.No;
+			controlPitch = Control.No;
+			controlRoll = Control.No;
 		}
 
 		override protected void onUpdate()
@@ -135,24 +151,24 @@ namespace bjeb
 
         private void drive(FlightControl c)
         {
-            double rollDelta = Math.Abs(vessel.surfaceRotation.roll - _lastRoll);
+            double rollDelta = Math.Abs(vessel.rotation.roll - _lastRoll);
             if (rollDelta > Math.PI)
                 rollDelta = 2 * Math.PI - rollDelta;
             if (rollDelta > Math.PI / 36)
             {
                 _controller.reset();
-                _lastRoll = vessel.surfaceRotation.roll;
+                _lastRoll = vessel.rotation.roll;
             }
-
-            // Direction we want to be facing
-			Quaternion target = Quaternion.look(vessel.north, vessel.up);
-			target *= Quaternion.makeRoll(_roll.value);
 
 			Quaternion delta = vessel.rotation.inverse * target;
 
             Vector3 err = new Vector3((delta.pitch > Math.PI) ? (delta.pitch - 2 * Math.PI) : delta.pitch,
 									  (delta.yaw > Math.PI) ? (delta.yaw - 2 * Math.PI) : delta.yaw,
 									  (delta.roll > Math.PI) ? (delta.roll - 2 * Math.PI) : delta.roll);
+
+			err = new Vector3(controlPitch == Control.KillRotation ? 0 : err.x,
+							  controlYaw == Control.KillRotation ? 0 : err.y,
+							  controlRoll == Control.KillRotation ? 0 : err.z);
 
             Vector3 torque = vessel.body.torque;
 
@@ -177,27 +193,24 @@ namespace bjeb
             _act = new Vector3(c.pitch, c.yaw, c.roll);
         }
 
+		private void control(double act, double limit, Control control, ref float value)
+		{
+			if(control == Control.Full || 
+			   (control == Control.KillRotation && Math.Abs(value) < 0.1))
+			{
+				if (!double.IsNaN(act)) 
+					value = (float)act.clamp(-limit, limit);
+
+				if (Math.Abs(value) < 0.05)
+					value = 0;
+			}
+		}
+
         private void setControls(Vector3 act, FlightControl c, double driveLimit)
         {
-			if (!double.IsNaN(act.z)) 
-				c.roll = (float)act.z.clamp(-driveLimit, driveLimit);
-
-			if (Math.Abs(c.roll) < 0.05)
-				c.roll = 0;
-
-			if (!double.IsNaN(act.x))
-				c.pitch = (float)act.x.clamp(-driveLimit, driveLimit);
-
-			if (Math.Abs(c.pitch) < 0.05)
-				c.pitch = 0;
-
-			if (!double.IsNaN(act.y)) 
-				c.yaw = (float)act.y.clamp(-driveLimit, driveLimit);
-
-			if (Math.Abs(c.yaw) < 0.05)
-			{
-				c.yaw = 0;
-			}
+			control(act.z, driveLimit, controlRoll, ref c.roll);
+			control(act.x, driveLimit, controlPitch, ref c.pitch);
+			control(act.y, driveLimit, controlYaw, ref c.yaw);
         }
 
 		override public void onControl(FlightControl control)

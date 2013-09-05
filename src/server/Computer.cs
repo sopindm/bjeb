@@ -14,7 +14,7 @@ namespace bjeb
 		}
 	}
 
-	public class Computer: IServer
+	class Computer: IServer
 	{
 		private gui.Window _window = null;
 
@@ -36,15 +36,23 @@ namespace bjeb
 		{			
 			modules = new List<Module>();
 
+			attitude = new AttitudeController(this);
+
 			modules.Add(new ASASModule(this));
 			modules.Add(new InfoModule(this));
-			modules.Add(new OrientationController(this));
+			modules.Add(attitude);
 
 			_switches = new Dictionary<Module, ModuleSwitch>();
 
 			settings = new DebugSettings() { guiUpdateRate = 30f, stateUpdateRate = 30f };
 
 			vessel = new Vessel();
+		}
+
+		public AttitudeController attitude
+		{
+			get;
+			private set;
 		}
 
 		public void onSetup(Screen screen)

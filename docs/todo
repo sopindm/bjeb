@@ -1,43 +1,7 @@
-Flight parameters
-  Universe:
-    time
-  	frame delta
-
-	space bodies orbits and physics data
-
-  Vessel:
-     position:
-	   forward
-	   up
-
-       north
-	   east
-
-	   yaw, pitch, roll
-
-	   orbit
-	   rotatingFrameVelocity
-
-	   altitude
-	   altitudeTrue
-	   altitudeBotton
-
-	 physics:
-       centerOfMass
-       momentumOfInertia
-
-	   mass
-
-	   angularVelocity
-	   angularMomentum
-
-	   torque
-	   thrustTorque
-
-Customizing styles
-  active, hover, focused, normal + on...
-    font color
-  alignment
+Grabbing input
+Killing rotation
+Attitude references
+Simple view
 
 
   

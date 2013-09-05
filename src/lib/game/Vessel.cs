@@ -194,7 +194,7 @@ namespace bjeb.game
 		{
 			get
 			{
-				return _rootRotation * Quaternion.makePitch(-Math.PI / 2);
+				return _rootRotation * Quaternion.makePitch(Math.PI / 2);
 			}
 		}
 
