@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using bjeb.gui;
@@ -116,11 +117,12 @@ namespace bjeb
 
 			Layout mainLayout = Layout.makeHorizontal();
 
-			var onToggle = new Toggle(name, false);
-			onToggle.area.width = 50;
-			onToggle.onSwitch = (t => active = t.toggled);
+			var nameLabel = new Label(name);
+			nameLabel.area.width = 50;
+			nameLabel.font.normal = Color.white;
+			nameLabel.font.style = FontStyle.Bold;
 
-			mainLayout.views.add(onToggle);
+			mainLayout.views.add(nameLabel);
 
 			Layout digitalLayout = Layout.makeHorizontal();
 
@@ -191,12 +193,6 @@ namespace bjeb
 			_view = mainLayout;
 		}
 
-		public bool active
-		{
-			get;
-			private set;
-		}
-
 		private Button _button(string text, int delta)
 		{
 			Button button = new Button(text);
@@ -229,16 +225,37 @@ namespace bjeb
 
 		private AxisController _yaw, _pitch, _roll;
 
+		private Toggle optionToggle(string name, bool on)
+		{
+			Toggle ret = new Toggle(name, on);
+			ret.area.width = 40;
+			ret.style = Style.Button;
+
+			return ret;
+		} 
+
+		private Toggle _yawOn, _pitchOn, _rollOn;
+
 		override protected void onSetup(Screen screen)
 		{
-			window.area.set(0, 200, 400, 200);
+			window.area.set(0, 200, 320, 180);
 			content.views.clear();
 
 			Layout referenceLayout = Layout.makeHorizontal();
 
-			referenceLayout.views.add(new Button("ORB"));
-			referenceLayout.views.add(new Button("SUR"));
-			referenceLayout.views.add(new Button("TRG"));
+			referenceLayout.views.add(optionToggle("ORB", false));
+			referenceLayout.views.add(optionToggle("SUR", true));
+			referenceLayout.views.add(optionToggle("TRG", false));
+
+			referenceLayout.views.add(new Space());
+
+			_yawOn = optionToggle("YAW", true);
+			_pitchOn = optionToggle("PCH", true);
+			_rollOn = optionToggle("RLL", true);
+
+			referenceLayout.views.add(_yawOn);
+			referenceLayout.views.add(_pitchOn);
+			referenceLayout.views.add(_rollOn);
 
 			active = false;
 
@@ -288,16 +305,8 @@ namespace bjeb
 					});
 
 			optionsLayout.views.add(switchToggle);
-
 			optionsLayout.views.add(new Space());
-
 			optionsLayout.views.add(new Button("SIM"));
-
-			optionsLayout.views.add(new Space());
-
-			var grabInputToggle = new Button("GRAB");
-			
-			optionsLayout.views.add(grabInputToggle);
 
 			return optionsLayout;
 		}
@@ -315,23 +324,29 @@ namespace bjeb
 
 			computer.attitude.target = Quaternion.look(vessel.north, vessel.up);
 
-			if(_yaw.active)
+			if(_yawOn.toggled)
 			{
 				computer.attitude.target *= Quaternion.makeYaw(_yaw.value);
 				computer.attitude.controlYaw = AttitudeController.Control.Full;
 			}
+			else
+				computer.attitude.controlYaw = AttitudeController.Control.KillRotation;
 
-			if(_pitch.active)
+			if(_pitchOn.toggled)
 			{
 				computer.attitude.target *= Quaternion.makePitch(_pitch.value);
 				computer.attitude.controlPitch = AttitudeController.Control.Full;
 			}
+			else
+				computer.attitude.controlPitch = AttitudeController.Control.KillRotation;
 
-			if(_roll.active)
+			if(_rollOn.toggled)
 			{
 				computer.attitude.target *= Quaternion.makeRoll(_roll.value);
 				computer.attitude.controlRoll = AttitudeController.Control.Full;
 			}
+			else
+				computer.attitude.controlRoll = AttitudeController.Control.KillRotation;
 		}
 
 		override public string name
