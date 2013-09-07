@@ -6,7 +6,7 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
-	[Serializable(18)]
+	[Serializable("space")]
 	public class Space: LayoutView
 	{
 		private float? _size;

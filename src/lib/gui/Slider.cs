@@ -6,7 +6,7 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
-	[Serializable(11)]
+	[Serializable("slider")]
 	public class Slider: LayoutView
 	{
 		public float minValue

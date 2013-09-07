@@ -17,7 +17,7 @@ namespace bjeb.math
 	}
 
         
-	[net.Serializable(14)]
+	[net.Serializable("vector3")]
 	public class Vector3: Serializable
 	{
 		public Vector3(): this(0, 0, 0)

@@ -160,7 +160,7 @@ namespace bjeb.gui
 
 
 
-	[Serializable(6)]
+	[Serializable("button")]
 	public class Button: LayoutView
 	{
 		public Button()

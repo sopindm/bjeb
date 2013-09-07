@@ -6,7 +6,7 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
-        [Serializable(10)]
+	[Serializable("textbox")]
 	public class Textbox: LayoutView
 	{
 		public string text

@@ -1,6 +1,6 @@
 namespace bjeb.net
 {
-	[Serializable(17)]
+	[Serializable("debugSettings")]
 	public class DebugSettings: Serializable
 	{
 		public float guiUpdateRate

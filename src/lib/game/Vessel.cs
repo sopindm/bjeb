@@ -4,7 +4,7 @@ using bjeb.math;
 
 namespace bjeb.game
 {
-	[net.Serializable(13)]
+	[net.Serializable("rigidBody")]
 	public class RigidBody: Serializable
 	{
 		public Vector3 centerOfMass
@@ -163,7 +163,7 @@ namespace bjeb.game
 	 orbit
 	 parts*/
 
-        [net.Serializable(16)]
+	[net.Serializable("vessel")]
 	public class Vessel: Serializable
 	{
 		public RigidBody body

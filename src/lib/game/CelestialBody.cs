@@ -12,7 +12,7 @@ using bjeb.math;
 
 namespace bjeb.game
 {
-	[net.Serializable(12)]
+	[net.Serializable("celestialBody")]
 	public class CelestialBody: Serializable
 	{
 		public Vector3 position;

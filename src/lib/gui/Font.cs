@@ -24,7 +24,7 @@ namespace bjeb.gui
 		BoldAndItalic
 	}
 
-	[bjeb.net.Serializable(3)]
+	[bjeb.net.Serializable("font")]
 	public class Font: Serializable
 	{
 		public Alignment alignment

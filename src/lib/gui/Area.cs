@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace bjeb.gui
 {
-    [net.Serializable(1)]
+    [net.Serializable("area")]
     public class Area: net.Serializable
     {
 	public float? x

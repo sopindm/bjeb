@@ -2,7 +2,7 @@ using System;
 
 namespace bjeb.math
 {
-        [net.Serializable(15)]
+        [net.Serializable("quaternion")]
         public class Quaternion: net.Serializable
 		{
 			public double w

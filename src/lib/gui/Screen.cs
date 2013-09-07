@@ -2,7 +2,7 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
-    [Serializable(0)]
+    [Serializable("screen")]
     public class Screen: Serializable
     {
 	public int width

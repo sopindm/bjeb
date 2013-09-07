@@ -6,7 +6,7 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
-    [Serializable(7)]
+    [Serializable("layout")]
     public class Layout: View
     {
 	private ViewContainer _views;

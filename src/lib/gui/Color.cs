@@ -2,7 +2,7 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
-    [Serializable(4)]
+    [Serializable("color")]
     public class Color: Serializable
     {
 	public float a

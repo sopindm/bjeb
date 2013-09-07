@@ -2,7 +2,7 @@ using bjeb.net;
 
 namespace bjeb.game
 {
-	[Serializable(19)]
+	[Serializable("flightControl")]
 	public class FlightControl: Serializable
 	{
 		public FlightControl()

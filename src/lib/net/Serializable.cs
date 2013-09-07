@@ -26,13 +26,13 @@ namespace bjeb.net
     [AttributeUsage(AttributeTargets.Class,AllowMultiple=false,Inherited=false)]
     public class SerializableAttribute: Attribute
     {
-        public UInt16 tag
+        public string tag
 		{
 			get;
 			private set;
 		}
 
-        public SerializableAttribute(UInt16 tag)
+        public SerializableAttribute(string tag)
 		{
 			this.tag = tag;
 		}
@@ -63,16 +63,26 @@ namespace bjeb.net
 		{
 			List<Type> serializableTypes = (from ass in AppDomain.CurrentDomain.GetAssemblies() from t in ass.GetTypes() where isSerializable(t) select t).ToList();
 
+			var typesDictionary = new SortedDictionary<string, Type>();
+
+			foreach(Type t in serializableTypes)
+			{
+				if(typesDictionary.ContainsKey(serializableAttribute(t).tag))
+					throw new SerializationException("Cannot define type " + t.ToString() + " with tag " + serializableAttribute(t).tag.ToString() + ". It's already defined.");
+
+				typesDictionary.Add(serializableAttribute(t).tag, t);
+			}
+
 			_serializableTypes = new SortedDictionary<UInt16, Type>();
 			_typeTags = new Dictionary<Type, UInt16>();
 
-			foreach (Type t in serializableTypes)
+			UInt16 id = 0;
+			foreach(var keyValue in typesDictionary)
 			{
-				if(_serializableTypes.ContainsKey(serializableAttribute(t).tag))
-					throw new SerializationException("Cannot define type " + t.ToString() + " with tag " + serializableAttribute(t).tag.ToString() + ". It's already defined.");
+				_serializableTypes.Add(id, keyValue.Value);
+				_typeTags.Add(keyValue.Value, id);
 
-				_serializableTypes.Add(serializableAttribute(t).tag, t);
-				_typeTags.Add(t, serializableAttribute(t).tag);
+				id++;
 			}
 		}
 

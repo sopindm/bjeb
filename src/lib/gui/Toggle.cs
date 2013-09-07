@@ -6,7 +6,7 @@ using bjeb.net;
 
 namespace bjeb.gui
 {
-	[Serializable(8)]
+	[Serializable("toggle")]
 	public class Toggle: LayoutView
 	{
 		public bool toggled
