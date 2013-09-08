@@ -222,7 +222,19 @@ namespace bjeb.game
 			}
 		}
 
-		public CelestialBody mainBody;
+		public math.Orbit orbit
+		{
+			get;
+			private set;
+		}
+
+		public CelestialBody mainBody
+		{
+			get
+			{
+				return orbit.mainBody;
+			}
+		}
 
 		private Vector3 _rotatingFrameVelocity;
 
@@ -274,7 +286,7 @@ namespace bjeb.game
 			_rotatingFrameVelocity = new Vector3();
 			gravity = new Vector3();
 
-			mainBody = new CelestialBody();
+			orbit = new math.Orbit();
 			body = new RigidBody();
 		}
 
@@ -282,7 +294,7 @@ namespace bjeb.game
 		public void update(global::Vessel vessel)
 		{
 			body.update(vessel);
-			mainBody.update(vessel.mainBody);
+			orbit.update(vessel.orbit, Planetarium.GetUniversalTime());
 
 			_rootRotation = new Quaternion(vessel.GetTransform().rotation);
 
@@ -321,7 +333,7 @@ namespace bjeb.game
 		override protected void doSerialize(Stream stream)
 		{
 			body.serialize(stream);
-			mainBody.serialize(stream);
+			orbit.serialize(stream);
 
 			_rootRotation.serialize(stream);
 			_rotatingFrameVelocity.serialize(stream);
@@ -334,7 +346,7 @@ namespace bjeb.game
 		override protected void doDeserialize(Stream stream)
 		{
 		    body.deserialize(stream);
-		    mainBody.deserialize(stream);
+		    orbit.deserialize(stream);
 
 		    _rootRotation.deserialize(stream);
 		    _rotatingFrameVelocity.deserialize(stream);

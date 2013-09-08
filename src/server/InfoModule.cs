@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using bjeb.gui;
 
@@ -64,8 +65,11 @@ namespace bjeb
 			_stats.Clear();
 
 			_stats.Add(new StatLabel("Mass", (() => vessel.body.mass.ToString("F2") + " t")));
-			_stats.Add(new StatLabel("Forward", (() => vessel.rotation.forward.ToString())));
-			_stats.Add(new StatLabel("Up", (() => vessel.up.ToString())));
+			_stats.Add(new StatLabel("Forward", (() => vessel.rootRotation.forward.ToString())));
+			_stats.Add(new StatLabel("Inclination", (() => (vessel.orbit.inclination * 180 / Math.PI) .ToString())));
+			_stats.Add(new StatLabel("LAN", (() => (vessel.orbit.LAN * 180 / Math.PI).ToString())));
+			_stats.Add(new StatLabel("Parameter", (() => vessel.orbit.parameter.ToString())));
+			_stats.Add(new StatLabel("Eccentricity", (() => vessel.orbit.eccentricity.ToString())));
 
 			_statsLayout.views.clear();
 			_statsLayout.style = Style.TextArea;

@@ -14,6 +14,11 @@ namespace bjeb.math
 		{
 			return Math.Max(min, Math.Min(value, max));
 		}
+
+		public static double sqrt(this double value)
+		{
+			return Math.Sqrt(value);
+		}
 	}
 
         
