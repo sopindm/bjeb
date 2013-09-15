@@ -16,6 +16,8 @@ using bjeb.game;
 
   timeAtPeriapsis *
 
+  period
+
   declension
 
   timeTo(trueA)
@@ -95,28 +97,98 @@ namespace bjeb.math
 		{
 		}
 
-		public Vector3 position;
-		public Vector3 speed;
-
-		public double timeFrom(double tA)
+		private enum _Type
 		{
-			if(Math.Abs(eccentricity) < 1e-3)
-				CircleOrbit.timeFrom(this, tA);
-			else if(eccentricity < 1 - 1e-3)
-				EllipticOrbit.timeFrom(this, tA);
-			else if(eccentricity < 1 + 1-3)
-				ParabolicOrbit.timeFrom(this, tA);
-			else
-				HyperbolicOrbit.timeFrom(this, tA);
-
-			throw new System.ArgumentException();
+			Circular,
+			Elliptic,
+			Parabolic,
+			Hyperbolic
 		}
 
-		private void _update(Vector3 position, Vector3 speed)
+		private _Type _type
 		{
-			this.position = position;
-			this.speed = speed;
+			get
+			{
+				if(Math.Abs(eccentricity) < 1e-3)
+					return _Type.Circular;
+				else if(eccentricity < 1 - 1e-3)
+					return _Type.Elliptic;
+				else if(eccentricity < 1 + 1e-3)
+					return _Type.Parabolic;
+				else 
+					return _Type.Hyperbolic;
+			}
+		}
 
+		public double semimajorAxis
+		{
+			get
+			{
+				switch(_type)
+				{
+				case _Type.Circular:
+					return CircularOrbit.semimajorAxis(this);
+				case _Type.Elliptic:
+					return EllipticOrbit.semimajorAxis(this);
+				case _Type.Parabolic:
+					return ParabolicOrbit.semimajorAxis(this);
+				case _Type.Hyperbolic:
+					return HyperbolicOrbit.semimajorAxis(this);
+				}
+
+				throw new ArgumentException();
+			}
+		}
+			
+		public double period
+		{
+			get
+			{
+				if(_type != _Type.Circular && _type != _Type.Elliptic)
+					throw new ArgumentException();
+
+				return 2 * Math.PI * Math.Pow(semimajorAxis, 1.5) / mainBody.gravParameter.sqrt();
+			}
+		}
+
+		public double time
+		{
+			get
+			{
+				return timeAtPeriapsis + timeFromPeriapsis;
+			}
+		}
+
+		public double timeFromPeriapsis
+		{
+			get
+			{
+				switch(_type)
+				{
+				case _Type.Circular:
+					return CircularOrbit.timeFromPeriapsis(this);
+				case _Type.Elliptic:
+					return EllipticOrbit.timeFromPeriapsis(this);
+				case _Type.Parabolic:
+					return ParabolicOrbit.timeFromPeriapsis(this);
+				case _Type.Hyperbolic:
+					return HyperbolicOrbit.timeFromPeriapsis(this);
+				default:
+					throw new ArgumentException();
+				}
+			}
+		}
+
+		public double timeToPeriapsis
+		{
+			get
+			{
+				return period - timeFromPeriapsis;
+			}
+		}
+
+		private void _update(Vector3 position, Vector3 speed, double time)
+		{
 			Vector3 c = speed.cross(position);
 			inclination = c.angle(mainBody.rotation.up);
 
@@ -157,6 +229,8 @@ namespace bjeb.math
 				argumentOfPeriapsis += 2 * Math.PI;
 
 			argumentOfPeriapsis -= trueAnomaly;
+
+			timeAtPeriapsis = time - timeFromPeriapsis;
 		}
 
 		private double inverseRotAngle;
@@ -166,8 +240,17 @@ namespace bjeb.math
         {
 			mainBody.update(orbit.referenceBody);
 			inverseRotAngle = Planetarium.InverseRotAngle;
-            _update(new Vector3(orbit.pos.x, orbit.pos.z, orbit.pos.y),
-					new Vector3(orbit.vel.x, orbit.vel.z, orbit.vel.y));
+
+			inclination = orbit.inclination * Math.PI / 180;
+			LAN = orbit.LAN * Math.PI / 180;
+
+			eccentricity = orbit.eccentricity;
+			parameter = new Vector3(orbit.h).magnitudeSquare / mainBody.gravParameter;
+
+			argumentOfPeriapsis = orbit.argumentOfPeriapsis * Math.PI / 180;
+			trueAnomaly = orbit.trueAnomaly * Math.PI / 180;
+
+			timeAtPeriapsis = time - timeFromPeriapsis;
 		}
 #endif
 
@@ -181,9 +264,6 @@ namespace bjeb.math
 			stream.write(argumentOfPeriapsis);
 			stream.write(timeAtPeriapsis);
 			mainBody.serialize(stream);
-
-			position.serialize(stream);
-			speed.serialize(stream);
 
 			stream.write(inverseRotAngle);
 		}
@@ -199,15 +279,7 @@ namespace bjeb.math
 			timeAtPeriapsis = stream.readDouble();
 			mainBody.deserialize(stream);
 
-			position = new Vector3();
-			speed = new Vector3();
-
-			position.deserialize(stream);
-			speed.deserialize(stream);
-			
 			inverseRotAngle = stream.readDouble();
-
-			_update(position, speed);
 		}
 	}
 }

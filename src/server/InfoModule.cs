@@ -72,6 +72,7 @@ namespace bjeb
 			_stats.Add(new StatLabel("Eccentricity", (() => vessel.orbit.eccentricity.ToString())));
 			_stats.Add(new StatLabel("True anomaly", (() => vessel.orbit.trueAnomaly.ToString())));
 			_stats.Add(new StatLabel("Argument of periapsis", (() => (vessel.orbit.argumentOfPeriapsis * 180 / Math.PI).ToString())));
+			_stats.Add(new StatLabel("Time at periapsis", (() => vessel.orbit.timeAtPeriapsis.ToString())));
 
 			_statsLayout.views.clear();
 			_statsLayout.style = Style.TextArea;
