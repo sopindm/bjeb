@@ -177,9 +177,7 @@ namespace bjeb
 
 		public void onControl(FlightControl control)
 		{
-			foreach(var module in modules)
-				if(module.isShowing)
-					module.onControl(control);
+			attitude.drive(control);
 		}
 	}
 }

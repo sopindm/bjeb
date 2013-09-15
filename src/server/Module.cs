@@ -120,9 +120,14 @@ namespace bjeb
 		{
 			get;
 		}
+	}
 
-		virtual public void onControl(FlightControl c)
+	abstract class Controller: Module
+	{
+		public Controller(Computer c): base(c)
 		{
 		}
+
+		abstract public void drive(FlightControl c);
 	}
 }

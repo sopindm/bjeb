@@ -78,7 +78,7 @@ namespace bjeb
 		}
 	}
 
-	class AttitudeController: Module
+	class AttitudeController: Controller
 	{
 		public AttitudeController(Computer computer): base(computer)
 		{
@@ -149,7 +149,7 @@ namespace bjeb
         private const double Tf = 0.1;
         private const double driveFactor = 100000;
 
-        private void drive(FlightControl c)
+        private void _drive(FlightControl c)
         {
             double rollDelta = Math.Abs(vessel.rotation.roll - _lastRoll);
             if (rollDelta > Math.PI)
@@ -213,9 +213,9 @@ namespace bjeb
 			control(act.y, driveLimit, controlYaw, ref c.yaw);
         }
 
-		override public void onControl(FlightControl control)
+		override public void drive(FlightControl control)
 		{
-			drive(control);
+			_drive(control);
 
 			control.yaw *= _sensetivity.value;
 			control.pitch *= _sensetivity.value;

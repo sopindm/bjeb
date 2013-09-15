@@ -58,6 +58,7 @@
     <Compile Include="src\lib\math\Vector3.cs" />
     <Compile Include="src\lib\math\Quaternion.cs" />
     <Compile Include="src\lib\math\Orbit.cs" />
+    <Compile Include="src\lib\math\OrbitTypes.cs" />
     <Compile Include="src\lib\game\CelestialBody.cs" />
     <Compile Include="src\lib\game\Vessel.cs" />
     <Compile Include="src\lib\game\FlightControl.cs" />

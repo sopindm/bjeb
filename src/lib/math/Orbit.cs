@@ -3,11 +3,6 @@ using bjeb.net;
 using bjeb.game;
 
 /*
-  trueAnomaly *
-  
-  eccentricity *
-  parameter *
-
   radius
   speed
 
@@ -27,7 +22,6 @@ using bjeb.game;
   timeFrom(trueA)
 
   Constructors:
-    main parameters
 	position and velocity
  */
 
@@ -104,8 +98,19 @@ namespace bjeb.math
 		public Vector3 position;
 		public Vector3 speed;
 
-		public Vector3 tmp;
-		public Vector3 tmp2;
+		public double timeFrom(double tA)
+		{
+			if(Math.Abs(eccentricity) < 1e-3)
+				CircleOrbit.timeFrom(this, tA);
+			else if(eccentricity < 1 - 1e-3)
+				EllipticOrbit.timeFrom(this, tA);
+			else if(eccentricity < 1 + 1-3)
+				ParabolicOrbit.timeFrom(this, tA);
+			else
+				HyperbolicOrbit.timeFrom(this, tA);
+
+			throw new System.ArgumentException();
+		}
 
 		private void _update(Vector3 position, Vector3 speed)
 		{
@@ -118,14 +123,40 @@ namespace bjeb.math
 			Vector3 an = c.cross(Vector3.up);
 
 			if(an.equals(Vector3.zero))
+			{
 				LAN = 0;
+				an = Vector3.right;
+			}
 			else
 				LAN = an.angleInPlane(Vector3.right, mainBody.rotation.up) + inverseRotAngle / 180 * Math.PI;
 
 			parameter = c.magnitudeSquare / mainBody.gravParameter;
 
 			double h = speed.magnitudeSquare - 2 * mainBody.gravParameter / position.magnitude;
+
 			eccentricity = (1 + h * parameter / mainBody.gravParameter).sqrt();
+
+			double vRadial = speed.dot(position.normalize);
+			double vNormal = speed.exclude(position).magnitude;
+
+			if(Math.Abs(eccentricity) > 1e-3)
+			{
+				double taSin = vRadial / eccentricity * (parameter / mainBody.gravParameter).sqrt();
+				double taCos = 1 / eccentricity * (vNormal * (parameter / mainBody.gravParameter).sqrt() - 1);
+
+				trueAnomaly = Math.Atan2(taSin, taCos);
+			}
+			else 
+				trueAnomaly = position.angleInPlane(an, c);
+
+			if(trueAnomaly < 0)
+				trueAnomaly += 2 * Math.PI;
+
+			argumentOfPeriapsis = position.angleInPlane(an, c);
+			if(argumentOfPeriapsis < 0)
+				argumentOfPeriapsis += 2 * Math.PI;
+
+			argumentOfPeriapsis -= trueAnomaly;
 		}
 
 		private double inverseRotAngle;
