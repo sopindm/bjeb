@@ -74,6 +74,16 @@ namespace bjeb
 			_stats.Add(new StatLabel("Argument of periapsis", (() => (vessel.orbit.argumentOfPeriapsis * 180 / Math.PI).ToString())));
 			_stats.Add(new StatLabel("Time at periapsis", (() => vessel.orbit.timeAtPeriapsis.ToString())));
 
+			_stats.Add(new StatLabel("Bodies", (() => 
+					{
+						string names = "";
+						
+						foreach(var body in computer.universe.celestialBodies)
+							names += " " + body.name;
+
+						return names;
+					})));
+
 			_statsLayout.views.clear();
 			_statsLayout.style = Style.TextArea;
 
@@ -87,10 +97,6 @@ namespace bjeb
 		{
 			foreach(var stat in _stats)
 				stat.update();
-
-			/*p
-				"Angular momentum: " +  + " " +
-				"Momentum of inertia: " + vessel.body.momentumOfInertia.ToString();*/
 
 			//control for stats
 			//need more control on styles (font colors) 

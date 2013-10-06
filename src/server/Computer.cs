@@ -26,6 +26,12 @@ namespace bjeb
 			private set;
 		}
 
+		public Universe universe
+		{
+			get;
+			private set;
+		}
+
 		public DebugSettings settings
 		{
 			get;
@@ -46,7 +52,8 @@ namespace bjeb
 
 			settings = new DebugSettings() { guiUpdateRate = 30f, stateUpdateRate = 30f };
 
-			vessel = new Vessel();
+			universe = new Universe();
+			vessel = new Vessel(universe);
 		}
 
 		public AttitudeController attitude

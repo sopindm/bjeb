@@ -18,6 +18,11 @@ namespace bjeb.net
 			get;
 		}
 
+		game.Universe universe
+		{
+			get;
+		}
+
 		DebugSettings settings
 		{
 			get;
@@ -89,9 +94,11 @@ namespace bjeb.net
 			connection.flush();
 	    }
 
-	    public static void requestUpdate(game.Vessel vessel, Connection connection)
+	    public static void requestUpdate(game.Universe universe, game.Vessel vessel, Connection connection)
 	    {
 			connection.stream.write("update");
+			
+			universe.serialize(connection.stream);
 			vessel.serialize(connection.stream);
 
 			connection.flush();
@@ -190,6 +197,7 @@ namespace bjeb.net
 
 	    private static void handleUpdate(Connection connection, IServer server)
 	    {
+			server.universe.deserialize(connection.stream);
 			server.vessel.deserialize(connection.stream);
 			server.onUpdate();
 	    }

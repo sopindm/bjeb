@@ -7,6 +7,7 @@ namespace bjeb
 {
     public class BJeb: BasicModule
     {
+		private game.Universe _universe;
 		private net.ClientProtocol _protocol;
 
 		private void onConnectionSetup()
@@ -21,6 +22,7 @@ namespace bjeb
 			
 			var client = new Client("127.0.0.1", 4400, onConnectionSetup);
 			_protocol = new ClientProtocol(client);
+			_universe = new game.Universe();
 		}
 
 		public override void OnLoad(ConfigNode sfsNode)
@@ -39,10 +41,11 @@ namespace bjeb
 			}
 
 			if(_vessel == null)
-				_vessel = new game.Vessel();
+				_vessel = new game.Vessel(_universe);
 
+			_universe.update();
 			_vessel.update(this.vessel);
-			_protocol.updateState(_vessel);
+			_protocol.updateState(_universe, _vessel);
 		}
 
         protected override void onDraw()

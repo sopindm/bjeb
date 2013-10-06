@@ -1,20 +1,17 @@
 using bjeb.net;
 using bjeb.math;
 
-/*
-  Main body - celectial body:
-     name
-
-	 g
-	 G
-
-	 orbit*/
-
 namespace bjeb.game
 {
 	[net.Serializable("celestialBody")]
 	public class CelestialBody: Serializable
 	{
+		public string name
+		{
+			get;
+			private set;
+		}
+
 		public Vector3 position
 		{
 			get;
@@ -46,7 +43,13 @@ namespace bjeb.game
 			private set;
 		}
 
-		public CelestialBody()
+		public Universe universe
+		{
+			get;
+			private set;
+		}
+
+		public CelestialBody(Universe universe)
 		{
 			position = new Vector3();
 			rotation = new Quaternion();
@@ -55,10 +58,21 @@ namespace bjeb.game
 
 			mass = 0;
 			gravParameter = 0;
+
+			this.universe = universe;
 		}
+
+#if UNITY
+		public CelestialBody(Universe universe, global::CelestialBody body): this(universe)
+		{
+			update(body);
+		}
+#endif
 
 		override protected void doSerialize(Stream stream)
 		{
+			stream.write(name);
+
 		    position.serialize(stream);
 		    rotation.serialize(stream);
 
@@ -70,6 +84,8 @@ namespace bjeb.game
 
 		override protected void doDeserialize(Stream stream)
 		{
+			name = stream.readString();
+
 		    position.deserialize(stream);
 		    rotation.deserialize(stream);
 
@@ -82,6 +98,8 @@ namespace bjeb.game
 #if UNITY
 		public void update(global::CelestialBody body)
 		{
+			name = body.GetName();
+
 			position = new Vector3(body.position);
 			rotation = new Quaternion(body.rotation);
 

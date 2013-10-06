@@ -9,10 +9,12 @@ namespace bjeb.test
     class TestPlugin
     {
 		private ClientProtocol _protocol = null;
+		private Universe universe;
 
 		public TestPlugin(Client client)
 		{
 			_protocol = new ClientProtocol(client);
+			universe = new Universe();
 		}
 
 		public void setup()
@@ -48,8 +50,8 @@ namespace bjeb.test
 		{
 			updateGui();
 			
-			_protocol.updateState(new Vessel());
-			_protocol.requestControl(new Vessel(), new FlightControl());
+			_protocol.updateState(universe, new Vessel(universe));
+			_protocol.requestControl(new Vessel(universe), new FlightControl());
 
 		}
     }

@@ -179,14 +179,14 @@ namespace bjeb
             err += inertia;
 			err *= vessel.body.momentumOfInertia * torque.invert;
 
-            Vector3 act = _controller.compute(err, vessel.body.timeDelta);
+            Vector3 act = _controller.compute(err, vessel.mainBody.universe.fixedDeltaTime);
 
             double precision = (Math.Min(vessel.body.torque.x, vessel.body.torque.y) * 20.0 / vessel.body.momentumOfInertia.magnitude).clamp(0.5, 10);
             double driveLimit = (err.magnitude * driveFactor / precision).clamp(0, 1);
 
 			act = act.clamp(-driveLimit, driveLimit);
 
-            act = _act + (act - _act) * (vessel.body.timeDelta / Tf);
+            act = _act + (act - _act) * (vessel.mainBody.universe.fixedDeltaTime / Tf);
 
             setControls(act, c, driveLimit);
 

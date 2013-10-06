@@ -158,12 +158,12 @@ namespace bjeb.net
 			}
 		}
 
-		public void updateState(game.Vessel vessel)
+		public void updateState(game.Universe universe, game.Vessel vessel)
 		{
 			if(_stateUpdateHandler.update() && _settings.updateState)
 			{
 				_background.wait();
-				_client.execute(() => Protocol.requestUpdate(vessel, _connection));
+				_client.execute(() => Protocol.requestUpdate(universe, vessel, _connection));
 			}
 		}
 	}

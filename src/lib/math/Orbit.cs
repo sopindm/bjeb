@@ -14,10 +14,6 @@ using bjeb.game;
   apopsisAltitude
   periapsisAltitude
 
-  timeAtPeriapsis *
-
-  period
-
   declension
 
   timeTo(trueA)
@@ -81,6 +77,14 @@ namespace bjeb.math
 			private set;
 		}
 
+		public game.Universe universe
+		{
+			get
+			{
+				return mainBody.universe;
+			}
+		}
+
 		public Orbit(double trueAnomaly, double eccentricity, double parameter, double inclination, double LAN, double argumentOfPeriapsis, double timeAtPeriapsis, game.CelestialBody mainBody)
 		{
 			this.trueAnomaly = trueAnomaly;
@@ -93,7 +97,7 @@ namespace bjeb.math
 			this.mainBody = mainBody;
 		}
 
-		public Orbit():this(0, 0, 0, 0, 0, 0, 0, new game.CelestialBody())
+		public Orbit(Universe universe): this(0, 0, 0, 0, 0, 0, 0, new game.CelestialBody(universe))
 		{
 		}
 
@@ -163,19 +167,30 @@ namespace bjeb.math
 		{
 			get
 			{
+				double value = 0;
+
 				switch(_type)
 				{
 				case _Type.Circular:
-					return CircularOrbit.timeFromPeriapsis(this);
+					value = CircularOrbit.timeFromPeriapsis(this);
+					break;
 				case _Type.Elliptic:
-					return EllipticOrbit.timeFromPeriapsis(this);
+					value = EllipticOrbit.timeFromPeriapsis(this);
+					break;
 				case _Type.Parabolic:
-					return ParabolicOrbit.timeFromPeriapsis(this);
+					value = ParabolicOrbit.timeFromPeriapsis(this);
+					break;
 				case _Type.Hyperbolic:
-					return HyperbolicOrbit.timeFromPeriapsis(this);
+					value = HyperbolicOrbit.timeFromPeriapsis(this);
+					break;
 				default:
 					throw new ArgumentException();
 				}
+
+				if(value < 0)
+					return period + value;
+
+				return value;
 			}
 		}
 
@@ -200,7 +215,7 @@ namespace bjeb.math
 				an = Vector3.right;
 			}
 			else
-				LAN = an.angleInPlane(Vector3.right, mainBody.rotation.up) + inverseRotAngle / 180 * Math.PI;
+				LAN = an.angleInPlane(Vector3.right, mainBody.rotation.up) + universe.inverseRotation / 180 * Math.PI;
 
 			parameter = c.magnitudeSquare / mainBody.gravParameter;
 
@@ -233,13 +248,10 @@ namespace bjeb.math
 			timeAtPeriapsis = time - timeFromPeriapsis;
 		}
 
-		private double inverseRotAngle;
-
 #if UNITY
 		public void update(global::Orbit orbit, double time)
         {
 			mainBody.update(orbit.referenceBody);
-			inverseRotAngle = Planetarium.InverseRotAngle;
 
 			inclination = orbit.inclination * Math.PI / 180;
 			LAN = orbit.LAN * Math.PI / 180;
@@ -264,8 +276,6 @@ namespace bjeb.math
 			stream.write(argumentOfPeriapsis);
 			stream.write(timeAtPeriapsis);
 			mainBody.serialize(stream);
-
-			stream.write(inverseRotAngle);
 		}
 
 		override protected void doDeserialize(Stream stream)
@@ -278,8 +288,6 @@ namespace bjeb.math
 			argumentOfPeriapsis = stream.readDouble();
 			timeAtPeriapsis = stream.readDouble();
 			mainBody.deserialize(stream);
-
-			inverseRotAngle = stream.readDouble();
 		}
 	}
 }
